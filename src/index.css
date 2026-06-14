@@ -8,6 +8,7 @@
   --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
   --animate-marquee: marquee 40s linear infinite;
   --animate-marquee-reviews: marquee-reviews 60s linear infinite;
+  --animate-marquee-partners: marquee-partners 40s linear infinite;
 }
 
 @keyframes marquee {
@@ -18,6 +19,11 @@
 @keyframes marquee-reviews {
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
+}
+
+@keyframes marquee-partners {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
 }
 
 @keyframes stroke-draw {

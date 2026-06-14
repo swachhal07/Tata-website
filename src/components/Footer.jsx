@@ -85,7 +85,12 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 text-[#f37022]"><PhoneIcon /></span>
-                <span>+977 9802748575</span>
+                <span>
+                  +977{' '}
+                  <a href="tel:+9779801007228" className="transition-colors hover:text-[#f37022]">9801007228</a>
+                  /
+                  <a href="tel:+9779812010558" className="transition-colors hover:text-[#f37022]">9812010558</a>
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 text-[#f37022]"><MailIcon /></span>

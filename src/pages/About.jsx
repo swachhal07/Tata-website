@@ -1,14 +1,24 @@
-import { Link } from 'react-router-dom'
-import storyImage from '../assets/Tata_Hitachi_ZAXIS_650_H_4_b67b5d4208.webp'
-import { ProgressiveBlur } from '../components/ProgressiveBlur'
+import { useEffect, useState } from 'react'
+import storySlide1 from '../assets/WhatsApp Image 2026-06-14 at 1.13.27 PM.jpeg'
+import storySlide2 from '../assets/WhatsApp Image 2026-06-14 at 1.19.34 PM.jpeg'
+import storySlide3 from '../assets/WhatsApp Image 2026-06-14 at 1.19.35 PM.jpeg'
+import storySlide4 from '../assets/WhatsApp Image 2026-06-14 at 1.19.355PM.jpeg'
+import logo1 from '../assets/1.png'
+import logo2 from '../assets/2.png'
+import logoCgCement from '../assets/demo-cg-cement-logo-colored.png'
+import logo4 from '../assets/4.png'
+import logo5 from '../assets/5.png'
+import logo6 from '../assets/6.png'
 
-const partnershipMarks = [
-  'TATA HITACHI',
-  'Hitachi Construction',
-  'TATA Group',
-  'Manufacturer Warranty',
-  'Authorised Dealer',
-  'Genuine Parts',
+const storySlides = [storySlide1, storySlide2, storySlide3, storySlide4]
+
+const partnerLogos = [
+  { src: logo1, alt: 'Swachchhanda Nirman Sewa', invert: true },
+  { src: logoCgCement, alt: 'CG Cement', invert: false },
+  { src: logo4, alt: 'Partner 4', invert: false },
+  { src: logo2, alt: 'Riddhi Siddhi Cement', invert: true },
+  { src: logo5, alt: 'Partner 5', invert: false },
+  { src: logo6, alt: 'Partner 6', invert: false },
 ]
 
 const trustPillars = [
@@ -18,43 +28,42 @@ const trustPillars = [
   { label: 'Genuine parts supply' },
 ]
 
-const differentiators = [
+const teamMembers = [
   {
-    num: '01',
-    tag: 'Coverage',
-    title: 'Pan-Nepal reach',
-    body: 'Service centres in every major region and field technicians on site within 24 hours of a call — wherever the work is happening, the support is closer than the next district.',
+    initials: 'MD',
+    name: '[Full Name]',
+    role: 'Managing Director',
+    bio: 'Sets the strategic direction across sales, service, and partnerships.',
   },
   {
-    num: '02',
-    tag: 'Parts',
-    title: 'Genuine spares, fast',
-    body: 'Our central warehouse stocks fast-movers for every Tata Hitachi machine in country. Most parts ship same-day; specialised orders inside a working week.',
+    initials: 'OP',
+    name: '[Full Name]',
+    role: 'Director, Sales & Operations',
+    bio: 'Owns the day-to-day across the distribution network and Kathmandu showroom.',
   },
   {
-    num: '03',
-    tag: 'Training',
-    title: 'Operators trained, not just delivered',
-    body: 'Every machine handover includes structured operator training — controls, daily inspection routines, safe operating procedures. Refresher courses available on request.',
+    initials: 'SV',
+    name: '[Full Name]',
+    role: 'Head of Service & Technical',
+    bio: 'Leads the factory-trained technician team and field response across project sites.',
   },
   {
-    num: '04',
-    tag: 'Heritage',
-    title: 'Family-run since 1995',
-    body: 'Three generations of the Dugar family have built this business one customer at a time. The institutional knowledge of three decades is on every call we take.',
+    initials: 'PT',
+    name: '[Full Name]',
+    role: 'Head of Parts & After-Sales',
+    bio: 'Runs the central warehouse and same-day dispatch operation.',
   },
-]
-
-const regions = [
-  { city: 'Kathmandu', province: 'Bagmati', role: 'Headquarters · Showroom · Service' },
-  { city: 'Biratnagar', province: 'Koshi', role: 'Sales · Service · Parts' },
-  { city: 'Bharatpur', province: 'Bagmati', role: 'Sales · Service · Parts' },
-  { city: 'Butwal', province: 'Lumbini', role: 'Sales · Service · Parts' },
-  { city: 'Nepalgunj', province: 'Lumbini', role: 'Service centre · Parts' },
-  { city: 'Surkhet', province: 'Karnali', role: 'Field technicians · Dispatch' },
 ]
 
 export default function About() {
+  const [storyIndex, setStoryIndex] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setStoryIndex((i) => (i + 1) % storySlides.length)
+    }, 4000)
+    return () => clearInterval(id)
+  }, [])
+
   return (
     <main className="bg-white">
       {/* ─── Hero ─────────────────────────────────────────────── */}
@@ -123,12 +132,17 @@ export default function About() {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div className="relative">
               <div className="relative aspect-[4/5] overflow-hidden">
-                <img
-                  src={storyImage}
-                  alt="Tata Hitachi ZAXIS 650 on a Nepal project site"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <span className="absolute left-0 top-0 h-1 w-32 bg-[#f37022]" />
+                {storySlides.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
+                      i === storyIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                ))}
+                <span className="absolute left-0 top-0 z-10 h-1 w-32 bg-[#f37022]" />
               </div>
               <div className="absolute -bottom-6 -right-6 hidden bg-black px-6 py-5 text-white sm:block">
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#f37022]">
@@ -180,59 +194,45 @@ export default function About() {
       </section>
 
       {/* ─── Trusted partner ─────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-black py-24 text-white md:py-32">
+      <section className="relative overflow-hidden bg-black pt-12 pb-24 text-white md:pt-16 md:pb-32">
         <div className="relative mx-auto max-w-[1400px] px-6 lg:px-12">
           <div className="mb-16 text-center">
             <div className="mb-5 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-[#f37022] md:text-base">
               <span className="h-px w-10 bg-[#f37022]" />
-              Trusted partner
+              Trusted Partners
               <span className="h-px w-10 bg-[#f37022]" />
             </div>
-            <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-tight md:text-6xl">
-              Authorised by{' '}
+            <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-white md:text-6xl">
+              Working with
+              <br />
               <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
-                Tata Hitachi.
+                Nepal's best.
               </span>
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-gray-400 md:text-lg">
-              Direct from the maker. Every machine carries the manufacturer's
-              warranty. Every technician trained at the factory. Every part
-              from the same supply chain that built the machine.
-            </p>
           </div>
+        </div>
 
-          {/* Scrolling partnership marks with progressive blur edges */}
-          <div className="relative overflow-hidden">
-            <div className="flex w-max animate-marquee gap-16 py-8 md:gap-24">
-              {[...partnershipMarks, ...partnershipMarks, ...partnershipMarks].map((m, i) => (
-                <div key={i} className="flex shrink-0 items-center gap-4">
-                  <span className="font-mono text-xs tabular-nums tracking-tight text-[#f37022]">
-                    /
-                  </span>
-                  <span className="whitespace-nowrap font-serif text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl">
-                    {m}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <ProgressiveBlur
-              direction="left"
-              blurLayers={6}
-              blurIntensity={0.5}
-              className="absolute inset-y-0 left-0 z-10 w-40 md:w-64"
-            />
-            <ProgressiveBlur
-              direction="right"
-              blurLayers={6}
-              blurIntensity={0.5}
-              className="absolute inset-y-0 right-0 z-10 w-40 md:w-64"
-            />
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-32 bg-gradient-to-r from-black to-transparent md:w-48" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-32 bg-gradient-to-l from-black to-transparent md:w-48" />
+        {/* Scrolling partner logos — full-bleed, left-to-right */}
+        <div className="relative w-full overflow-hidden">
+          <div className="flex w-max animate-marquee-partners items-center py-8 [animation-direction:reverse]">
+            {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((logo, i) => (
+              <div
+                key={i}
+                className="flex h-48 w-56 shrink-0 items-center justify-center md:h-60 md:w-72 lg:h-72 lg:w-96"
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  loading="lazy"
+                  className={`max-h-full max-w-full object-contain ${logo.invert ? 'brightness-0 invert' : ''}`}
+                />
+              </div>
+            ))}
           </div>
+        </div>
 
-          <div className="mt-16 grid grid-cols-2 gap-px border border-white/10 bg-white/10 sm:grid-cols-4">
+        <div className="relative mx-auto mt-16 max-w-[1400px] px-6 lg:px-12">
+          <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10 sm:grid-cols-4">
             {trustPillars.map((p, i) => (
               <div
                 key={p.label}
@@ -242,7 +242,7 @@ export default function About() {
                 <p className="font-mono text-[10px] font-bold tabular-nums tracking-[0.25em] text-[#f37022]">
                   / 0{i + 1}
                 </p>
-                <p className="mt-3 text-sm font-bold uppercase tracking-[0.2em] text-white md:text-base">
+                <p className="mt-3 whitespace-nowrap text-xs font-bold uppercase tracking-[0.12em] text-white md:text-sm">
                   {p.label}
                 </p>
               </div>
@@ -251,100 +251,45 @@ export default function About() {
         </div>
       </section>
 
-      {/* ─── What sets us apart ──────────────────────────────── */}
-      <section className="bg-[#f7f5f0] py-24 md:py-32">
+      {/* ─── Meet our team ───────────────────────────────────── */}
+      <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
           <div className="mb-16 max-w-3xl">
             <div className="mb-6 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-[#f37022] md:text-base">
               <span className="h-px w-10 bg-[#f37022]" />
-              What sets us apart
+              Our team
             </div>
             <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-black md:text-5xl lg:text-6xl">
-              Four reasons fleets{' '}
+              The people behind{' '}
               <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
-                come back.
+                the machines.
               </span>
             </h2>
           </div>
 
-          <div className="grid gap-px bg-gray-300 md:grid-cols-2">
-            {differentiators.map((d) => (
+          <div className="grid grid-cols-1 gap-px bg-gray-300 sm:grid-cols-2 lg:grid-cols-4">
+            {teamMembers.map((m, i) => (
               <div
-                key={d.num}
-                className="group bg-[#f7f5f0] p-8 transition-colors hover:bg-white md:p-12"
+                key={m.role}
+                className="group bg-white p-8 transition-colors hover:bg-[#f7f5f0]"
+                style={{ animation: `fade-up 0.6s ease-out ${0.08 * i}s both` }}
               >
-                <div className="mb-8 flex items-baseline justify-between">
-                  <span className="text-2xl font-black tabular-nums tracking-tight text-[#f37022]">
-                    {d.num}
+                <div className="relative mb-6 flex aspect-square items-center justify-center overflow-hidden bg-black/5">
+                  <span className="font-serif text-5xl font-bold italic tracking-tight text-[#f37022] md:text-6xl">
+                    {m.initials}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 transition-colors group-hover:text-[#f37022]">
-                    {d.tag}
-                  </span>
+                  <span className="absolute left-0 top-0 h-1 w-12 bg-[#f37022]" />
                 </div>
-                <h3 className="text-2xl font-black uppercase leading-[1.05] tracking-tight text-black md:text-3xl">
-                  {d.title}
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 transition-colors group-hover:text-[#f37022]">
+                  {m.role}
+                </span>
+                <h3 className="mt-2 text-xl font-black uppercase leading-[1.05] tracking-tight text-black md:text-2xl">
+                  {m.name}
                 </h3>
-                <p className="mt-5 max-w-lg text-base leading-relaxed text-gray-700">
-                  {d.body}
+                <p className="mt-3 text-sm leading-relaxed text-gray-700">
+                  {m.bio}
                 </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Service network ─────────────────────────────────── */}
-      <section className="bg-white py-24 md:py-32">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
-          <div className="mb-16 grid grid-cols-1 items-end gap-8 lg:grid-cols-[1fr_1.4fr]">
-            <div>
-              <div className="mb-6 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-[#f37022] md:text-base">
-                <span className="h-px w-10 bg-[#f37022]" />
-                Service network
-              </div>
-              <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-black md:text-5xl lg:text-6xl">
-                Across the country.
-                <br />
-                <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
-                  Within reach.
-                </span>
-              </h2>
-            </div>
-            <p className="max-w-xl text-base leading-relaxed text-gray-700 lg:justify-self-end lg:text-right">
-              Six locations stocked with parts, technicians, and field-ready
-              support — so when a machine stops, the answer is never more than
-              a day's reach away.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-200">
-            {regions.map((r, i) => (
-              <Link
-                key={r.city}
-                to="/contact"
-                className="group block border-b border-gray-200 transition-colors hover:bg-[#f7f5f0]"
-              >
-                <div className="grid grid-cols-[40px_1fr_auto] items-center gap-4 py-6 transition-transform group-hover:translate-x-2 md:grid-cols-[60px_1.4fr_1fr_1.6fr_60px] md:gap-8 md:py-8">
-                  <span className="text-xs font-bold tabular-nums tracking-[0.2em] text-gray-400">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span className="text-2xl font-black uppercase leading-none tracking-tight text-black md:text-4xl">
-                    {r.city}
-                  </span>
-                  <span className="hidden text-xs font-bold uppercase tracking-[0.25em] text-gray-500 md:block">
-                    {r.province} province
-                  </span>
-                  <span className="hidden text-sm text-gray-600 md:block">
-                    {r.role}
-                  </span>
-                  <span className="text-right text-xl text-[#f37022] opacity-30 transition-all group-hover:opacity-100 md:text-2xl">
-                    →
-                  </span>
-                </div>
-                <div className="-mt-3 mb-3 pl-11 text-xs text-gray-500 md:hidden">
-                  {r.province} · {r.role}
-                </div>
-              </Link>
             ))}
           </div>
         </div>

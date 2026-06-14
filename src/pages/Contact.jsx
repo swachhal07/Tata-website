@@ -12,12 +12,16 @@ const interests = [
 ]
 
 const offices = [
-  { city: 'Kathmandu', role: 'Headquarters', detail: 'Tinkune' },
-  { city: 'Biratnagar', role: 'Eastern region', detail: 'Sales · Service' },
-  { city: 'Bharatpur', role: 'Central region', detail: 'Sales · Service' },
-  { city: 'Butwal', role: 'Western region', detail: 'Sales · Service' },
-  { city: 'Nepalgunj', role: 'Mid-west region', detail: 'Service centre' },
-  { city: 'Surkhet', role: 'Far-west region', detail: 'Field technicians' },
+  { city: 'Jeetpur',    activeFor: 'Service & Parts', coordinator: 'Sahzad Ansari',    phone: '9802919537' },
+  { city: 'Biratnagar', activeFor: 'Service & Parts', coordinator: 'Jakir Hussain',    phone: '9801558692' },
+  { city: 'Bardibaas',  activeFor: 'Service',         coordinator: 'Jakir Hussain',    phone: '9801558692' },
+  { city: 'Kathmandu',  activeFor: 'Service & Parts', coordinator: 'Rupesh Mahato',    phone: '9800018809' },
+  { city: 'Nepalgunj',  activeFor: 'Service & Parts', coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
+  { city: 'Dhangadi',   activeFor: 'Service',         coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
+  { city: 'Surkhet',    activeFor: 'Service',         coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
+  { city: 'Dang',       activeFor: 'Service',         coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
+  { city: 'Pokhara',    activeFor: 'Service & Parts', coordinator: 'Dipendra Paudel',  phone: '9802773245' },
+  { city: 'Butwal',     activeFor: 'Service',         coordinator: 'Dipendra Paudel',  phone: '9802773245' },
 ]
 
 function Field({ label, required, children, span = 1 }) {
@@ -300,14 +304,29 @@ export default function Contact() {
                     Sales
                   </p>
                   <a
-                    href="tel:+97714000000"
+                    href="tel:+9779801007228"
                     className="mt-1 block text-xl font-bold text-white transition-colors hover:text-[#f37022]"
                   >
-                    +977 01-4000000
+                    +977 9801007228
                   </a>
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    Also +977 9802748575 / 9801028519
+                  <a
+                    href="tel:+9779812010558"
+                    className="mt-0.5 block text-xs text-gray-400 transition-colors hover:text-[#f37022]"
+                  >
+                    Also +977 9812010558
+                  </a>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#f37022]">
+                    Toll Free
                   </p>
+                  <a
+                    href="tel:+9779801571065"
+                    className="mt-1 block text-xl font-bold text-white transition-colors hover:text-[#f37022]"
+                  >
+                    +977 9801571065
+                  </a>
                 </div>
 
                 <div>
@@ -447,13 +466,13 @@ export default function Contact() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-px overflow-hidden border border-gray-300 bg-gray-300 md:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-px overflow-hidden border border-gray-300 bg-gray-300 md:grid-cols-3 lg:grid-cols-5">
             {offices.map((o, i) => (
               <div
                 key={o.city}
-                className="group relative bg-[#f7f5f0] p-6 transition-colors hover:bg-white"
+                className="group relative flex flex-col bg-[#f7f5f0] p-6 transition-colors hover:bg-white"
               >
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-5 flex items-center justify-between">
                   <span className="text-[11px] font-bold tabular-nums tracking-[0.2em] text-[#f37022]">
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -464,10 +483,23 @@ export default function Contact() {
                 <p className="text-xl font-black uppercase leading-none tracking-tight text-black">
                   {o.city}
                 </p>
-                <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">
-                  {o.role}
+                <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
+                  {o.activeFor}
                 </p>
-                <p className="mt-1 text-xs text-gray-500">{o.detail}</p>
+                <div className="mt-auto pt-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
+                    Coordinator
+                  </p>
+                  <p className="mt-1 text-sm font-bold leading-tight text-black">
+                    {o.coordinator}
+                  </p>
+                  <a
+                    href={`tel:+977${o.phone}`}
+                    className="mt-1 inline-block text-sm font-mono tabular-nums tracking-tight text-gray-700 transition-colors hover:text-[#f37022]"
+                  >
+                    {o.phone}
+                  </a>
+                </div>
               </div>
             ))}
           </div>
@@ -477,10 +509,10 @@ export default function Contact() {
               Need help reaching a remote site?
             </p>
             <a
-              href="tel:+97714000000"
+              href="tel:+9779801007228"
               className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-black transition-colors hover:text-[#f37022]"
             >
-              Call dispatch · +977 01-4000000
+              Call dispatch · +977 9801007228
               <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
             </a>
           </div>

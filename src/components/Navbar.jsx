@@ -8,7 +8,7 @@ const leftNavItems = [
 ]
 
 const rightNavItems = [
-  { to: '/blog', label: 'Blog' },
+  { to: '/compare', label: 'Compare' },
   { to: '/about', label: 'About Us' },
 ]
 
