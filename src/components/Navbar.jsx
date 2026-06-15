@@ -18,11 +18,16 @@ function NavItem({ item, isHome }) {
   return (
     <NavLink
       to={item.to}
-      className={`text-base font-medium transition ${
-        isHome
-          ? 'text-white group-hover/nav:text-black'
-          : 'text-gray-800 hover:text-black'
-      }`}
+      end={item.to === '/'}
+      className={({ isActive }) =>
+        `relative inline-flex pb-1 text-base font-medium transition after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:bg-[#f37022] after:transition-transform after:duration-200 after:origin-left ${
+          isActive ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100'
+        } ${
+          isHome
+            ? 'text-white group-hover/nav:text-black'
+            : 'text-gray-800 hover:text-black'
+        }`
+      }
     >
       {item.label}
     </NavLink>

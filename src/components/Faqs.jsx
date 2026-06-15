@@ -37,18 +37,16 @@ function FaqItem({ faq, isOpen, onToggle }) {
         aria-expanded={isOpen}
       >
         <span
-          className={`text-base font-bold tracking-tight transition-colors md:text-lg ${
-            isOpen ? 'text-[#f37022]' : 'text-black'
-          }`}
+          className={`text-base font-bold tracking-tight transition-colors md:text-lg ${isOpen ? 'text-[#f37022]' : 'text-black'
+            }`}
         >
           {faq.q}
         </span>
         <span
-          className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
-            isOpen
+          className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${isOpen
               ? 'rotate-45 border-[#f37022] bg-[#f37022] text-white'
               : 'border-gray-400 text-gray-600 group-hover:border-[#f37022] group-hover:bg-[#f37022] group-hover:text-white'
-          }`}
+            }`}
           aria-hidden
         >
           <svg viewBox="0 0 14 14" className="h-3 w-3 fill-current">
@@ -57,9 +55,8 @@ function FaqItem({ faq, isOpen, onToggle }) {
         </span>
       </button>
       <div
-        className={`grid transition-all duration-400 ease-out ${
-          isOpen ? 'grid-rows-[1fr] pb-6 opacity-100' : 'grid-rows-[0fr] opacity-0'
-        }`}
+        className={`grid transition-all duration-400 ease-out ${isOpen ? 'grid-rows-[1fr] pb-6 opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
       >
         <div className="overflow-hidden">
           <p className="max-w-2xl text-sm leading-relaxed text-gray-600 md:text-base">
@@ -104,7 +101,7 @@ export default function Faqs() {
               >
                 <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2a15.05 15.05 0 0 1-6.59-6.59l2.2-2.2c.27-.27.36-.66.24-1.02A11.36 11.36 0 0 1 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z" />
               </svg>
-              Still unsure? Just call: +977 9801007228
+              Still unsure? Just call: +977 9801571065
             </a>
           </div>
 

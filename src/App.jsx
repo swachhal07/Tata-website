@@ -6,6 +6,8 @@ import Products from './pages/Products'
 import About from './pages/About'
 import Compare from './pages/Compare'
 import Contact from './pages/Contact'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
           <Route path="/compare" element={<Compare />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   )

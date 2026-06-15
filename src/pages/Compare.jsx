@@ -10,7 +10,7 @@ import { products } from '../data/products'
  *  verify themselves.
  * ───────────────────────────────────────────────────────────── */
 
-const BRANDS = ['Tata Hitachi', 'JCB', 'Kobelco']
+const BRANDS = ['Tata Hitachi', 'JCB', 'Kobelco', 'CAT']
 
 const brandRows = [
   {
@@ -19,22 +19,33 @@ const brandRows = [
       'Dugar Earthmovers · since 1995',
       'Varies by local dealer',
       'Varies by local dealer',
+      'Varies by local dealer',
     ],
     tataWins: true,
   },
   {
     label: 'Service branches across Nepal',
-    values: ['10 branches · 7 provinces', 'Varies with dealer', 'Varies with dealer'],
+    values: [
+      '10 branches · 7 provinces',
+      'Varies with dealer',
+      'Varies with dealer',
+      'Varies with dealer',
+    ],
     tataWins: true,
   },
   {
     label: 'Factory-trained technicians',
-    values: ['At every branch', 'Varies with dealer', 'Varies with dealer'],
+    values: [
+      'At every branch',
+      'Varies with dealer',
+      'Varies with dealer',
+      'Varies with dealer',
+    ],
     tataWins: true,
   },
   {
     label: 'Manufacturer warranty',
-    values: ['Standard · full coverage', 'Standard', 'Standard'],
+    values: ['Standard · full coverage', 'Standard', 'Standard', 'Standard'],
     tataWins: false,
   },
   {
@@ -43,28 +54,40 @@ const brandRows = [
       'Central warehouse · branch stock',
       'Varies with dealer',
       'Varies with dealer',
+      'Varies with dealer',
     ],
     tataWins: true,
   },
   {
     label: 'Same / next-day parts dispatch',
-    values: ['Yes — most parts', 'Varies with dealer', 'Varies with dealer'],
+    values: [
+      'Yes — most parts',
+      'Varies with dealer',
+      'Varies with dealer',
+      'Varies with dealer',
+    ],
     tataWins: true,
   },
   {
     label: 'Operator training on handover',
-    values: ['Included with every machine', 'Varies with dealer', 'Varies with dealer'],
+    values: [
+      'Included with every machine',
+      'Varies with dealer',
+      'Varies with dealer',
+      'Varies with dealer',
+    ],
     tataWins: true,
   },
   {
     label: 'Years serving Nepal contractors',
-    values: ['30+ years', 'Varies with dealer', 'Varies with dealer'],
+    values: ['30+ years', 'Varies with dealer', 'Varies with dealer', 'Varies with dealer'],
     tataWins: true,
   },
   {
     label: 'Resale market in Nepal',
     values: [
       'Strong — large installed base',
+      'Varies with dealer',
       'Varies with dealer',
       'Varies with dealer',
     ],
@@ -108,6 +131,16 @@ const classMap = {
         'Fuel tank':        '600 L',
       },
     },
+    cat: {
+      name: 'CAT 365',
+      specs: {
+        'Operating weight': '65.0 t',
+        'Engine power':     '415 HP',
+        'Bucket capacity':  '3.4 m³',
+        'Max digging depth':'7.8 m',
+        'Fuel tank':        '720 L',
+      },
+    },
   },
   'ZAXIS-370LCH': {
     jcb: {
@@ -130,8 +163,18 @@ const classMap = {
         'Fuel tank':        '520 L',
       },
     },
+    cat: {
+      name: 'CAT 374',
+      specs: {
+        'Operating weight': '37.5 t',
+        'Engine power':     '268 HP',
+        'Bucket capacity':  '2.1 m³',
+        'Max digging depth':'7.4 m',
+        'Fuel tank':        '565 L',
+      },
+    },
   },
-  'EX-300-LCPRIME': {
+  'EX-350-LCPRIME': {
     jcb: {
       name: 'JCB JS305LC',
       specs: {
@@ -152,6 +195,16 @@ const classMap = {
         'Fuel tank':        '480 L',
       },
     },
+    cat: {
+      name: 'CAT 330',
+      specs: {
+        'Operating weight': '30.4 t',
+        'Engine power':     '275 HP',
+        'Bucket capacity':  '1.4 m³',
+        'Max digging depth':'7.1 m',
+        'Fuel tank':        '485 L',
+      },
+    },
   },
   'ZAXIS-220LC': {
     jcb: {
@@ -169,6 +222,16 @@ const classMap = {
       specs: {
         'Operating weight': '22.1 t',
         'Engine power':     '167 HP',
+        'Bucket capacity':  '1.0 m³',
+        'Max digging depth':'6.7 m',
+        'Fuel tank':        '410 L',
+      },
+    },
+    cat: {
+      name: 'CAT 320',
+      specs: {
+        'Operating weight': '22.2 t',
+        'Engine power':     '162 HP',
         'Bucket capacity':  '1.0 m³',
         'Max digging depth':'6.7 m',
         'Fuel tank':        '410 L',
@@ -196,6 +259,16 @@ const classMap = {
         'Fuel tank':        '410 L',
       },
     },
+    cat: {
+      name: 'CAT 320',
+      specs: {
+        'Operating weight': '22.2 t',
+        'Engine power':     '162 HP',
+        'Bucket capacity':  '1.0 m³',
+        'Max digging depth':'6.7 m',
+        'Fuel tank':        '410 L',
+      },
+    },
   },
   'EX-210-LCPRIME': {
     jcb: {
@@ -213,6 +286,16 @@ const classMap = {
       specs: {
         'Operating weight': '21.0 t',
         'Engine power':     '158 HP',
+        'Bucket capacity':  '1.0 m³',
+        'Max digging depth':'6.7 m',
+        'Fuel tank':        '410 L',
+      },
+    },
+    cat: {
+      name: 'CAT 320',
+      specs: {
+        'Operating weight': '22.2 t',
+        'Engine power':     '162 HP',
         'Bucket capacity':  '1.0 m³',
         'Max digging depth':'6.7 m',
         'Fuel tank':        '410 L',
@@ -240,6 +323,16 @@ const classMap = {
         'Fuel tank':        '230 L',
       },
     },
+    cat: {
+      name: 'CAT 313',
+      specs: {
+        'Operating weight': '13.5 t',
+        'Engine power':     '107 HP',
+        'Bucket capacity':  '0.59 m³',
+        'Max digging depth':'5.7 m',
+        'Fuel tank':        '240 L',
+      },
+    },
   },
   'EX-130': {
     jcb: {
@@ -260,6 +353,16 @@ const classMap = {
         'Bucket capacity':  '0.5 m³',
         'Max digging depth':'5.6 m',
         'Fuel tank':        '220 L',
+      },
+    },
+    cat: {
+      name: 'CAT 313',
+      specs: {
+        'Operating weight': '13.5 t',
+        'Engine power':     '107 HP',
+        'Bucket capacity':  '0.59 m³',
+        'Max digging depth':'5.7 m',
+        'Fuel tank':        '240 L',
       },
     },
   },
@@ -284,6 +387,16 @@ const classMap = {
         'Fuel tank':        '130 L',
       },
     },
+    cat: {
+      name: 'CAT 308',
+      specs: {
+        'Operating weight': '8.5 t',
+        'Engine power':     '65 HP',
+        'Bucket capacity':  '0.30 m³',
+        'Max digging depth':'4.5 m',
+        'Fuel tank':        '130 L',
+      },
+    },
   },
   'SHINRAI-PRO': {
     jcb: {
@@ -291,7 +404,7 @@ const classMap = {
       specs: {
         'Operating weight': '7.8 t',
         'Engine power':     '74 HP',
-        'Bucket capacity':  '—',
+        'Bucket capacity':  '1.0 m³',
         'Max digging depth':'5.5 m',
         'Fuel tank':        '128 L',
       },
@@ -299,6 +412,16 @@ const classMap = {
     kobelco: {
       name: '— (no backhoe in Kobelco lineup)',
       specs: {},
+    },
+    cat: {
+      name: 'CAT 426F',
+      specs: {
+        'Operating weight': '8.0 t',
+        'Engine power':     '93 HP',
+        'Bucket capacity':  '1.0 m³',
+        'Max digging depth':'5.6 m',
+        'Fuel tank':        '160 L',
+      },
     },
   },
 }
@@ -335,12 +458,14 @@ export default function Compare() {
   const equivalents = classMap[classCode] ?? {
     jcb: { name: '—', specs: {} },
     kobelco: { name: '—', specs: {} },
+    cat: { name: '—', specs: {} },
   }
 
   const tataSpec = (label) =>
     tataProduct?.specs.find((s) => s.label === label)?.value ?? '—'
   const jcbSpec = (label) => equivalents.jcb?.specs?.[label] ?? '—'
   const kobelcoSpec = (label) => equivalents.kobelco?.specs?.[label] ?? '—'
+  const catSpec = (label) => equivalents.cat?.specs?.[label] ?? '—'
 
   return (
     <main className="bg-white">
@@ -514,12 +639,20 @@ export default function Compare() {
                       {equivalents.jcb.name}
                     </p>
                   </th>
-                  <th className="px-6 py-6 text-left">
+                  <th className="border-r border-white/10 px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
                       / Kobelco
                     </p>
                     <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
                       {equivalents.kobelco.name}
+                    </p>
+                  </th>
+                  <th className="px-6 py-6 text-left">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                      / CAT
+                    </p>
+                    <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
+                      {equivalents.cat.name}
                     </p>
                   </th>
                 </tr>
@@ -539,8 +672,11 @@ export default function Compare() {
                     <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
                       {jcbSpec(label)}
                     </td>
-                    <td className="px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
+                    <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
                       {kobelcoSpec(label)}
+                    </td>
+                    <td className="px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
+                      {catSpec(label)}
                     </td>
                   </tr>
                 ))}
@@ -582,8 +718,24 @@ export default function Compare() {
                       <span className="text-gray-400">—</span>
                     )}
                   </td>
-                  <td className="px-6 py-5 align-top">
+                  <td className="border-r border-gray-200 px-6 py-5 align-top">
                     {tataProduct && !equivalents.kobelco.name.startsWith('—') ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {tataProduct.applications.map((a) => (
+                          <span
+                            key={a}
+                            className="border border-gray-300 bg-gray-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-600"
+                          >
+                            {a}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-5 align-top">
+                    {tataProduct && equivalents.cat.name !== '—' ? (
                       <div className="flex flex-wrap gap-1.5">
                         {tataProduct.applications.map((a) => (
                           <span

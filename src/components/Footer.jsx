@@ -94,7 +94,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 text-[#f37022]"><MailIcon /></span>
-                <span>sales.tatahitachi@mvdugar.com</span>
+                <span>sales.tatahitachinp@gmail.com</span>
               </li>
             </ul>
           </div>

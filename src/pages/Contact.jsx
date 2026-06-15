@@ -24,6 +24,16 @@ const offices = [
   { city: 'Butwal',     activeFor: 'Service',         coordinator: 'Dipendra Paudel',  phone: '9802773245' },
 ]
 
+const salesTeam = [
+  { branch: 'Biratnagar', name: 'Jagarnath Sah',    phone: '9801500928' },
+  { branch: 'Birgunj',    name: 'Binod Manandhar',  phone: '9705475443' },
+  { branch: 'Birgunj',    name: 'Bikendra Subedi',  phone: '9802058089' },
+  { branch: 'Pokhara',    name: 'Amrit Bhujel',     phone: '9802855225' },
+  { branch: 'Nepalgunj',  name: 'Aman Raj Sidiqi',  phone: '9704589586' },
+  { branch: 'Kathmandu',  name: 'Prem Lama',        phone: '9801007228' },
+  { branch: 'Kathmandu',  name: 'Suman Pujari',     phone: '9812010556' },
+]
+
 function Field({ label, required, children, span = 1 }) {
   return (
     <label className={span === 2 ? 'block md:col-span-2' : 'block'}>
@@ -77,16 +87,37 @@ export default function Contact() {
   })
   const [status, setStatus] = useState('idle')
 
-  const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
+  const update = (key) => (e) => {
+    const v = key === 'phone' ? e.target.value.replace(/[^0-9+\s-]/g, '') : e.target.value
+    setForm((f) => ({ ...f, [key]: v }))
+  }
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setStatus('sending')
-    setTimeout(() => setStatus('sent'), 700)
+    setError('')
+    try {
+      const res = await fetch('/api/send-mail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'contact', ...form }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Send failed')
+      }
+      setStatus('sent')
+    } catch (err) {
+      setStatus('idle')
+      setError(err.message || 'Could not send. Please try again or call us directly.')
+    }
   }
 
   const reset = () => {
     setStatus('idle')
+    setError('')
     setForm({ name: '', company: '', phone: '', email: '', interest: '', message: '' })
   }
 
@@ -194,6 +225,9 @@ export default function Contact() {
                       <input
                         type="tel"
                         required
+                        inputMode="tel"
+                        pattern="[0-9+\s-]{7,15}"
+                        title="Digits only — at least 7 numbers"
                         value={form.phone}
                         onChange={update('phone')}
                         placeholder="+977 98•••••••"
@@ -253,6 +287,12 @@ export default function Contact() {
                         {form.message.length}/600
                       </span>
                     </Field>
+
+                    {error && (
+                      <p className="md:col-span-2 border-l-2 border-[#f37022] bg-[#fdecdf] px-4 py-3 text-sm text-[#a4360c]">
+                        {error}
+                      </p>
+                    )}
 
                     <div className="md:col-span-2 md:flex md:items-center md:justify-between md:gap-8">
                       <p className="text-xs leading-relaxed text-gray-500 md:max-w-sm">
@@ -334,10 +374,10 @@ export default function Contact() {
                     Email
                   </p>
                   <a
-                    href="mailto:sales.tatahitachi@mvdugar.com"
+                    href="mailto:sales.tatahitachinp@gmail.com"
                     className="mt-1 block break-all text-base font-medium text-white transition-colors hover:text-[#f37022]"
                   >
-                    sales.tatahitachi@mvdugar.com
+                    sales.tatahitachinp@gmail.com
                   </a>
                 </div>
 
@@ -466,6 +506,62 @@ export default function Contact() {
             </p>
           </div>
 
+          <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-gray-300 pb-4">
+            <h4 className="text-2xl font-black uppercase tracking-tight text-black md:text-3xl">
+              Sales Team
+            </h4>
+            <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-gray-500">
+              {salesTeam.length} representatives
+            </span>
+          </div>
+
+          <div className="mb-16 grid grid-cols-2 border-l border-t border-gray-300 md:grid-cols-3 lg:grid-cols-5">
+            {salesTeam.map((s, i) => (
+              <div
+                key={`${s.branch}-${s.name}`}
+                className="group relative flex flex-col border-b border-r border-gray-300 bg-[#f7f5f0] p-6 transition-colors hover:bg-white"
+              >
+                <div className="mb-5 flex items-center justify-between">
+                  <span className="text-[11px] font-bold tabular-nums tracking-[0.2em] text-[#f37022]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="text-[11px] uppercase tracking-[0.25em] text-gray-400 transition-colors group-hover:text-[#f37022]">
+                    NP
+                  </span>
+                </div>
+                <p className="text-xl font-black uppercase leading-none tracking-tight text-black">
+                  {s.branch}
+                </p>
+                <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
+                  Sales
+                </p>
+                <div className="mt-auto pt-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
+                    Representative
+                  </p>
+                  <p className="mt-1 text-sm font-bold leading-tight text-black">
+                    {s.name}
+                  </p>
+                  <a
+                    href={`tel:+977${s.phone}`}
+                    className="mt-1 inline-block text-sm font-mono tabular-nums tracking-tight text-gray-700 transition-colors hover:text-[#f37022]"
+                  >
+                    {s.phone}
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-gray-300 pb-4">
+            <h4 className="text-2xl font-black uppercase tracking-tight text-black md:text-3xl">
+              Service & Spare
+            </h4>
+            <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-gray-500">
+              {offices.length} locations
+            </span>
+          </div>
+
           <div className="grid grid-cols-2 gap-px overflow-hidden border border-gray-300 bg-gray-300 md:grid-cols-3 lg:grid-cols-5">
             {offices.map((o, i) => (
               <div
@@ -509,10 +605,10 @@ export default function Contact() {
               Need help reaching a remote site?
             </p>
             <a
-              href="tel:+9779801007228"
+              href="tel:+9779801571065"
               className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-black transition-colors hover:text-[#f37022]"
             >
-              Call dispatch · +977 9801007228
+              Call toll-free · +977 9801571065
               <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
             </a>
           </div>

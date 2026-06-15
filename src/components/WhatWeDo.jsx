@@ -10,11 +10,11 @@ const cards = [
     title: 'Excavators',
     description:
       'Mini to mining-class Tata Hitachi excavators built for hydropower, road, and infrastructure work across Nepal.',
-    image: excavator,
+    image: mining,
     featured: true,
   },
   { number: '02', title: 'Backhoe Loaders', image: backhoe },
-  { number: '03', title: 'Mining Equipment', image: mining },
+  { number: '03', title: 'Mining Equipment', image: excavator },
   { number: '04', title: 'Service & Maintenance', image: service },
   { number: '05', title: 'Genuine Parts', image: parts },
 ]

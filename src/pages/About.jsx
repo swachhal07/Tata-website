@@ -9,6 +9,7 @@ import logoCgCement from '../assets/demo-cg-cement-logo-colored.png'
 import logo4 from '../assets/4.png'
 import logo5 from '../assets/5.png'
 import logo6 from '../assets/6.png'
+import mvDugarLogo from '../assets/MVDUGAR-01.png'
 
 const storySlides = [storySlide1, storySlide2, storySlide3, storySlide4]
 
@@ -97,8 +98,13 @@ export default function About() {
               className="lg:pb-3"
               style={{ animation: 'fade-up 0.7s ease-out 0.15s both' }}
             >
-              <div className="mb-6 flex items-stretch gap-4">
+              <div className="mb-6 flex items-stretch gap-0">
                 <div className="w-1 bg-[#f37022]" />
+                <img
+                  src={mvDugarLogo}
+                  alt="MV Dugar Group"
+                  className="-mx-6 h-20 w-auto self-center md:h-24"
+                />
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Established
