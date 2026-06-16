@@ -1,34 +1,31 @@
 # Logs
-logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Build artefacts
+node_modules/
+dist/
+dist-ssr/
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.sw?
+
+# Vercel CLI link metadata (per-machine)
+.vercel/
+
+# Env files (real secrets) — keep .example checked in
 .env
 .env.*
 !.env.example
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-.vercel
-.env*
-
-# Server-side runtime data
-server/uploads/
-server/data/
+# Backend runtime data — local-only, never push
+backend/data/
+backend/uploads/

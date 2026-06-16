@@ -7,7 +7,6 @@ import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { renderContact, renderBrochure, buildTransporter } from './email.js'
 
 // dotenv loads .env by default; also load .env.local if present
 import dotenv from 'dotenv'
@@ -325,49 +324,9 @@ app.post('/api/admin/products/:code/restore', requireAuth, async (req, res) => {
   }
 })
 
-/* ─────────── Mail ─────────── */
-
-app.post('/api/send-mail', async (req, res) => {
-  const body = req.body || {}
-  const { type } = body
-
-  let subject
-  let html
-  if (type === 'contact') {
-    if (!body.name || !body.phone || !body.email || !body.message) {
-      return res.status(400).json({ error: 'Missing required fields' })
-    }
-    subject = `Contact enquiry · ${body.name}${body.interest ? ` · ${body.interest}` : ''}`
-    html = renderContact(body)
-  } else if (type === 'brochure') {
-    if (!body.name || !body.phone || !body.product) {
-      return res.status(400).json({ error: 'Missing required fields' })
-    }
-    subject = `Brochure request · ${body.product} · ${body.name}`
-    html = renderBrochure(body)
-  } else {
-    return res.status(400).json({ error: 'Unknown form type' })
-  }
-
-  const transporter = buildTransporter()
-  if (!transporter) {
-    return res.status(500).json({ error: 'Mail service is not configured' })
-  }
-
-  try {
-    await transporter.sendMail({
-      from: `"${process.env.MAIL_FROM_NAME || 'Tata Hitachi · Dugar Earthmovers'}" <${process.env.SMTP_USER}>`,
-      to: process.env.MAIL_TO || process.env.SMTP_USER,
-      replyTo: body.email || undefined,
-      subject,
-      html,
-    })
-    res.json({ ok: true })
-  } catch (err) {
-    console.error('[send-mail] failed', err)
-    res.status(502).json({ error: 'Could not send mail' })
-  }
-})
+/* Mail handling lives in the frontend folder (api/send-mail.js as a
+ * Vercel serverless function). Local dev uses a Vite middleware so
+ * the contact form works without running this server. */
 
 app.listen(PORT, () => {
   console.log(`[server] http://localhost:${PORT}`)
