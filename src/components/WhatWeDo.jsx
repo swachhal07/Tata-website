@@ -1,8 +1,8 @@
 import excavator from '../assets/650h zaxis.webp'
 import backhoe from '../assets/sinrahai pro img.jpg'
 import mining from '../assets/zaxis 370.png'
-import service from '../assets/Tata_Hitachi_Zaxis_140_H_Side_view_2ac73983e8.webp'
-import parts from '../assets/Tata_Hitachi_Zaxis_220_LCM_Side_View_f037a1e7f1.webp'
+import service from '../assets/IMG_5286.JPG.jpeg'
+import parts from '../assets/IMG_5291.JPG.jpeg'
 
 const cards = [
   {

@@ -10,7 +10,7 @@ import { products } from '../data/products'
  *  verify themselves.
  * ───────────────────────────────────────────────────────────── */
 
-const BRANDS = ['Tata Hitachi', 'JCB', 'Kobelco', 'CAT']
+const BRANDS = ['Tata Hitachi', 'JCB', 'Kobelco', 'Hyundai']
 
 const brandRows = [
   {
@@ -131,14 +131,14 @@ const classMap = {
         'Fuel tank':        '600 L',
       },
     },
-    cat: {
-      name: 'CAT 365',
+    hyundai: {
+      name: 'Hyundai HX520L',
       specs: {
-        'Operating weight': '65.0 t',
-        'Engine power':     '415 HP',
-        'Bucket capacity':  '3.4 m³',
-        'Max digging depth':'7.8 m',
-        'Fuel tank':        '720 L',
+        'Operating weight': '52.0 t',
+        'Engine power':     '365 HP',
+        'Bucket capacity':  '2.4 m³',
+        'Max digging depth':'7.2 m',
+        'Fuel tank':        '540 L',
       },
     },
   },
@@ -163,14 +163,14 @@ const classMap = {
         'Fuel tank':        '520 L',
       },
     },
-    cat: {
-      name: 'CAT 374',
+    hyundai: {
+      name: 'Hyundai HX380AL',
       specs: {
-        'Operating weight': '37.5 t',
-        'Engine power':     '268 HP',
-        'Bucket capacity':  '2.1 m³',
-        'Max digging depth':'7.4 m',
-        'Fuel tank':        '565 L',
+        'Operating weight': '37.0 t',
+        'Engine power':     '270 HP',
+        'Bucket capacity':  '1.9 m³',
+        'Max digging depth':'7.3 m',
+        'Fuel tank':        '540 L',
       },
     },
   },
@@ -195,14 +195,14 @@ const classMap = {
         'Fuel tank':        '480 L',
       },
     },
-    cat: {
-      name: 'CAT 330',
+    hyundai: {
+      name: 'Hyundai HX300L',
       specs: {
-        'Operating weight': '30.4 t',
-        'Engine power':     '275 HP',
+        'Operating weight': '30.0 t',
+        'Engine power':     '222 HP',
         'Bucket capacity':  '1.4 m³',
-        'Max digging depth':'7.1 m',
-        'Fuel tank':        '485 L',
+        'Max digging depth':'7.0 m',
+        'Fuel tank':        '480 L',
       },
     },
   },
@@ -227,12 +227,12 @@ const classMap = {
         'Fuel tank':        '410 L',
       },
     },
-    cat: {
-      name: 'CAT 320',
+    hyundai: {
+      name: 'Hyundai HX220AL',
       specs: {
-        'Operating weight': '22.2 t',
-        'Engine power':     '162 HP',
-        'Bucket capacity':  '1.0 m³',
+        'Operating weight': '22.5 t',
+        'Engine power':     '164 HP',
+        'Bucket capacity':  '1.05 m³',
         'Max digging depth':'6.7 m',
         'Fuel tank':        '410 L',
       },
@@ -259,12 +259,12 @@ const classMap = {
         'Fuel tank':        '410 L',
       },
     },
-    cat: {
-      name: 'CAT 320',
+    hyundai: {
+      name: 'Hyundai HX220AL',
       specs: {
-        'Operating weight': '22.2 t',
-        'Engine power':     '162 HP',
-        'Bucket capacity':  '1.0 m³',
+        'Operating weight': '22.5 t',
+        'Engine power':     '164 HP',
+        'Bucket capacity':  '1.05 m³',
         'Max digging depth':'6.7 m',
         'Fuel tank':        '410 L',
       },
@@ -291,12 +291,12 @@ const classMap = {
         'Fuel tank':        '410 L',
       },
     },
-    cat: {
-      name: 'CAT 320',
+    hyundai: {
+      name: 'Hyundai HX220AL',
       specs: {
-        'Operating weight': '22.2 t',
-        'Engine power':     '162 HP',
-        'Bucket capacity':  '1.0 m³',
+        'Operating weight': '22.5 t',
+        'Engine power':     '164 HP',
+        'Bucket capacity':  '1.05 m³',
         'Max digging depth':'6.7 m',
         'Fuel tank':        '410 L',
       },
@@ -323,14 +323,14 @@ const classMap = {
         'Fuel tank':        '230 L',
       },
     },
-    cat: {
-      name: 'CAT 313',
+    hyundai: {
+      name: 'Hyundai HX140L',
       specs: {
-        'Operating weight': '13.5 t',
-        'Engine power':     '107 HP',
-        'Bucket capacity':  '0.59 m³',
+        'Operating weight': '14.0 t',
+        'Engine power':     '110 HP',
+        'Bucket capacity':  '0.65 m³',
         'Max digging depth':'5.7 m',
-        'Fuel tank':        '240 L',
+        'Fuel tank':        '230 L',
       },
     },
   },
@@ -355,14 +355,14 @@ const classMap = {
         'Fuel tank':        '220 L',
       },
     },
-    cat: {
-      name: 'CAT 313',
+    hyundai: {
+      name: 'Hyundai HX140L',
       specs: {
-        'Operating weight': '13.5 t',
-        'Engine power':     '107 HP',
-        'Bucket capacity':  '0.59 m³',
+        'Operating weight': '14.0 t',
+        'Engine power':     '110 HP',
+        'Bucket capacity':  '0.65 m³',
         'Max digging depth':'5.7 m',
-        'Fuel tank':        '240 L',
+        'Fuel tank':        '230 L',
       },
     },
   },
@@ -387,12 +387,12 @@ const classMap = {
         'Fuel tank':        '130 L',
       },
     },
-    cat: {
-      name: 'CAT 308',
+    hyundai: {
+      name: 'Hyundai HX85A',
       specs: {
-        'Operating weight': '8.5 t',
+        'Operating weight': '8.4 t',
         'Engine power':     '65 HP',
-        'Bucket capacity':  '0.30 m³',
+        'Bucket capacity':  '0.32 m³',
         'Max digging depth':'4.5 m',
         'Fuel tank':        '130 L',
       },
@@ -413,15 +413,9 @@ const classMap = {
       name: '— (no backhoe in Kobelco lineup)',
       specs: {},
     },
-    cat: {
-      name: 'CAT 426F',
-      specs: {
-        'Operating weight': '8.0 t',
-        'Engine power':     '93 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'5.6 m',
-        'Fuel tank':        '160 L',
-      },
+    hyundai: {
+      name: '— (no backhoe in Hyundai lineup)',
+      specs: {},
     },
   },
 }
@@ -458,14 +452,14 @@ export default function Compare() {
   const equivalents = classMap[classCode] ?? {
     jcb: { name: '—', specs: {} },
     kobelco: { name: '—', specs: {} },
-    cat: { name: '—', specs: {} },
+    hyundai: { name: '—', specs: {} },
   }
 
   const tataSpec = (label) =>
     tataProduct?.specs.find((s) => s.label === label)?.value ?? '—'
   const jcbSpec = (label) => equivalents.jcb?.specs?.[label] ?? '—'
   const kobelcoSpec = (label) => equivalents.kobelco?.specs?.[label] ?? '—'
-  const catSpec = (label) => equivalents.cat?.specs?.[label] ?? '—'
+  const hyundaiSpec = (label) => equivalents.hyundai?.specs?.[label] ?? '—'
 
   return (
     <main className="bg-white">
@@ -649,10 +643,10 @@ export default function Compare() {
                   </th>
                   <th className="px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      / CAT
+                      / Hyundai
                     </p>
                     <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
-                      {equivalents.cat.name}
+                      {equivalents.hyundai.name}
                     </p>
                   </th>
                 </tr>
@@ -676,7 +670,7 @@ export default function Compare() {
                       {kobelcoSpec(label)}
                     </td>
                     <td className="px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                      {catSpec(label)}
+                      {hyundaiSpec(label)}
                     </td>
                   </tr>
                 ))}
@@ -735,7 +729,7 @@ export default function Compare() {
                     )}
                   </td>
                   <td className="px-6 py-5 align-top">
-                    {tataProduct && equivalents.cat.name !== '—' ? (
+                    {tataProduct && !equivalents.hyundai.name.startsWith('—') ? (
                       <div className="flex flex-wrap gap-1.5">
                         {tataProduct.applications.map((a) => (
                           <span

@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: 'Where are your service centres located?',
-    a: 'Our headquarters is in Kathmandu, with branch service centres and field-deployable technician teams covering Biratnagar, Bharatpur, Butwal, Nepalgunj, and Surkhet. For remote project sites, on-site service can be arranged.',
+    a: 'Ten branches across seven provinces — Kathmandu (HQ), Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang, and Butwal. Each runs a factory-trained technician team that can be on a project site within 24 hours. For sites further out, we deploy field crews on demand.',
   },
   {
     q: 'Is operator training included at the time of delivery?',
@@ -91,7 +91,7 @@ export default function Faqs() {
               operators ask us most often.
             </p>
             <a
-              href="tel:+9779801007228"
+              href="tel:+9779801571065"
               className="group mt-8 inline-flex items-center gap-3 bg-black px-6 py-4 text-sm font-bold uppercase tracking-wider text-white transition hover:bg-[#f37022]"
             >
               <svg
