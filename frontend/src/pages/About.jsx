@@ -10,6 +10,8 @@ import logo4 from '../assets/4.png'
 import logo5 from '../assets/5.png'
 import logo6 from '../assets/6.png'
 import mvDugarLogo from '../assets/MVDUGAR-01.png'
+import salesTeamPhoto from '../assets/WhatsApp Image 2026-06-17 at 3.32.19 PM.jpeg'
+import serviceTeamPhoto from '../assets/WhatsApp Image 2026-06-17 at 3.21.21 PM.jpeg'
 
 const storySlides = [storySlide1, storySlide2, storySlide3, storySlide4]
 
@@ -29,30 +31,36 @@ const trustPillars = [
   { label: 'Genuine parts supply' },
 ]
 
-const teamMembers = [
+const teamGroups = [
   {
-    initials: 'MD',
-    name: '[Full Name]',
-    role: 'Managing Director',
-    bio: 'Sets the strategic direction across sales, service, and partnerships.',
+    number: '01',
+    label: 'Sales',
+    headline: 'Built around',
+    accent: 'the buyer.',
+    photo: salesTeamPhoto,
+    caption: 'Kathmandu showroom · 2026',
+    bio: "Our sales floor pairs technical depth with on-the-ground experience. They walk job sites, talk through applications, and stay involved long after the invoice is signed — because the relationship is the product.",
+    capabilities: [
+      'Showroom walk-throughs & site visits',
+      'Application sizing & spec advice',
+      'Finance & delivery coordination',
+      'Long-term customer relationships',
+    ],
   },
   {
-    initials: 'OP',
-    name: '[Full Name]',
-    role: 'Director, Sales & Operations',
-    bio: 'Owns the day-to-day across the distribution network and Kathmandu showroom.',
-  },
-  {
-    initials: 'SV',
-    name: '[Full Name]',
-    role: 'Head of Service & Technical',
-    bio: 'Leads the factory-trained technician team and field response across project sites.',
-  },
-  {
-    initials: 'PT',
-    name: '[Full Name]',
-    role: 'Head of Parts & After-Sales',
-    bio: 'Runs the central warehouse and same-day dispatch operation.',
+    number: '02',
+    label: 'Service',
+    headline: 'Built to',
+    accent: 'stay close.',
+    photo: serviceTeamPhoto,
+    caption: 'Service centre · 2026',
+    bio: 'Factory-trained, parts-stocked, and always reachable. The service team carries the machine from first commissioning to its tenth season — through warranty work, scheduled servicing, and the late-night calls from remote sites.',
+    capabilities: [
+      'Factory-trained technicians',
+      'Scheduled servicing & warranty',
+      'Genuine Tata Hitachi parts',
+      'Emergency field response',
+    ],
   },
 ]
 
@@ -273,30 +281,85 @@ export default function About() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 gap-px bg-gray-300 sm:grid-cols-2 lg:grid-cols-4">
-            {teamMembers.map((m, i) => (
-              <div
-                key={m.role}
-                className="group bg-white p-8 transition-colors hover:bg-[#f7f5f0]"
-                style={{ animation: `fade-up 0.6s ease-out ${0.08 * i}s both` }}
-              >
-                <div className="relative mb-6 flex aspect-square items-center justify-center overflow-hidden bg-black/5">
-                  <span className="font-serif text-5xl font-bold italic tracking-tight text-[#f37022] md:text-6xl">
-                    {m.initials}
+          <div className="space-y-24 md:space-y-32">
+            {teamGroups.map((g, i) => {
+              const isReversed = i % 2 === 1
+              return (
+                <article
+                  key={g.label}
+                  className="relative"
+                  style={{ animation: `fade-up 0.7s ease-out ${0.1 * i}s both` }}
+                >
+                  <span
+                    aria-hidden
+                    className={`pointer-events-none absolute -top-6 z-0 select-none font-serif text-[180px] font-black italic leading-none text-black/[0.04] md:-top-10 md:text-[260px] lg:text-[320px] ${
+                      isReversed ? 'left-0' : 'right-0'
+                    }`}
+                  >
+                    {g.number}
                   </span>
-                  <span className="absolute left-0 top-0 h-1 w-12 bg-[#f37022]" />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 transition-colors group-hover:text-[#f37022]">
-                  {m.role}
-                </span>
-                <h3 className="mt-2 text-xl font-black uppercase leading-[1.05] tracking-tight text-black md:text-2xl">
-                  {m.name}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                  {m.bio}
-                </p>
-              </div>
-            ))}
+
+                  <div className="relative z-10 grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
+                    <figure
+                      className={`lg:col-span-6 ${isReversed ? 'lg:order-2' : ''}`}
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden bg-black/5">
+                        <img
+                          src={g.photo}
+                          alt={`${g.label} team`}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.02]"
+                        />
+                        <span className="absolute left-0 top-0 z-10 h-1 w-20 bg-[#f37022]" />
+                        <div className="absolute bottom-0 right-0 z-10 bg-white px-4 py-2">
+                          <span className="font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.3em] text-black">
+                            / {g.number} · {g.label}
+                          </span>
+                        </div>
+                      </div>
+                      <figcaption className="mt-3 font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.3em] text-gray-500">
+                        {g.caption}
+                      </figcaption>
+                    </figure>
+
+                    <div
+                      className={`lg:col-span-6 ${isReversed ? 'lg:order-1' : ''}`}
+                    >
+                      <div className="mb-7 flex items-center gap-3 font-mono text-xs font-bold uppercase tabular-nums tracking-[0.3em] text-[#f37022] md:text-sm">
+                        <span>Team / {g.number}</span>
+                        <span className="h-px flex-1 bg-[#f37022]/40" />
+                      </div>
+
+                      <h3 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-black md:text-5xl lg:text-[60px]">
+                        {g.headline}{' '}
+                        <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
+                          {g.accent}
+                        </span>
+                      </h3>
+
+                      <p className="mt-7 text-lg leading-relaxed text-gray-700 md:text-xl">
+                        {g.bio}
+                      </p>
+
+                      <ul className="mt-10 border-t border-black/10">
+                        {g.capabilities.map((c, j) => (
+                          <li
+                            key={c}
+                            className="flex items-baseline gap-5 border-b border-black/10 py-4"
+                          >
+                            <span className="font-mono text-xs font-bold tabular-nums tracking-[0.25em] text-[#f37022]">
+                              / {String(j + 1).padStart(2, '0')}
+                            </span>
+                            <span className="text-base font-medium uppercase tracking-[0.06em] text-black md:text-lg">
+                              {c}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>
