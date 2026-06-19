@@ -4,29 +4,61 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import multer from 'multer'
 import crypto from 'node:crypto'
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import dns from 'node:dns'
+import { Readable } from 'node:stream'
+import { MongoClient } from 'mongodb'
+import { v2 as cloudinary } from 'cloudinary'
+
+// Use public resolvers for SRV lookups (works around Windows c-ares
+// picking up an unreachable system DNS server during local dev).
+dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 // dotenv loads .env by default; also load .env.local if present
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local', override: false })
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const ROOT = __dirname
-const DATA_DIR = path.join(ROOT, 'data')
-const UPLOADS_DIR = path.join(ROOT, 'uploads')
-const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json')
+const PORT = Number(process.env.PORT || 3001)
+const MONGODB_URI = process.env.MONGODB_URI
+const MONGODB_DB = process.env.MONGODB_DB || 'tata_hitachi'
 
-await fs.mkdir(DATA_DIR, { recursive: true })
-await fs.mkdir(UPLOADS_DIR, { recursive: true })
-try {
-  await fs.access(PRODUCTS_FILE)
-} catch {
-  await fs.writeFile(PRODUCTS_FILE, '{"overrides":[],"hidden":[]}', 'utf8')
+if (!MONGODB_URI) {
+  console.error('[fatal] MONGODB_URI is required')
+  process.exit(1)
+}
+if (!process.env.CLOUDINARY_URL) {
+  console.error('[fatal] CLOUDINARY_URL is required')
+  process.exit(1)
 }
 
-const PORT = Number(process.env.PORT || 3001)
+// SDK auto-reads CLOUDINARY_URL; force https on generated URLs.
+// First call with `true` forces env re-read (the SDK caches at import time).
+cloudinary.config(true)
+cloudinary.config({ secure: true })
+
+const mongo = new MongoClient(MONGODB_URI)
+await mongo.connect()
+const db = mongo.db(MONGODB_DB)
+const productsCol = db.collection('products')
+const metaCol = db.collection('meta')
+await productsCol.createIndex({ code: 1 }, { unique: true })
+console.log(`[mongo] connected to ${MONGODB_DB}`)
+
+const CLOUDINARY_FOLDER = 'tata_hitachi'
+
+function uploadBuffer(buffer, { resourceType = 'auto', originalName }) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: CLOUDINARY_FOLDER,
+        resource_type: resourceType,
+        // Keep PDFs identifiable by original filename in the Cloudinary console
+        ...(originalName ? { public_id: undefined, use_filename: true, unique_filename: true } : {}),
+      },
+      (err, result) => (err ? reject(err) : resolve(result)),
+    )
+    Readable.from(buffer).pipe(stream)
+  })
+}
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'sales.tatahitachinp@gmail.com').toLowerCase()
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'changeme'
 const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString('hex')
@@ -62,22 +94,15 @@ function requireAuth(req, res, next) {
 }
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: UPLOADS_DIR,
-    filename: (_req, file, cb) => {
-      const id = crypto.randomBytes(8).toString('hex')
-      const ext = path.extname(file.originalname).toLowerCase().replace(/[^.a-z0-9]/g, '')
-      cb(null, `${Date.now()}-${id}${ext}`)
-    },
-  }),
-  limits: { fileSize: 12 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  // Match Cloudinary free-plan per-file limit (10 MB)
+  limits: { fileSize: 10 * 1024 * 1024 },
 })
 
 const app = express()
 app.use(cors({ origin: true, credentials: true }))
 app.use(express.json({ limit: '1mb' }))
 app.use(cookieParser())
-app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d' }))
 
 /* ─────────── Auth ─────────── */
 
@@ -108,31 +133,24 @@ app.get('/api/me', (req, res) => {
 })
 
 /* ─────────── Products ───────────
- * Storage shape: { overrides: [...products], hidden: [...codes] }
- *  - overrides:  full product objects added or edited via /admin
- *  - hidden:     seed product codes the admin has removed from the catalogue
+ * Mongo collections:
+ *  - products: one doc per admin-added/edited product (unique on `code`)
+ *  - meta:     single doc { _id: 'hidden', codes: [seed codes removed] }
  *
- * Backward compat: if products.json contains a bare array (the old format),
- * we treat it as overrides and an empty hidden list.
+ * API shape preserved: { products, hidden } so the frontend is unchanged.
  */
 
-async function readStore() {
-  const raw = await fs.readFile(PRODUCTS_FILE, 'utf8')
-  let parsed
-  try {
-    parsed = JSON.parse(raw || '{"overrides":[],"hidden":[]}')
-  } catch {
-    parsed = { overrides: [], hidden: [] }
-  }
-  if (Array.isArray(parsed)) return { overrides: parsed, hidden: [] }
-  return {
-    overrides: Array.isArray(parsed.overrides) ? parsed.overrides : [],
-    hidden: Array.isArray(parsed.hidden) ? parsed.hidden : [],
-  }
+async function readHiddenCodes() {
+  const doc = await metaCol.findOne({ _id: 'hidden' })
+  return Array.isArray(doc?.codes) ? doc.codes : []
 }
 
-async function writeStore(store) {
-  await fs.writeFile(PRODUCTS_FILE, JSON.stringify(store, null, 2), 'utf8')
+async function setHidden(codeToAdd, codesToRemove = []) {
+  const update = {}
+  if (codesToRemove.length) update.$pull = { codes: { $in: codesToRemove } }
+  if (codeToAdd) update.$addToSet = { codes: codeToAdd }
+  if (!Object.keys(update).length) return
+  await metaCol.updateOne({ _id: 'hidden' }, update, { upsert: true })
 }
 
 function parseBody(req) {
@@ -166,8 +184,14 @@ function parseBody(req) {
 
 app.get('/api/products', async (_req, res) => {
   try {
-    const store = await readStore()
-    res.json({ products: store.overrides, hidden: store.hidden })
+    const [products, hidden] = await Promise.all([
+      productsCol
+        .find({}, { projection: { _id: 0 } })
+        .sort({ addedAt: -1 })
+        .toArray(),
+      readHiddenCodes(),
+    ])
+    res.json({ products, hidden })
   } catch (err) {
     console.error('[products] read failed', err)
     res.status(500).json({ error: 'Could not load products' })
@@ -198,26 +222,30 @@ app.post(
       const pdfFile = req.files?.pdf?.[0]
 
       const code = b.code.trim()
-      const store = await readStore()
-      if (store.overrides.some((p) => p.code === code)) {
+      const conflict = await productsCol.findOne({ code }, { projection: { _id: 1 } })
+      if (conflict) {
         return res.status(409).json({ error: `A product with code ${code} already exists` })
       }
+
+      const [imageResult, pdfResult] = await Promise.all([
+        imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
+        pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
+      ])
 
       const product = {
         code,
         ...parsed,
         ...(parsed.tags.length ? { tags: parsed.tags } : {}),
-        image: imageFile ? `/uploads/${imageFile.filename}` : null,
-        pdf: pdfFile ? `/uploads/${pdfFile.filename}` : null,
+        image: imageResult?.secure_url || null,
+        pdf: pdfResult?.secure_url || null,
         addedAt: new Date().toISOString(),
         dynamic: true,
       }
       delete product.tags // re-added conditionally above
       if (parsed.tags.length) product.tags = parsed.tags
 
-      store.overrides.unshift(product)
-      store.hidden = store.hidden.filter((c) => c !== code)
-      await writeStore(store)
+      await productsCol.insertOne({ ...product })
+      await setHidden(null, [code])
       res.json({ product })
     } catch (err) {
       console.error('[admin/products POST] failed', err)
@@ -251,20 +279,33 @@ app.put(
       const pdfFile = req.files?.pdf?.[0]
       const newCode = (b.code?.trim() || targetCode)
 
-      const store = await readStore()
-      const existing = store.overrides.find((p) => p.code === targetCode)
+      const existing = await productsCol.findOne(
+        { code: targetCode },
+        { projection: { _id: 0 } },
+      )
 
       // If renaming code, ensure new code isn't taken
-      if (newCode !== targetCode && store.overrides.some((p) => p.code === newCode)) {
-        return res.status(409).json({ error: `Code ${newCode} is already in use` })
+      if (newCode !== targetCode) {
+        const conflict = await productsCol.findOne(
+          { code: newCode },
+          { projection: { _id: 1 } },
+        )
+        if (conflict) {
+          return res.status(409).json({ error: `Code ${newCode} is already in use` })
+        }
       }
+
+      const [imageResult, pdfResult] = await Promise.all([
+        imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
+        pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
+      ])
 
       const product = {
         code: newCode,
         ...parsed,
         ...(parsed.tags.length ? { tags: parsed.tags } : {}),
-        image: imageFile ? `/uploads/${imageFile.filename}` : existing?.image ?? null,
-        pdf: pdfFile ? `/uploads/${pdfFile.filename}` : existing?.pdf ?? null,
+        image: imageResult?.secure_url || existing?.image || null,
+        pdf: pdfResult?.secure_url || existing?.pdf || null,
         addedAt: existing?.addedAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         dynamic: true,
@@ -273,19 +314,14 @@ app.put(
       if (parsed.tags.length) product.tags = parsed.tags
 
       if (existing) {
-        store.overrides = store.overrides.map((p) =>
-          p.code === targetCode ? product : p,
-        )
+        await productsCol.replaceOne({ code: targetCode }, { ...product })
       } else {
-        store.overrides.unshift(product)
+        await productsCol.insertOne({ ...product })
       }
 
       // Editing un-hides the code; if renamed, also un-hide new code
-      store.hidden = store.hidden.filter(
-        (c) => c !== targetCode && c !== newCode,
-      )
+      await setHidden(null, [targetCode, newCode])
 
-      await writeStore(store)
       res.json({ product })
     } catch (err) {
       console.error('[admin/products PUT] failed', err)
@@ -297,14 +333,10 @@ app.put(
 app.delete('/api/admin/products/:code', requireAuth, async (req, res) => {
   try {
     const code = req.params.code
-    const store = await readStore()
-    const beforeCount = store.overrides.length
-    store.overrides = store.overrides.filter((p) => p.code !== code)
-    const removedOverride = store.overrides.length < beforeCount
+    const result = await productsCol.deleteOne({ code })
     // Mark as hidden so any seed product with the same code is also removed from the catalogue
-    if (!store.hidden.includes(code)) store.hidden.push(code)
-    await writeStore(store)
-    res.json({ ok: true, removedOverride })
+    await setHidden(code)
+    res.json({ ok: true, removedOverride: result.deletedCount > 0 })
   } catch (err) {
     console.error('[admin/products DELETE] failed', err)
     res.status(500).json({ error: 'Could not delete' })
@@ -314,9 +346,7 @@ app.delete('/api/admin/products/:code', requireAuth, async (req, res) => {
 app.post('/api/admin/products/:code/restore', requireAuth, async (req, res) => {
   try {
     const code = req.params.code
-    const store = await readStore()
-    store.hidden = store.hidden.filter((c) => c !== code)
-    await writeStore(store)
+    await setHidden(null, [code])
     res.json({ ok: true })
   } catch (err) {
     console.error('[admin/products restore] failed', err)
