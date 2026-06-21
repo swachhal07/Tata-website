@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Map, MapMarker, MapControls, MarkerContent } from '../components/MapLibre'
 
 const interests = [
   'Excavators',
@@ -33,6 +34,71 @@ const salesTeam = [
   { branch: 'Kathmandu',  name: 'Prem Lama',        phone: '9801007228' },
   { branch: 'Kathmandu',  name: 'Suman Pujari',     phone: '9812010556' },
 ]
+
+const serviceLocations = [
+  { city: 'Biratnagar', lat: 26.4525, lng: 87.2718, labelOffset: 'right' },
+  { city: 'Jeetpur',    lat: 27.2167, lng: 84.9667, labelOffset: 'down'  },
+  { city: 'Bardibaas',  lat: 26.9833, lng: 85.9000, labelOffset: 'down'  },
+  { city: 'Kathmandu',  lat: 27.7172, lng: 85.3240, labelOffset: 'up'    },
+  { city: 'Pokhara',    lat: 28.2096, lng: 83.9856, labelOffset: 'up'    },
+  { city: 'Butwal',     lat: 27.7000, lng: 83.4486, labelOffset: 'down'  },
+  { city: 'Dang',       lat: 28.0333, lng: 82.4833, labelOffset: 'down'  },
+  { city: 'Surkhet',    lat: 28.6000, lng: 81.6333, labelOffset: 'up'    },
+  { city: 'Nepalgunj',  lat: 28.0500, lng: 81.6167, labelOffset: 'left'  },
+  { city: 'Dhangadi',   lat: 28.6953, lng: 80.5898, labelOffset: 'down'  },
+]
+
+function NetworkMap({ locations }) {
+  return (
+    <div
+      className="relative mb-14 overflow-hidden border border-gray-300 bg-white"
+      style={{ animation: 'fade-up 0.7s ease-out 0.2s both' }}
+    >
+      <span className="pointer-events-none absolute left-0 top-0 z-20 h-1 w-32 bg-[#f37022]" />
+
+      <div className="h-[420px] md:h-[520px]">
+        <Map
+          theme="light"
+          center={[83.6, 28.3]}
+          zoom={6.2}
+          minZoom={5.5}
+          maxZoom={9}
+          scrollZoom={false}
+          dragRotate={false}
+          pitchWithRotate={false}
+          doubleClickZoom
+        >
+          <MapControls position="bottom-right" />
+          {locations.map((b) => {
+            const labelPos =
+              b.labelOffset === 'up'
+                ? 'bottom-full left-1/2 mb-6 -translate-x-1/2'
+                : b.labelOffset === 'down'
+                ? 'top-full left-1/2 mt-2 -translate-x-1/2'
+                : b.labelOffset === 'left'
+                ? 'right-full top-1/2 mr-2 -translate-y-1/2'
+                : 'left-full top-1/2 ml-2 -translate-y-1/2'
+            return (
+              <MapMarker key={b.city} longitude={b.lng} latitude={b.lat}>
+                <MarkerContent>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute inset-0 -m-1.5 animate-ping rounded-full bg-[#f37022] opacity-40" />
+                    <span className="relative block h-3.5 w-3.5 rounded-full border-2 border-white bg-[#f37022] shadow-[0_2px_10px_rgba(0,0,0,0.35)]" />
+                    <span
+                      className={`pointer-events-none absolute ${labelPos} whitespace-nowrap bg-black px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.2em] text-white`}
+                    >
+                      {b.city}
+                    </span>
+                  </div>
+                </MarkerContent>
+              </MapMarker>
+            )
+          })}
+        </Map>
+      </div>
+    </div>
+  )
+}
 
 function Field({ label, required, children, span = 1 }) {
   return (
@@ -515,6 +581,8 @@ export default function Contact() {
             </span>
           </div>
 
+          <NetworkMap locations={serviceLocations} />
+
           <div className="mb-16 grid grid-cols-2 border-l border-t border-gray-300 md:grid-cols-3 lg:grid-cols-5">
             {salesTeam.map((s, i) => (
               <div
@@ -537,10 +605,7 @@ export default function Contact() {
                 </p>
                 <div className="mt-auto pt-5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
-                    Representative
-                  </p>
-                  <p className="mt-1 text-sm font-bold leading-tight text-black">
-                    {s.name}
+                    Contact
                   </p>
                   <a
                     href={`tel:+977${s.phone}`}
@@ -584,10 +649,7 @@ export default function Contact() {
                 </p>
                 <div className="mt-auto pt-5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
-                    Coordinator
-                  </p>
-                  <p className="mt-1 text-sm font-bold leading-tight text-black">
-                    {o.coordinator}
+                    Contact
                   </p>
                   <a
                     href={`tel:+977${o.phone}`}

@@ -115,30 +115,30 @@ const classMap = {
       name: 'JCB JS460LC',
       specs: {
         'Operating weight': '46.0 t',
-        'Engine power':     '367 HP',
-        'Bucket capacity':  '2.2 m³',
-        'Max digging depth':'7.6 m',
-        'Fuel tank':        '750 L',
+        'Engine power': '367 HP',
+        'Bucket capacity': '2.2 m³',
+        'Max digging depth': '7.6 m',
+        'Fuel tank': '750 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK500LC-10',
       specs: {
         'Operating weight': '49.5 t',
-        'Engine power':     '362 HP',
-        'Bucket capacity':  '2.5 m³',
-        'Max digging depth':'7.4 m',
-        'Fuel tank':        '600 L',
+        'Engine power': '362 HP',
+        'Bucket capacity': '2.5 m³',
+        'Max digging depth': '7.4 m',
+        'Fuel tank': '600 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX520L',
       specs: {
         'Operating weight': '52.0 t',
-        'Engine power':     '365 HP',
-        'Bucket capacity':  '2.4 m³',
-        'Max digging depth':'7.2 m',
-        'Fuel tank':        '540 L',
+        'Engine power': '365 HP',
+        'Bucket capacity': '2.4 m³',
+        'Max digging depth': '7.2 m',
+        'Fuel tank': '540 L',
       },
     },
   },
@@ -147,30 +147,30 @@ const classMap = {
       name: 'JCB JS370LC',
       specs: {
         'Operating weight': '37.0 t',
-        'Engine power':     '286 HP',
-        'Bucket capacity':  '2.0 m³',
-        'Max digging depth':'7.4 m',
-        'Fuel tank':        '525 L',
+        'Engine power': '286 HP',
+        'Bucket capacity': '2.0 m³',
+        'Max digging depth': '7.4 m',
+        'Fuel tank': '525 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK380LC-10',
       specs: {
         'Operating weight': '38.0 t',
-        'Engine power':     '282 HP',
-        'Bucket capacity':  '1.9 m³',
-        'Max digging depth':'7.5 m',
-        'Fuel tank':        '520 L',
+        'Engine power': '282 HP',
+        'Bucket capacity': '1.9 m³',
+        'Max digging depth': '7.5 m',
+        'Fuel tank': '520 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX380AL',
       specs: {
         'Operating weight': '37.0 t',
-        'Engine power':     '270 HP',
-        'Bucket capacity':  '1.9 m³',
-        'Max digging depth':'7.3 m',
-        'Fuel tank':        '540 L',
+        'Engine power': '270 HP',
+        'Bucket capacity': '1.9 m³',
+        'Max digging depth': '7.3 m',
+        'Fuel tank': '540 L',
       },
     },
   },
@@ -179,30 +179,30 @@ const classMap = {
       name: 'JCB JS305LC',
       specs: {
         'Operating weight': '30.5 t',
-        'Engine power':     '228 HP',
-        'Bucket capacity':  '1.4 m³',
-        'Max digging depth':'7.0 m',
-        'Fuel tank':        '470 L',
+        'Engine power': '228 HP',
+        'Bucket capacity': '1.4 m³',
+        'Max digging depth': '7.0 m',
+        'Fuel tank': '470 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK300LC',
       specs: {
         'Operating weight': '30.0 t',
-        'Engine power':     '207 HP',
-        'Bucket capacity':  '1.4 m³',
-        'Max digging depth':'7.0 m',
-        'Fuel tank':        '480 L',
+        'Engine power': '207 HP',
+        'Bucket capacity': '1.4 m³',
+        'Max digging depth': '7.0 m',
+        'Fuel tank': '480 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX300L',
       specs: {
         'Operating weight': '30.0 t',
-        'Engine power':     '222 HP',
-        'Bucket capacity':  '1.4 m³',
-        'Max digging depth':'7.0 m',
-        'Fuel tank':        '480 L',
+        'Engine power': '222 HP',
+        'Bucket capacity': '1.4 m³',
+        'Max digging depth': '7.0 m',
+        'Fuel tank': '480 L',
       },
     },
   },
@@ -211,30 +211,30 @@ const classMap = {
       name: 'JCB JS220LC',
       specs: {
         'Operating weight': '22.0 t',
-        'Engine power':     '174 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '174 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK220LC-10',
       specs: {
         'Operating weight': '22.1 t',
-        'Engine power':     '167 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '167 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX220AL',
       specs: {
         'Operating weight': '22.5 t',
-        'Engine power':     '164 HP',
-        'Bucket capacity':  '1.05 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '164 HP',
+        'Bucket capacity': '1.05 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
   },
@@ -243,30 +243,30 @@ const classMap = {
       name: 'JCB JS220LC',
       specs: {
         'Operating weight': '22.0 t',
-        'Engine power':     '174 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '174 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK220LC-10',
       specs: {
         'Operating weight': '22.1 t',
-        'Engine power':     '167 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '167 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX220AL',
       specs: {
         'Operating weight': '22.5 t',
-        'Engine power':     '164 HP',
-        'Bucket capacity':  '1.05 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '164 HP',
+        'Bucket capacity': '1.05 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
   },
@@ -275,30 +275,30 @@ const classMap = {
       name: 'JCB JS210LC',
       specs: {
         'Operating weight': '21.0 t',
-        'Engine power':     '173 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '173 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK210LC-10',
       specs: {
         'Operating weight': '21.0 t',
-        'Engine power':     '158 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '158 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX220AL',
       specs: {
         'Operating weight': '22.5 t',
-        'Engine power':     '164 HP',
-        'Bucket capacity':  '1.05 m³',
-        'Max digging depth':'6.7 m',
-        'Fuel tank':        '410 L',
+        'Engine power': '164 HP',
+        'Bucket capacity': '1.05 m³',
+        'Max digging depth': '6.7 m',
+        'Fuel tank': '410 L',
       },
     },
   },
@@ -307,30 +307,30 @@ const classMap = {
       name: 'JCB JS140LC',
       specs: {
         'Operating weight': '14.0 t',
-        'Engine power':     '96 HP',
-        'Bucket capacity':  '0.65 m³',
-        'Max digging depth':'5.6 m',
-        'Fuel tank':        '230 L',
+        'Engine power': '96 HP',
+        'Bucket capacity': '0.65 m³',
+        'Max digging depth': '5.6 m',
+        'Fuel tank': '230 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK140SRLC-7',
       specs: {
         'Operating weight': '14.2 t',
-        'Engine power':     '99 HP',
-        'Bucket capacity':  '0.5 m³',
-        'Max digging depth':'5.7 m',
-        'Fuel tank':        '230 L',
+        'Engine power': '99 HP',
+        'Bucket capacity': '0.5 m³',
+        'Max digging depth': '5.7 m',
+        'Fuel tank': '230 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX140L',
       specs: {
         'Operating weight': '14.0 t',
-        'Engine power':     '110 HP',
-        'Bucket capacity':  '0.65 m³',
-        'Max digging depth':'5.7 m',
-        'Fuel tank':        '230 L',
+        'Engine power': '110 HP',
+        'Bucket capacity': '0.65 m³',
+        'Max digging depth': '5.7 m',
+        'Fuel tank': '230 L',
       },
     },
   },
@@ -339,30 +339,30 @@ const classMap = {
       name: 'JCB JS130LC',
       specs: {
         'Operating weight': '13.5 t',
-        'Engine power':     '81 HP',
-        'Bucket capacity':  '0.55 m³',
-        'Max digging depth':'5.6 m',
-        'Fuel tank':        '230 L',
+        'Engine power': '81 HP',
+        'Bucket capacity': '0.55 m³',
+        'Max digging depth': '5.6 m',
+        'Fuel tank': '230 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK130LC-11',
       specs: {
         'Operating weight': '13.7 t',
-        'Engine power':     '99 HP',
-        'Bucket capacity':  '0.5 m³',
-        'Max digging depth':'5.6 m',
-        'Fuel tank':        '220 L',
+        'Engine power': '99 HP',
+        'Bucket capacity': '0.5 m³',
+        'Max digging depth': '5.6 m',
+        'Fuel tank': '220 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX140L',
       specs: {
         'Operating weight': '14.0 t',
-        'Engine power':     '110 HP',
-        'Bucket capacity':  '0.65 m³',
-        'Max digging depth':'5.7 m',
-        'Fuel tank':        '230 L',
+        'Engine power': '110 HP',
+        'Bucket capacity': '0.65 m³',
+        'Max digging depth': '5.7 m',
+        'Fuel tank': '230 L',
       },
     },
   },
@@ -371,30 +371,30 @@ const classMap = {
       name: 'JCB 8085 ZTS',
       specs: {
         'Operating weight': '8.5 t',
-        'Engine power':     '59 HP',
-        'Bucket capacity':  '0.30 m³',
-        'Max digging depth':'4.4 m',
-        'Fuel tank':        '100 L',
+        'Engine power': '59 HP',
+        'Bucket capacity': '0.30 m³',
+        'Max digging depth': '4.4 m',
+        'Fuel tank': '100 L',
       },
     },
     kobelco: {
       name: 'Kobelco SK75-8',
       specs: {
         'Operating weight': '7.9 t',
-        'Engine power':     '60 HP',
-        'Bucket capacity':  '0.28 m³',
-        'Max digging depth':'4.4 m',
-        'Fuel tank':        '130 L',
+        'Engine power': '60 HP',
+        'Bucket capacity': '0.28 m³',
+        'Max digging depth': '4.4 m',
+        'Fuel tank': '130 L',
       },
     },
     hyundai: {
       name: 'Hyundai HX85A',
       specs: {
         'Operating weight': '8.4 t',
-        'Engine power':     '65 HP',
-        'Bucket capacity':  '0.32 m³',
-        'Max digging depth':'4.5 m',
-        'Fuel tank':        '130 L',
+        'Engine power': '65 HP',
+        'Bucket capacity': '0.32 m³',
+        'Max digging depth': '4.5 m',
+        'Fuel tank': '130 L',
       },
     },
   },
@@ -403,10 +403,10 @@ const classMap = {
       name: 'JCB 3DX',
       specs: {
         'Operating weight': '7.8 t',
-        'Engine power':     '74 HP',
-        'Bucket capacity':  '1.0 m³',
-        'Max digging depth':'5.5 m',
-        'Fuel tank':        '128 L',
+        'Engine power': '74 HP',
+        'Bucket capacity': '1.0 m³',
+        'Max digging depth': '5.5 m',
+        'Fuel tank': '128 L',
       },
     },
     kobelco: {
@@ -432,9 +432,8 @@ function BrandPill({ name, isTata }) {
   return (
     <div className={isTata ? 'text-[#f37022]' : 'text-white'}>
       <p
-        className={`font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.25em] ${
-          isTata ? 'text-[#f37022]' : 'text-gray-500'
-        }`}
+        className={`font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.25em] ${isTata ? 'text-[#f37022]' : 'text-gray-500'
+          }`}
       >
         {isTata ? '/ Us' : '/ Them'}
       </p>
@@ -506,7 +505,7 @@ export default function Compare() {
                 / Where it counts
               </p>
               <h2 className="mt-2 text-2xl font-black uppercase leading-[1] tracking-tight text-black md:text-3xl">
-                The full-life comparison
+                Why Choose Tata Hitachi
               </h2>
             </div>
             <p className="max-w-md text-xs text-gray-500 sm:text-right">
@@ -546,13 +545,12 @@ export default function Compare() {
                       return (
                         <td
                           key={i}
-                          className={`border-r border-gray-200 px-6 py-5 align-top text-sm font-medium last:border-r-0 ${
-                            highlight
-                              ? 'bg-[#f37022]/10 font-bold text-[#f37022]'
-                              : i === 0
+                          className={`border-r border-gray-200 px-6 py-5 align-top text-sm font-medium last:border-r-0 ${highlight
+                            ? 'bg-[#f37022]/10 font-bold text-[#f37022]'
+                            : i === 0
                               ? 'text-black'
                               : 'text-gray-500'
-                          }`}
+                            }`}
                         >
                           {v}
                         </td>
@@ -581,7 +579,7 @@ export default function Compare() {
                 / Machine by machine
               </p>
               <h2 className="mt-2 text-2xl font-black uppercase leading-[1] tracking-tight text-black md:text-3xl">
-                Compare a class
+                Tata Vs The Rest
               </h2>
             </div>
 

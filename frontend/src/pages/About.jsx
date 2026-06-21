@@ -11,7 +11,8 @@ import logo5 from '../assets/5.png'
 import logo6 from '../assets/6.png'
 import mvDugarLogo from '../assets/MVDUGAR-01.png'
 import salesTeamPhoto from '../assets/WhatsApp Image 2026-06-17 at 3.32.19 PM.jpeg'
-import serviceTeamPhoto from '../assets/WhatsApp Image 2026-06-17 at 3.21.21 PM.jpeg'
+import serviceTeamPhoto1 from '../assets/WhatsApp Image 2026-06-17 at 3.21.21 PM.jpeg'
+import serviceTeamPhoto2 from '../assets/WhatsApp Image 2026-06-19 at 4.32.52 PM.jpeg'
 
 const storySlides = [storySlide1, storySlide2, storySlide3, storySlide4]
 
@@ -37,7 +38,7 @@ const teamGroups = [
     label: 'Sales',
     headline: 'Built around',
     accent: 'the buyer.',
-    photo: salesTeamPhoto,
+    photos: [salesTeamPhoto],
     caption: 'Kathmandu showroom · 2026',
     bio: "Our sales floor pairs technical depth with on-the-ground experience. They walk job sites, talk through applications, and stay involved long after the invoice is signed — because the relationship is the product.",
     capabilities: [
@@ -52,7 +53,7 @@ const teamGroups = [
     label: 'Service',
     headline: 'Built to',
     accent: 'stay close.',
-    photo: serviceTeamPhoto,
+    photos: [serviceTeamPhoto1, serviceTeamPhoto2],
     caption: 'Service centre · 2026',
     bio: 'Factory-trained, parts-stocked, and always reachable. The service team carries the machine from first commissioning to its tenth season — through warranty work, scheduled servicing, and the late-night calls from remote sites.',
     capabilities: [
@@ -63,6 +64,53 @@ const teamGroups = [
     ],
   },
 ]
+
+function TeamPhoto({ photos, label, number }) {
+  const [idx, setIdx] = useState(0)
+  useEffect(() => {
+    if (photos.length <= 1) return
+    const id = setInterval(
+      () => setIdx((i) => (i + 1) % photos.length),
+      4500
+    )
+    return () => clearInterval(id)
+  }, [photos.length])
+
+  return (
+    <div className="group relative aspect-[4/3] overflow-hidden bg-black/5">
+      {photos.map((src, i) => (
+        <img
+          key={i}
+          src={src}
+          alt={`${label} team ${i + 1}`}
+          className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out group-hover:scale-[1.02]"
+          style={{ opacity: i === idx ? 1 : 0 }}
+        />
+      ))}
+      <span className="absolute left-0 top-0 z-10 h-1 w-20 bg-[#f37022]" />
+      <div className="absolute bottom-0 right-0 z-10 bg-white px-4 py-2">
+        <span className="font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.3em] text-black">
+          / {number} · {label}
+        </span>
+      </div>
+      {photos.length > 1 && (
+        <div className="absolute bottom-4 left-4 z-10 flex gap-1.5">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Show photo ${i + 1}`}
+              onClick={() => setIdx(i)}
+              className={`h-1 w-7 transition-colors ${
+                i === idx ? 'bg-[#f37022]' : 'bg-white/70 hover:bg-white'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function About() {
   const [storyIndex, setStoryIndex] = useState(0)
@@ -303,19 +351,7 @@ export default function About() {
                     <figure
                       className={`lg:col-span-6 ${isReversed ? 'lg:order-2' : ''}`}
                     >
-                      <div className="relative aspect-[4/3] overflow-hidden bg-black/5">
-                        <img
-                          src={g.photo}
-                          alt={`${g.label} team`}
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.02]"
-                        />
-                        <span className="absolute left-0 top-0 z-10 h-1 w-20 bg-[#f37022]" />
-                        <div className="absolute bottom-0 right-0 z-10 bg-white px-4 py-2">
-                          <span className="font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.3em] text-black">
-                            / {g.number} · {g.label}
-                          </span>
-                        </div>
-                      </div>
+                      <TeamPhoto photos={g.photos} label={g.label} number={g.number} />
                       <figcaption className="mt-3 font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.3em] text-gray-500">
                         {g.caption}
                       </figcaption>
