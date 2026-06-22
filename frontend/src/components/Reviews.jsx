@@ -13,7 +13,7 @@ const reviews = [
   },
   {
     quote:
-      'The Shinrai Pro backhoe has been a workhorse for our municipal projects in Biratnagar. Fuel economy and operator comfort are exactly what was promised at the demo.',
+      'The Shinrai Power backhoe has been a workhorse for our municipal projects in Biratnagar. Fuel economy and operator comfort are exactly what was promised at the demo.',
     name: 'Sunita Rai',
     role: 'Koshi Civil Works',
   },

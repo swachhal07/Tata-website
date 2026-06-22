@@ -103,9 +103,23 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-7xl px-6 py-5 text-center text-xs text-gray-500">
-          © {new Date().getFullYear()} Dugar Earthmovers P. Ltd — Authorised Tata Hitachi distributor in Nepal. All rights reserved.
-        </p>
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center sm:flex-row sm:text-left">
+          <p className="text-xs text-gray-500">
+            © {new Date().getFullYear()} Dugar Earthmovers P. Ltd — Authorised Tata Hitachi distributor in Nepal. All rights reserved.
+          </p>
+          <p className="font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.25em] text-gray-500">
+            <span className="font-serif text-xs normal-case text-gray-500">Developed by</span>
+            <span className="mx-2 text-[#f37022]">·</span>
+            <a
+              href="https://swachhalportfolio.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[#f37022]"
+            >
+              Swachhal Lamsal
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   )

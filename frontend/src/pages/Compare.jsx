@@ -398,7 +398,7 @@ const classMap = {
       },
     },
   },
-  'SHINRAI-PRO': {
+  'SHINRAI-POWER': {
     jcb: {
       name: 'JCB 3DX',
       specs: {
