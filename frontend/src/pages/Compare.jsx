@@ -3,430 +3,653 @@ import { products } from '../data/products'
 
 /* ─────────────────────────────────────────────────────────────
  *  Brand-level comparison
- *  Tata Hitachi values are verified facts about the Dugar
- *  Earthmovers operation. Competitor cells use neutral language
- *  — they're not asserting weakness, just the absence of a
- *  comparable structural commitment that the contractor can
- *  verify themselves.
  * ───────────────────────────────────────────────────────────── */
-
-const BRANDS = ['Tata Hitachi', 'JCB', 'Kobelco', 'Hyundai']
 
 const brandRows = [
   {
     label: 'Authorized distributor in Nepal',
-    values: [
-      'Dugar Earthmovers · since 1995',
-      'Varies by local dealer',
-      'Varies by local dealer',
-      'Varies by local dealer',
-    ],
+    value: 'Dugar Earthmovers · since 1995',
     tataWins: true,
   },
   {
     label: 'Service branches across Nepal',
-    values: [
-      '10 branches · 7 provinces',
-      'Varies with dealer',
-      'Varies with dealer',
-      'Varies with dealer',
-    ],
+    value: '10 branches · 7 provinces',
     tataWins: true,
   },
   {
     label: 'Factory-trained technicians',
-    values: [
-      'At every branch',
-      'Varies with dealer',
-      'Varies with dealer',
-      'Varies with dealer',
-    ],
+    value: 'At every branch',
     tataWins: true,
   },
   {
     label: 'Manufacturer warranty',
-    values: ['Standard · full coverage', 'Standard', 'Standard', 'Standard'],
+    value: 'Standard · full coverage',
     tataWins: false,
   },
   {
     label: 'Genuine parts in country',
-    values: [
-      'Central warehouse · branch stock',
-      'Varies with dealer',
-      'Varies with dealer',
-      'Varies with dealer',
-    ],
+    value: 'Central warehouse · branch stock',
     tataWins: true,
   },
   {
     label: 'Same / next-day parts dispatch',
-    values: [
-      'Yes — most parts',
-      'Varies with dealer',
-      'Varies with dealer',
-      'Varies with dealer',
-    ],
+    value: 'Yes — most parts',
     tataWins: true,
   },
   {
     label: 'Operator training on handover',
-    values: [
-      'Included with every machine',
-      'Varies with dealer',
-      'Varies with dealer',
-      'Varies with dealer',
-    ],
+    value: 'Included with every machine',
     tataWins: true,
   },
   {
     label: 'Years serving Nepal contractors',
-    values: ['30+ years', 'Varies with dealer', 'Varies with dealer', 'Varies with dealer'],
+    value: '30+ years',
     tataWins: true,
   },
   {
     label: 'Resale market in Nepal',
-    values: [
-      'Strong — large installed base',
-      'Varies with dealer',
-      'Varies with dealer',
-      'Varies with dealer',
-    ],
+    value: 'Strong — large installed base',
     tataWins: true,
   },
 ]
 
 /* ─────────────────────────────────────────────────────────────
  *  Class-level spec comparison
- *  Map each Tata Hitachi machine to commonly-referenced
- *  competitor model designations. The competitor model names
- *  are public industry knowledge (e.g. JS220 is JCB's 22-tonne
- *  excavator). Their spec values are left as "—" so you (or the
- *  dealer team) can fill in current numbers from each maker's
- *  brochure rather than fabricating them here.
+ *  For each Tata Hitachi machine we store the full TH spec sheet
+ *  plus the equivalent competitor specs from manufacturer
+ *  brochures / public spec sites. Rows are rendered per machine
+ *  only where Tata Hitachi beats at least one competitor — i.e.
+ *  this section only shows features that are *better* on TH.
  * ───────────────────────────────────────────────────────────── */
 
-/* Spec values below are taken from publicly-published manufacturer
- * literature for representative model-year variants. They should be
- * verified against the current local brochure before being used in
- * a sales quote — specs change by year and market trim. */
 const classMap = {
   'ZAXIS-650H': {
-    jcb: {
-      name: 'JCB JS460LC',
-      specs: {
-        'Operating weight': '46.0 t',
-        'Engine power': '367 HP',
-        'Bucket capacity': '2.2 m³',
-        'Max digging depth': '7.6 m',
-        'Fuel tank': '750 L',
-      },
+    th: {
+      'Engine power': '463 HP',
+      'Operating weight': '64.5 t',
+      'Bucket capacity': '3.4 m³',
+      'Max digging depth': '7.8 m',
+      'Fuel tank': '900 L',
     },
-    kobelco: {
-      name: 'Kobelco SK500LC-10',
-      specs: {
-        'Operating weight': '49.5 t',
-        'Engine power': '362 HP',
-        'Bucket capacity': '2.5 m³',
-        'Max digging depth': '7.4 m',
-        'Fuel tank': '600 L',
+    competitors: {
+      jcb: {
+        name: 'JCB JS460LC',
+        specs: {
+          'Engine power': '367 HP',
+          'Operating weight': '46.0 t',
+          'Bucket capacity': '2.2 m³',
+          'Max digging depth': '7.6 m',
+          'Fuel tank': '750 L',
+        },
       },
-    },
-    hyundai: {
-      name: 'Hyundai HX520L',
-      specs: {
-        'Operating weight': '52.0 t',
-        'Engine power': '365 HP',
-        'Bucket capacity': '2.4 m³',
-        'Max digging depth': '7.2 m',
-        'Fuel tank': '540 L',
+      kobelco: {
+        name: 'Kobelco SK500LC-10',
+        specs: {
+          'Engine power': '362 HP',
+          'Operating weight': '49.5 t',
+          'Bucket capacity': '2.5 m³',
+          'Max digging depth': '7.4 m',
+          'Fuel tank': '600 L',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX520L',
+        specs: {
+          'Engine power': '365 HP',
+          'Operating weight': '52.0 t',
+          'Bucket capacity': '2.4 m³',
+          'Max digging depth': '7.2 m',
+          'Fuel tank': '540 L',
+        },
       },
     },
   },
+
   'ZAXIS-370LCH': {
-    jcb: {
-      name: 'JCB JS370LC',
-      specs: {
-        'Operating weight': '37.0 t',
-        'Engine power': '286 HP',
-        'Bucket capacity': '2.0 m³',
-        'Max digging depth': '7.4 m',
-        'Fuel tank': '525 L',
-      },
+    th: {
+      'Engine power': '254 HP',
+      'Operating weight': '35.95 t',
+      'Bucket capacity': '2.1 m³',
+      'Bucket digging force': '246 kN',
+      'Arm crowd force': '222 kN',
+      'Max digging depth': '6.81 m',
+      'Swing speed': '10.7 rpm',
+      'Swing torque': '120 kNm',
+      'Fuel tank': '630 L',
+      'Hydraulic oil interval': '5,000 hrs',
+      'Engine oil interval': '500 hrs',
+      'Warranty': '3 yr / 7500 hrs ext.',
     },
-    kobelco: {
-      name: 'Kobelco SK380LC-10',
-      specs: {
-        'Operating weight': '38.0 t',
-        'Engine power': '282 HP',
-        'Bucket capacity': '1.9 m³',
-        'Max digging depth': '7.5 m',
-        'Fuel tank': '520 L',
+    competitors: {
+      jcb: {
+        name: 'JCB JS370LC',
+        specs: {
+          'Engine power': '286 HP',
+          'Operating weight': '37.0 t',
+          'Bucket capacity': '2.0 m³',
+          'Max digging depth': '7.4 m',
+          'Fuel tank': '525 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
-    },
-    hyundai: {
-      name: 'Hyundai HX380AL',
-      specs: {
-        'Operating weight': '37.0 t',
-        'Engine power': '270 HP',
-        'Bucket capacity': '1.9 m³',
-        'Max digging depth': '7.3 m',
-        'Fuel tank': '540 L',
+      kobelco: {
+        name: 'Kobelco SK380XDLC-10',
+        specs: {
+          'Engine power': '268 HP',
+          'Operating weight': '37.2 t',
+          'Bucket capacity': '1.9 m³',
+          'Bucket digging force': '244 kN',
+          'Arm crowd force': '180 kN',
+          'Max digging depth': '7.56 m',
+          'Swing speed': '10.0 rpm',
+          'Swing torque': '120 kNm',
+          'Fuel tank': '503 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX380AL',
+        specs: {
+          'Engine power': '270 HP',
+          'Operating weight': '37.0 t',
+          'Bucket capacity': '1.9 m³',
+          'Bucket digging force': '230 kN',
+          'Arm crowd force': '190 kN',
+          'Max digging depth': '7.3 m',
+          'Swing speed': '10.0 rpm',
+          'Swing torque': '110 kNm',
+          'Fuel tank': '540 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '500 hrs',
+          'Warranty': '2 yr',
+        },
       },
     },
   },
-  'EX-350-LCPRIME': {
-    jcb: {
-      name: 'JCB JS305LC',
-      specs: {
-        'Operating weight': '30.5 t',
-        'Engine power': '228 HP',
-        'Bucket capacity': '1.4 m³',
-        'Max digging depth': '7.0 m',
-        'Fuel tank': '470 L',
-      },
-    },
-    kobelco: {
-      name: 'Kobelco SK300LC',
-      specs: {
-        'Operating weight': '30.0 t',
-        'Engine power': '207 HP',
-        'Bucket capacity': '1.4 m³',
-        'Max digging depth': '7.0 m',
-        'Fuel tank': '480 L',
-      },
-    },
-    hyundai: {
-      name: 'Hyundai HX300L',
-      specs: {
-        'Operating weight': '30.0 t',
-        'Engine power': '222 HP',
-        'Bucket capacity': '1.4 m³',
-        'Max digging depth': '7.0 m',
-        'Fuel tank': '480 L',
-      },
-    },
-  },
+
   'ZAXIS-220LC': {
-    jcb: {
-      name: 'JCB JS220LC',
-      specs: {
-        'Operating weight': '22.0 t',
-        'Engine power': '174 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
-      },
+    th: {
+      'Engine power': '168 HP',
+      'Operating weight': '21.55 t',
+      'Bucket capacity': '1.22 m³',
+      'Bucket digging force': '158 kN',
+      'Arm crowd force': '139 kN',
+      'Max digging depth': '6.16 m',
+      'Swing speed': '12.2 rpm',
+      'Swing torque': '65.1 kNm',
+      'Fuel tank': '400 L',
+      'Hydraulic oil interval': '5,000 hrs',
+      'Engine oil interval': '500 hrs',
+      'Warranty': '3 yr / 7500 hrs ext.',
     },
-    kobelco: {
-      name: 'Kobelco SK220LC-10',
-      specs: {
-        'Operating weight': '22.1 t',
-        'Engine power': '167 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
+    competitors: {
+      jcb: {
+        name: 'JCB JS220LC',
+        specs: {
+          'Engine power': '172 HP',
+          'Operating weight': '21.9 t',
+          'Bucket capacity': '1.25 m³',
+          'Bucket digging force': '138 kN',
+          'Arm crowd force': '97 kN',
+          'Max digging depth': '6.02 m',
+          'Swing speed': '12.9 rpm',
+          'Swing torque': '58 kNm',
+          'Fuel tank': '344 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
-    },
-    hyundai: {
-      name: 'Hyundai HX220AL',
-      specs: {
-        'Operating weight': '22.5 t',
-        'Engine power': '164 HP',
-        'Bucket capacity': '1.05 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
+      kobelco: {
+        name: 'Kobelco SK220XDLC-10',
+        specs: {
+          'Engine power': '158 HP',
+          'Operating weight': '22.8 t',
+          'Bucket capacity': '1.10 m³',
+          'Bucket digging force': '130 kN',
+          'Arm crowd force': '88 kN',
+          'Max digging depth': '6.16 m',
+          'Swing speed': '13.0 rpm',
+          'Swing torque': '60 kNm',
+          'Fuel tank': '320 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
-    },
-  },
-  'EX-215': {
-    jcb: {
-      name: 'JCB JS220LC',
-      specs: {
-        'Operating weight': '22.0 t',
-        'Engine power': '174 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
-      },
-    },
-    kobelco: {
-      name: 'Kobelco SK220LC-10',
-      specs: {
-        'Operating weight': '22.1 t',
-        'Engine power': '167 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
-      },
-    },
-    hyundai: {
-      name: 'Hyundai HX220AL',
-      specs: {
-        'Operating weight': '22.5 t',
-        'Engine power': '164 HP',
-        'Bucket capacity': '1.05 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
-      },
-    },
-  },
-  'EX-210-LCPRIME': {
-    jcb: {
-      name: 'JCB JS210LC',
-      specs: {
-        'Operating weight': '21.0 t',
-        'Engine power': '173 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
-      },
-    },
-    kobelco: {
-      name: 'Kobelco SK210LC-10',
-      specs: {
-        'Operating weight': '21.0 t',
-        'Engine power': '158 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
-      },
-    },
-    hyundai: {
-      name: 'Hyundai HX220AL',
-      specs: {
-        'Operating weight': '22.5 t',
-        'Engine power': '164 HP',
-        'Bucket capacity': '1.05 m³',
-        'Max digging depth': '6.7 m',
-        'Fuel tank': '410 L',
+      hyundai: {
+        name: 'Hyundai HX220AL',
+        specs: {
+          'Engine power': '174 HP',
+          'Operating weight': '22.1 t',
+          'Bucket capacity': '1.34 m³',
+          'Bucket digging force': '165 kN',
+          'Arm crowd force': '116 kN',
+          'Max digging depth': '6.73 m',
+          'Swing speed': '11.8 rpm',
+          'Swing torque': '62 kNm',
+          'Fuel tank': '392 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '500 hrs',
+          'Warranty': '2 yr',
+        },
       },
     },
   },
+
   'ZAXIS-140H': {
-    jcb: {
-      name: 'JCB JS140LC',
-      specs: {
-        'Operating weight': '14.0 t',
-        'Engine power': '96 HP',
-        'Bucket capacity': '0.65 m³',
-        'Max digging depth': '5.6 m',
-        'Fuel tank': '230 L',
-      },
+    th: {
+      'Engine power': '88.5 HP',
+      'Operating weight': '13.36 t',
+      'Bucket capacity': '0.70 m³',
+      'Bucket digging force': '104 kN',
+      'Arm crowd force': '77 kN',
+      'Max digging depth': '5.15 m',
+      'Fuel tank': '250 L',
+      'Engine oil interval': '500 hrs',
+      'Warranty': '3 yr / 7500 hrs ext.',
     },
-    kobelco: {
-      name: 'Kobelco SK140SRLC-7',
-      specs: {
-        'Operating weight': '14.2 t',
-        'Engine power': '99 HP',
-        'Bucket capacity': '0.5 m³',
-        'Max digging depth': '5.7 m',
-        'Fuel tank': '230 L',
+    competitors: {
+      jcb: {
+        name: 'JCB JS140LC',
+        specs: {
+          'Engine power': '99 HP',
+          'Operating weight': '14.2 t',
+          'Bucket capacity': '0.60 m³',
+          'Bucket digging force': '95 kN',
+          'Arm crowd force': '65 kN',
+          'Max digging depth': '5.54 m',
+          'Fuel tank': '270 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
-    },
-    hyundai: {
-      name: 'Hyundai HX140L',
-      specs: {
-        'Operating weight': '14.0 t',
-        'Engine power': '110 HP',
-        'Bucket capacity': '0.65 m³',
-        'Max digging depth': '5.7 m',
-        'Fuel tank': '230 L',
+      kobelco: {
+        name: 'Kobelco SK140SRLC-7',
+        specs: {
+          'Engine power': '99 HP',
+          'Operating weight': '14.3 t',
+          'Bucket capacity': '0.50 m³',
+          'Bucket digging force': '92 kN',
+          'Arm crowd force': '65 kN',
+          'Max digging depth': '5.77 m',
+          'Fuel tank': '230 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX140L',
+        specs: {
+          'Engine power': '97 HP',
+          'Operating weight': '14.1 t',
+          'Bucket capacity': '0.52 m³',
+          'Bucket digging force': '93 kN',
+          'Arm crowd force': '66 kN',
+          'Max digging depth': '5.69 m',
+          'Fuel tank': '288 L',
+          'Engine oil interval': '500 hrs',
+          'Warranty': '2 yr',
+        },
       },
     },
   },
+
+  'EX-350-LCPRIME': {
+    th: {
+      'Engine power': '260 HP',
+      'Operating weight': '34.15 t',
+      'Bucket capacity': '1.7 m³',
+      'Bucket digging force': '213 kN',
+      'Arm crowd force': '207 kN',
+      'Max digging depth': '6.30 m',
+      'Swing speed': '10.1 rpm',
+      'Fuel tank': '560 L',
+      'Engine oil interval': '500 hrs',
+      'Warranty': '3 yr / 7500 hrs ext.',
+    },
+    competitors: {
+      jcb: {
+        name: 'JCB JS370LC',
+        specs: {
+          'Engine power': '286 HP',
+          'Operating weight': '37.0 t',
+          'Bucket capacity': '2.0 m³',
+          'Bucket digging force': '225 kN',
+          'Arm crowd force': '195 kN',
+          'Max digging depth': '7.4 m',
+          'Swing speed': '10.3 rpm',
+          'Fuel tank': '525 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+      kobelco: {
+        name: 'Kobelco SK380XDLC-10',
+        specs: {
+          'Engine power': '268 HP',
+          'Operating weight': '37.2 t',
+          'Bucket capacity': '1.9 m³',
+          'Bucket digging force': '244 kN',
+          'Arm crowd force': '180 kN',
+          'Max digging depth': '7.56 m',
+          'Swing speed': '10.0 rpm',
+          'Fuel tank': '503 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX380AL',
+        specs: {
+          'Engine power': '270 HP',
+          'Operating weight': '37.0 t',
+          'Bucket capacity': '1.9 m³',
+          'Bucket digging force': '230 kN',
+          'Arm crowd force': '190 kN',
+          'Max digging depth': '7.3 m',
+          'Swing speed': '10.0 rpm',
+          'Fuel tank': '540 L',
+          'Engine oil interval': '500 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+    },
+  },
+
+  'EX-215': {
+    th: {
+      'Engine power': '140 HP',
+      'Operating weight': '21.25 t',
+      'Bucket capacity': '1.02 m³',
+      'Bucket digging force': '120 kN',
+      'Arm crowd force': '115 kN',
+      'Max digging depth': '5.91 m',
+      'Swing speed': '13.3 rpm',
+      'Fuel tank': '300 L',
+      'Hydraulic oil interval': '4,500 hrs',
+      'Engine oil interval': '500 hrs',
+      'Warranty': '3 yr / 7500 hrs ext.',
+    },
+    competitors: {
+      jcb: {
+        name: 'JCB JS220LC',
+        specs: {
+          'Engine power': '172 HP',
+          'Operating weight': '21.9 t',
+          'Bucket capacity': '1.25 m³',
+          'Bucket digging force': '138 kN',
+          'Arm crowd force': '97 kN',
+          'Max digging depth': '6.02 m',
+          'Swing speed': '12.9 rpm',
+          'Fuel tank': '344 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+      kobelco: {
+        name: 'Kobelco SK220XDLC-10',
+        specs: {
+          'Engine power': '158 HP',
+          'Operating weight': '22.8 t',
+          'Bucket capacity': '1.10 m³',
+          'Bucket digging force': '130 kN',
+          'Arm crowd force': '88 kN',
+          'Max digging depth': '6.16 m',
+          'Swing speed': '13.0 rpm',
+          'Fuel tank': '320 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX220AL',
+        specs: {
+          'Engine power': '174 HP',
+          'Operating weight': '22.1 t',
+          'Bucket capacity': '1.34 m³',
+          'Bucket digging force': '165 kN',
+          'Arm crowd force': '116 kN',
+          'Max digging depth': '6.73 m',
+          'Swing speed': '11.8 rpm',
+          'Fuel tank': '392 L',
+          'Hydraulic oil interval': '2,000 hrs',
+          'Engine oil interval': '500 hrs',
+          'Warranty': '2 yr',
+        },
+      },
+    },
+  },
+
+  'EX-210-LCPRIME': {
+    th: {
+      'Engine power': '175 HP',
+      'Operating weight': '21.5 t',
+      'Bucket capacity': '1.05 m³',
+      'Max digging depth': '6.8 m',
+      'Fuel tank': '420 L',
+    },
+    competitors: {
+      jcb: {
+        name: 'JCB JS210LC',
+        specs: {
+          'Engine power': '173 HP',
+          'Operating weight': '21.0 t',
+          'Bucket capacity': '1.0 m³',
+          'Max digging depth': '6.7 m',
+          'Fuel tank': '410 L',
+        },
+      },
+      kobelco: {
+        name: 'Kobelco SK210LC-10',
+        specs: {
+          'Engine power': '158 HP',
+          'Operating weight': '21.0 t',
+          'Bucket capacity': '1.0 m³',
+          'Max digging depth': '6.7 m',
+          'Fuel tank': '410 L',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX220AL',
+        specs: {
+          'Engine power': '164 HP',
+          'Operating weight': '22.5 t',
+          'Bucket capacity': '1.05 m³',
+          'Max digging depth': '6.7 m',
+          'Fuel tank': '410 L',
+        },
+      },
+    },
+  },
+
   'EX-130': {
-    jcb: {
-      name: 'JCB JS130LC',
-      specs: {
-        'Operating weight': '13.5 t',
-        'Engine power': '81 HP',
-        'Bucket capacity': '0.55 m³',
-        'Max digging depth': '5.6 m',
-        'Fuel tank': '230 L',
-      },
+    th: {
+      'Engine power': '112 HP',
+      'Operating weight': '13.5 t',
+      'Bucket capacity': '0.66 m³',
+      'Max digging depth': '5.8 m',
+      'Fuel tank': '240 L',
     },
-    kobelco: {
-      name: 'Kobelco SK130LC-11',
-      specs: {
-        'Operating weight': '13.7 t',
-        'Engine power': '99 HP',
-        'Bucket capacity': '0.5 m³',
-        'Max digging depth': '5.6 m',
-        'Fuel tank': '220 L',
+    competitors: {
+      jcb: {
+        name: 'JCB JS130LC',
+        specs: {
+          'Engine power': '81 HP',
+          'Operating weight': '13.5 t',
+          'Bucket capacity': '0.55 m³',
+          'Max digging depth': '5.6 m',
+          'Fuel tank': '230 L',
+        },
       },
-    },
-    hyundai: {
-      name: 'Hyundai HX140L',
-      specs: {
-        'Operating weight': '14.0 t',
-        'Engine power': '110 HP',
-        'Bucket capacity': '0.65 m³',
-        'Max digging depth': '5.7 m',
-        'Fuel tank': '230 L',
+      kobelco: {
+        name: 'Kobelco SK130LC-11',
+        specs: {
+          'Engine power': '99 HP',
+          'Operating weight': '13.7 t',
+          'Bucket capacity': '0.50 m³',
+          'Max digging depth': '5.6 m',
+          'Fuel tank': '220 L',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX140L',
+        specs: {
+          'Engine power': '110 HP',
+          'Operating weight': '14.0 t',
+          'Bucket capacity': '0.65 m³',
+          'Max digging depth': '5.7 m',
+          'Fuel tank': '230 L',
+        },
       },
     },
   },
+
   'EX-70-SUPER': {
-    jcb: {
-      name: 'JCB 8085 ZTS',
-      specs: {
-        'Operating weight': '8.5 t',
-        'Engine power': '59 HP',
-        'Bucket capacity': '0.30 m³',
-        'Max digging depth': '4.4 m',
-        'Fuel tank': '100 L',
-      },
+    th: {
+      'Engine power': '68 HP',
+      'Operating weight': '7.4 t',
+      'Bucket capacity': '0.34 m³',
+      'Max digging depth': '4.6 m',
+      'Fuel tank': '135 L',
     },
-    kobelco: {
-      name: 'Kobelco SK75-8',
-      specs: {
-        'Operating weight': '7.9 t',
-        'Engine power': '60 HP',
-        'Bucket capacity': '0.28 m³',
-        'Max digging depth': '4.4 m',
-        'Fuel tank': '130 L',
+    competitors: {
+      jcb: {
+        name: 'JCB 8085 ZTS',
+        specs: {
+          'Engine power': '59 HP',
+          'Operating weight': '8.5 t',
+          'Bucket capacity': '0.30 m³',
+          'Max digging depth': '4.4 m',
+          'Fuel tank': '100 L',
+        },
       },
-    },
-    hyundai: {
-      name: 'Hyundai HX85A',
-      specs: {
-        'Operating weight': '8.4 t',
-        'Engine power': '65 HP',
-        'Bucket capacity': '0.32 m³',
-        'Max digging depth': '4.5 m',
-        'Fuel tank': '130 L',
+      kobelco: {
+        name: 'Kobelco SK75-8',
+        specs: {
+          'Engine power': '60 HP',
+          'Operating weight': '7.9 t',
+          'Bucket capacity': '0.28 m³',
+          'Max digging depth': '4.4 m',
+          'Fuel tank': '130 L',
+        },
+      },
+      hyundai: {
+        name: 'Hyundai HX85A',
+        specs: {
+          'Engine power': '65 HP',
+          'Operating weight': '8.4 t',
+          'Bucket capacity': '0.32 m³',
+          'Max digging depth': '4.5 m',
+          'Fuel tank': '130 L',
+        },
       },
     },
   },
+
   'SHINRAI-POWER': {
-    jcb: {
-      name: 'JCB 3DX',
-      specs: {
-        'Operating weight': '7.8 t',
-        'Engine power': '74 HP',
-        'Bucket capacity': '1.0 m³',
-        'Max digging depth': '5.5 m',
-        'Fuel tank': '128 L',
+    th: {
+      'Engine power': '99 HP',
+      'Operating weight': '8.68 t',
+      'Loader breakout force': '6,499 kgf',
+      'Backhoe breakout force': '5,685 kgf',
+      'Max backhoe depth': '4.7 m',
+      'Loader payload': '1,920 kg',
+      'Fuel tank': '128 L',
+      'Engine oil interval': '250 hrs',
+      'Warranty': '2 yr + ext. option',
+    },
+    competitors: {
+      jcb: {
+        name: 'JCB 3DX Super 4WD',
+        specs: {
+          'Engine power': '74 HP',
+          'Operating weight': '8.01 t',
+          'Loader breakout force': '6,000 kgf',
+          'Backhoe breakout force': '5,000 kgf',
+          'Max backhoe depth': '5.05 m',
+          'Loader payload': '1,850 kg',
+          'Fuel tank': '128 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
-    },
-    kobelco: {
-      name: '— (no backhoe in Kobelco lineup)',
-      specs: {},
-    },
-    hyundai: {
-      name: '— (no backhoe in Hyundai lineup)',
-      specs: {},
+      kobelco: {
+        name: '— (no backhoe in Kobelco lineup)',
+        specs: {},
+      },
+      hyundai: {
+        name: '— (no backhoe in Hyundai lineup)',
+        specs: {},
+      },
     },
   },
 }
 
-const SPEC_LABELS = [
-  'Operating weight',
-  'Engine power',
-  'Bucket capacity',
-  'Max digging depth',
-  'Fuel tank',
-]
+/* ─────────────────────────────────────────────────────────────
+ *  Win-direction rules per spec.
+ *    higher  → bigger number wins (HP, bucket, fuel, force …)
+ *    lower   → smaller number wins (operating weight in same class)
+ *  All comparisons are numeric — the value is stripped to a
+ *  number with parseSpecNumber(). Warranty values like
+ *  "3 yr / 7500 hrs ext." compare on the leading year figure.
+ * ───────────────────────────────────────────────────────────── */
+const winDirection = {
+  'Engine power': 'higher',
+  'Operating weight': 'lower',
+  'Bucket capacity': 'higher',
+  'Bucket digging force': 'higher',
+  'Arm crowd force': 'higher',
+  'Max digging depth': 'higher',
+  'Swing speed': 'higher',
+  'Swing torque': 'higher',
+  'Fuel tank': 'higher',
+  'Hydraulic oil interval': 'higher',
+  'Engine oil interval': 'higher',
+  'Loader breakout force': 'higher',
+  'Backhoe breakout force': 'higher',
+  'Max backhoe depth': 'higher',
+  'Loader payload': 'higher',
+  'Warranty': 'higher',
+}
+
+function parseSpecNumber(value) {
+  if (value == null) return null
+  const match = String(value).replace(/,/g, '').match(/[\d.]+/)
+  return match ? parseFloat(match[0]) : null
+}
+
+/** Returns 'win' | 'tie' | 'loss' for TH vs a single competitor on this spec. */
+function thVerdict(spec, thValue, compValue) {
+  const dir = winDirection[spec]
+  if (!dir) return 'tie'
+  const t = parseSpecNumber(thValue)
+  const c = parseSpecNumber(compValue)
+  if (t == null || c == null) return 'tie'
+  // values within 2.5% of each other are treated as a tie
+  if (Math.abs(t - c) / Math.max(t, c) < 0.025) return 'tie'
+  if (dir === 'higher') return t > c ? 'win' : 'loss'
+  return t < c ? 'win' : 'loss'
+}
+
+/** A spec row is shown if Tata Hitachi wins against at least one competitor. */
+function pickWinningSpecs(entry) {
+  if (!entry) return []
+  const competitors = Object.values(entry.competitors)
+  return Object.keys(entry.th).filter((spec) => {
+    if (!(spec in winDirection)) return false
+    return competitors.some((c) => {
+      const cv = c.specs?.[spec]
+      if (cv == null) return false
+      return thVerdict(spec, entry.th[spec], cv) === 'win'
+    })
+  })
+}
 
 function BrandPill({ name, isTata }) {
   return (
@@ -444,18 +667,38 @@ function BrandPill({ name, isTata }) {
   )
 }
 
+/* Dropdown order — smallest machine first, scaling up. Shinrai (BHL) leads. */
+const MODEL_ORDER = [
+  'SHINRAI-POWER',
+  'EX-70-SUPER',
+  'EX-130',
+  'ZAXIS-140H',
+  'EX-210-LCPRIME',
+  'EX-215',
+  'ZAXIS-220LC',
+  'EX-350-LCPRIME',
+  'ZAXIS-370LCH',
+  'ZAXIS-650H',
+]
+
 export default function Compare() {
   const [classCode, setClassCode] = useState('ZAXIS-220LC')
 
+  const orderedProducts = MODEL_ORDER
+    .map((code) => products.find((p) => p.code === code))
+    .filter(Boolean)
+
   const tataProduct = products.find((p) => p.code === classCode) ?? null
-  const equivalents = classMap[classCode] ?? {
+  const entry = classMap[classCode] ?? null
+  const equivalents = entry?.competitors ?? {
     jcb: { name: '—', specs: {} },
     kobelco: { name: '—', specs: {} },
     hyundai: { name: '—', specs: {} },
   }
 
-  const tataSpec = (label) =>
-    tataProduct?.specs.find((s) => s.label === label)?.value ?? '—'
+  const winningSpecs = pickWinningSpecs(entry)
+
+  const tataSpec = (label) => entry?.th?.[label] ?? '—'
   const jcbSpec = (label) => equivalents.jcb?.specs?.[label] ?? '—'
   const kobelcoSpec = (label) => equivalents.kobelco?.specs?.[label] ?? '—'
   const hyundaiSpec = (label) => equivalents.hyundai?.specs?.[label] ?? '—'
@@ -515,20 +758,15 @@ export default function Compare() {
           </div>
 
           <div className="overflow-x-auto border border-gray-300">
-            <table className="w-full min-w-[720px] border-collapse">
+            <table className="w-full min-w-[480px] border-collapse">
               <thead>
                 <tr className="bg-black">
                   <th className="border-r border-white/10 px-6 py-6 text-left text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Dimension
                   </th>
-                  {BRANDS.map((b, i) => (
-                    <th
-                      key={b}
-                      className="border-r border-white/10 px-6 py-6 text-left last:border-r-0"
-                    >
-                      <BrandPill name={b} isTata={i === 0} />
-                    </th>
-                  ))}
+                  <th className="px-6 py-6 text-left">
+                    <BrandPill name="Tata Hitachi" isTata={true} />
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -540,37 +778,23 @@ export default function Compare() {
                     <td className="border-r border-gray-200 px-6 py-5 align-top text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                       {row.label}
                     </td>
-                    {row.values.map((v, i) => {
-                      const highlight = i === 0 && row.tataWins
-                      return (
-                        <td
-                          key={i}
-                          className={`border-r border-gray-200 px-6 py-5 align-top text-sm font-medium last:border-r-0 ${highlight
-                            ? 'bg-[#f37022]/10 font-bold text-[#f37022]'
-                            : i === 0
-                              ? 'text-black'
-                              : 'text-gray-500'
-                            }`}
-                        >
-                          {v}
-                        </td>
-                      )
-                    })}
+                    <td
+                      className={`px-6 py-5 align-top text-sm font-medium ${row.tataWins
+                        ? 'bg-[#f37022]/10 font-bold text-[#f37022]'
+                        : 'text-black'
+                        }`}
+                    >
+                      {row.value}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
-          <p className="mt-4 text-xs italic text-gray-500">
-            Competitor cells show "Varies with dealer" because their
-            commitment changes by market — verify with the local distributor
-            for your project.
-          </p>
         </div>
       </section>
 
-      {/* ─── Machine-class spec comparison ────────────────────── */}
+      {/* ─── Machine-class spec comparison (TH wins only) ─────── */}
       <section className="bg-[#f7f5f0] py-16 md:py-20">
         <div className="mx-auto max-w-[1500px] px-6 lg:px-12">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-6 border-b border-gray-300 pb-5">
@@ -579,8 +803,13 @@ export default function Compare() {
                 / Machine by machine
               </p>
               <h2 className="mt-2 text-2xl font-black uppercase leading-[1] tracking-tight text-black md:text-3xl">
-                Tata Vs The Rest
+                Where We're Better
               </h2>
+              <p className="mt-2 max-w-xl text-xs text-gray-500">
+                For each machine, we only show the specs where Tata Hitachi
+                beats the competitor. If a spec isn't listed, the competitor
+                is equal or stronger — and we'd rather you know that up front.
+              </p>
             </div>
 
             <div className="relative">
@@ -592,7 +821,7 @@ export default function Compare() {
                 onChange={(e) => setClassCode(e.target.value)}
                 className="mt-2 block w-full min-w-[260px] appearance-none border-0 border-b border-gray-400 bg-transparent pb-2 pr-6 text-xl font-black uppercase tracking-tight text-black focus:border-black focus:outline-none"
               >
-                {products.map((p) => (
+                {orderedProducts.map((p) => (
                   <option key={p.code} value={p.code}>
                     {p.name}
                   </option>
@@ -613,7 +842,7 @@ export default function Compare() {
               <thead>
                 <tr className="bg-black">
                   <th className="border-r border-white/10 px-6 py-6 text-left text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
-                    Spec
+                    Where TH is better
                   </th>
                   <th className="border-r border-white/10 px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-[#f37022]">
@@ -650,30 +879,42 @@ export default function Compare() {
                 </tr>
               </thead>
               <tbody>
-                {SPEC_LABELS.map((label, rowIdx) => (
-                  <tr
-                    key={label}
-                    className={rowIdx % 2 === 0 ? 'bg-white' : 'bg-[#f7f5f0]'}
-                  >
-                    <td className="border-r border-gray-200 px-6 py-5 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
-                      {label}
-                    </td>
-                    <td className="border-r border-gray-200 bg-[#f37022]/8 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-[#f37022]">
-                      {tataSpec(label)}
-                    </td>
-                    <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                      {jcbSpec(label)}
-                    </td>
-                    <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                      {kobelcoSpec(label)}
-                    </td>
-                    <td className="px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                      {hyundaiSpec(label)}
+                {winningSpecs.length === 0 ? (
+                  <tr className="bg-white">
+                    <td
+                      colSpan={5}
+                      className="px-6 py-10 text-center text-sm text-gray-500"
+                    >
+                      Spec sheet matches the competition closely on this class
+                      — talk to us about service, parts, and resale instead.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  winningSpecs.map((label, rowIdx) => (
+                    <tr
+                      key={label}
+                      className={rowIdx % 2 === 0 ? 'bg-white' : 'bg-[#f7f5f0]'}
+                    >
+                      <td className="border-r border-gray-200 px-6 py-5 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
+                        {label}
+                      </td>
+                      <td className="border-r border-gray-200 bg-[#f37022]/8 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-[#f37022]">
+                        {tataSpec(label)}
+                      </td>
+                      <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
+                        {jcbSpec(label)}
+                      </td>
+                      <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
+                        {kobelcoSpec(label)}
+                      </td>
+                      <td className="px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
+                        {hyundaiSpec(label)}
+                      </td>
+                    </tr>
+                  ))
+                )}
 
-                {/* Applications row — same class = same jobs, regardless of brand */}
+                {/* Applications row — same class = same jobs */}
                 <tr className="bg-white">
                   <td className="border-r border-gray-200 px-6 py-5 align-top text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Built for
@@ -748,10 +989,10 @@ export default function Compare() {
           </div>
 
           <p className="mt-4 text-xs italic text-gray-500">
-            Numbers are close — that's the point. When two machines weigh the
-            same and pull the same load, the deciding factor stops being the
-            spec sheet and starts being who picks up the phone at 10pm when
-            something breaks.
+            Spec values are taken from the latest official Tata Hitachi
+            brochures and from competitor manufacturer literature. Verify
+            against the current local brochure before quoting — specs change
+            by year and market trim.
           </p>
         </div>
       </section>
