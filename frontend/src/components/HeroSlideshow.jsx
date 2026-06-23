@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import heroVideo from '../assets/Shinrai Power- Nepali Language.mp4'
 import slide1 from '../assets/WhatsApp Image 2026-06-23 at 9.56.05 AM.jpeg'
 import slide2 from '../assets/zaxis 370.png'
@@ -20,15 +19,6 @@ const slides = [
 
 export default function HeroSlideshow() {
   const [index, setIndex] = useState(0)
-
-  useEffect(() => {
-    // Hold the intro video for 60s, then cycle image slides every 5s.
-    const duration = slides[index].video ? 60000 : 5000
-    const id = setTimeout(() => {
-      setIndex((i) => (i + 1) % slides.length)
-    }, duration)
-    return () => clearTimeout(id)
-  }, [index])
 
   return (
     <section className="relative h-screen w-full overflow-hidden text-white">
@@ -60,47 +50,7 @@ export default function HeroSlideshow() {
         </div>
       ))}
 
-      {slides[index].title && (
-        <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-6">
-          <div className="max-w-2xl">
-            {slides[index].eyebrow && (
-              <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-tata-red">
-                {slides[index].eyebrow}
-              </p>
-            )}
-            <h1 className="text-4xl font-bold leading-tight md:text-6xl">
-              {slides[index].title}
-              {slides[index].highlight && (
-                <>
-                  <br />
-                  <span className="text-tata-red">{slides[index].highlight}</span>
-                </>
-              )}
-            </h1>
-            {slides[index].subtitle && (
-              <p className="mt-6 max-w-lg text-lg text-gray-200">
-                {slides[index].subtitle}
-              </p>
-            )}
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                to="/products"
-                className="rounded-full bg-tata-red px-6 py-3 font-semibold shadow-lg hover:bg-red-700"
-              >
-                Explore Products
-              </Link>
-              <Link
-                to="/contact"
-                className="rounded-full border border-white/40 px-6 py-3 font-semibold backdrop-blur hover:bg-white/10"
-              >
-                Talk to Sales
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Arrows */}
+      {/* Arrows — manual navigation only (no auto-advance) */}
       <button
         onClick={() => setIndex((i) => (i - 1 + slides.length) % slides.length)}
         aria-label="Previous slide"
