@@ -415,12 +415,6 @@ export default function Contact() {
                   >
                     +977 9801007228
                   </a>
-                  <a
-                    href="tel:+9779812010558"
-                    className="mt-0.5 block text-xs text-gray-400 transition-colors hover:text-[#f37022]"
-                  >
-                    Also +977 9812010558
-                  </a>
                 </div>
 
                 <div>

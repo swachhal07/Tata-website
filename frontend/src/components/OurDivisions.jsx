@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import excavator from '../assets/Tata_Hitachi_ZAXIS_650_H_4_b67b5d4208.webp'
-import backhoe from '../assets/2a28a805-690b-4239-baf1-e3c1ec7be1e6_machanx-628392-application_backhoe_loaders_mbl_745_manitou_006_5UAyddusp.webp'
+import backhoe from '../assets/Tata_Hitachi_Shinrai_Power_Over_View_b51f6a79fc.webp'
 import mining from '../assets/zaxis 370.png'
 
 const divisions = [

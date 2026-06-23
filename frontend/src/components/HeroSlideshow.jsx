@@ -1,26 +1,34 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import slide1 from '../assets/tata-hitachi-shinrai-pro-backhoe-loader.jpg'
+import heroVideo from '../assets/Shinrai Power- Nepali Language.mp4'
+import slide1 from '../assets/WhatsApp Image 2026-06-23 at 9.56.05 AM.jpeg'
 import slide2 from '../assets/zaxis 370.png'
 import slide3 from '../assets/ex 300 LC prime.jpg'
 import slide4 from '../assets/desi-machines-tata-hitachi-excavator-ex200-infra-featured.jpg'
+import slide5 from '../assets/ZAXIS 140H Ultra.JPG'
+import slide6 from '../assets/ZX220LC Ultra 6.jpg'
 
 const slides = [
+  { video: heroVideo },
   { image: slide1 },
   { image: slide2 },
   { image: slide3 },
   { image: slide4 },
+  { image: slide5 },
+  { image: slide6 },
 ]
 
 export default function HeroSlideshow() {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    const id = setInterval(() => {
+    // Hold the intro video for 60s, then cycle image slides every 5s.
+    const duration = slides[index].video ? 60000 : 5000
+    const id = setTimeout(() => {
       setIndex((i) => (i + 1) % slides.length)
-    }, 5000)
-    return () => clearInterval(id)
-  }, [])
+    }, duration)
+    return () => clearTimeout(id)
+  }, [index])
 
   return (
     <section className="relative h-screen w-full overflow-hidden text-white">
@@ -31,11 +39,22 @@ export default function HeroSlideshow() {
             i === index ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <img
-            src={slide.image}
-            alt=""
-            className="h-full w-full object-cover"
-          />
+          {slide.video ? (
+            <video
+              src={slide.video}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <img
+              src={slide.image}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/10" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
         </div>

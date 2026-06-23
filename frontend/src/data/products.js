@@ -1,6 +1,6 @@
 import excavator from '../assets/650h zaxis.webp'
 import compact from '../assets/zaxis 140.jpg'
-import backhoe from '../assets/sinrahai pro img.jpg'
+import backhoe from '../assets/desi-machines-tata-hitachi-shinrai-power-cev-featured-image.jpg'
 import zaxis220 from '../assets/Tata_Hitachi_Zaxis_220_LCM_Side_View_f037a1e7f1.webp'
 import mining from '../assets/zaxis 370.png'
 import ex70 from '../assets/EX 70 Super.webp'

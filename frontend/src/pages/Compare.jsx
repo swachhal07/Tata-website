@@ -568,7 +568,7 @@ const classMap = {
       jcb: {
         name: 'JCB 3DX Super 4WD',
         specs: {
-          'Engine power': '74 HP',
+          'Engine power': '92 HP',
           'Operating weight': '8.01 t',
           'Loader breakout force': '6,000 kgf',
           'Backhoe breakout force': '5,000 kgf',
@@ -579,13 +579,37 @@ const classMap = {
           'Warranty': '2 yr',
         },
       },
+      // The two right-hand slots are repurposed for backhoe-segment rivals.
+      // `brand` overrides the column header label (default Kobelco / Hyundai).
       kobelco: {
-        name: '— (no backhoe in Kobelco lineup)',
-        specs: {},
+        brand: 'Bull',
+        name: 'Bull Smart 4WD',
+        specs: {
+          'Engine power': '76 HP',
+          'Operating weight': '7.9 t',
+          'Loader breakout force': '6,100 kgf',
+          'Backhoe breakout force': '5,200 kgf',
+          'Max backhoe depth': '4.92 m',
+          'Loader payload': '1,800 kg',
+          'Fuel tank': '125 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
       hyundai: {
-        name: '— (no backhoe in Hyundai lineup)',
-        specs: {},
+        brand: 'Case',
+        name: 'Case 770EX Magnum',
+        specs: {
+          'Engine power': '76 HP',
+          'Operating weight': '7.8 t',
+          'Loader breakout force': '6,200 kgf',
+          'Backhoe breakout force': '5,300 kgf',
+          'Max backhoe depth': '4.95 m',
+          'Loader payload': '1,860 kg',
+          'Fuel tank': '135 L',
+          'Engine oil interval': '250 hrs',
+          'Warranty': '2 yr',
+        },
       },
     },
   },
@@ -862,7 +886,7 @@ export default function Compare() {
                   </th>
                   <th className="border-r border-white/10 px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      / Kobelco
+                      / {equivalents.kobelco.brand ?? 'Kobelco'}
                     </p>
                     <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
                       {equivalents.kobelco.name}
@@ -870,7 +894,7 @@ export default function Compare() {
                   </th>
                   <th className="px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      / Hyundai
+                      / {equivalents.hyundai.brand ?? 'Hyundai'}
                     </p>
                     <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
                       {equivalents.hyundai.name}
