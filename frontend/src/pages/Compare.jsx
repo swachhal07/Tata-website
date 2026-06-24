@@ -65,11 +65,14 @@ const brandRows = [
 const classMap = {
   'ZAXIS-650H': {
     th: {
-      'Engine power': '463 HP',
-      'Operating weight': '64.5 t',
-      'Bucket capacity': '3.4 m³',
-      'Max digging depth': '7.8 m',
-      'Fuel tank': '900 L',
+      'Engine power': '400 HP',
+      'Operating weight': '58.3 t',
+      'Bucket capacity': '3.8 m³',
+      'Bucket digging force': '308 kN',
+      'Arm crowd force': '258 kN',
+      'Max digging depth': '7.08 m',
+      'Swing speed': '7.0 rpm',
+      'Fuel tank': '740 L',
     },
     competitors: {
       jcb: {
@@ -248,7 +251,9 @@ const classMap = {
       'Bucket digging force': '104 kN',
       'Arm crowd force': '77 kN',
       'Max digging depth': '5.15 m',
+      'Swing speed': '13.7 rpm',
       'Fuel tank': '250 L',
+      'Hydraulic oil interval': '5,000 hrs',
       'Engine oil interval': '500 hrs',
       'Warranty': '3 yr / 7500 hrs ext.',
     },
@@ -307,6 +312,7 @@ const classMap = {
       'Arm crowd force': '207 kN',
       'Max digging depth': '6.30 m',
       'Swing speed': '10.1 rpm',
+      'Swing torque': '110 kNm',
       'Fuel tank': '560 L',
       'Engine oil interval': '500 hrs',
       'Warranty': '3 yr / 7500 hrs ext.',
@@ -433,6 +439,9 @@ const classMap = {
       'Bucket capacity': '1.05 m³',
       'Max digging depth': '6.8 m',
       'Fuel tank': '420 L',
+      'Hydraulic oil interval': '4,500 hrs',
+      'Engine oil interval': '500 hrs',
+      'Warranty': '3 yr / 7500 hrs ext.',
     },
     competitors: {
       jcb: {
@@ -470,11 +479,12 @@ const classMap = {
 
   'EX-130': {
     th: {
-      'Engine power': '112 HP',
-      'Operating weight': '13.5 t',
-      'Bucket capacity': '0.66 m³',
-      'Max digging depth': '5.8 m',
-      'Fuel tank': '240 L',
+      'Engine power': '76 HP',
+      'Operating weight': '12.8 t',
+      'Bucket capacity': '0.65 m³',
+      'Max digging depth': '2.72 m',
+      'Swing speed': '13.8 rpm',
+      'Fuel tank': '250 L',
     },
     competitors: {
       jcb: {
@@ -512,11 +522,16 @@ const classMap = {
 
   'EX-70-SUPER': {
     th: {
-      'Engine power': '68 HP',
-      'Operating weight': '7.4 t',
-      'Bucket capacity': '0.34 m³',
-      'Max digging depth': '4.6 m',
+      'Engine power': '55 HP',
+      'Operating weight': '7.0 t',
+      'Bucket capacity': '0.30 m³',
+      'Bucket digging force': '47 kN',
+      'Arm crowd force': '36 kN',
+      'Max digging depth': '4.66 m',
+      'Swing speed': '12.8 rpm',
       'Fuel tank': '135 L',
+      'Hydraulic oil interval': '4,500 hrs',
+      'Warranty': '2 yr / 5000 hrs',
     },
     competitors: {
       jcb: {
@@ -616,62 +631,37 @@ const classMap = {
 }
 
 /* ─────────────────────────────────────────────────────────────
- *  Win-direction rules per spec.
- *    higher  → bigger number wins (HP, bucket, fuel, force …)
- *    lower   → smaller number wins (operating weight in same class)
- *  All comparisons are numeric — the value is stripped to a
- *  number with parseSpecNumber(). Warranty values like
- *  "3 yr / 7500 hrs ext." compare on the leading year figure.
+ *  Canonical spec order. Every machine renders its spec rows in
+ *  this sequence so the table reads consistently across models.
+ *  A machine simply omits any spec it doesn't carry — excavators
+ *  and the Shinrai backhoe draw from the same ordered list.
  * ───────────────────────────────────────────────────────────── */
-const winDirection = {
-  'Engine power': 'higher',
-  'Operating weight': 'lower',
-  'Bucket capacity': 'higher',
-  'Bucket digging force': 'higher',
-  'Arm crowd force': 'higher',
-  'Max digging depth': 'higher',
-  'Swing speed': 'higher',
-  'Swing torque': 'higher',
-  'Fuel tank': 'higher',
-  'Hydraulic oil interval': 'higher',
-  'Engine oil interval': 'higher',
-  'Loader breakout force': 'higher',
-  'Backhoe breakout force': 'higher',
-  'Max backhoe depth': 'higher',
-  'Loader payload': 'higher',
-  'Warranty': 'higher',
-}
+const SPEC_ORDER = [
+  'Engine power',
+  'Operating weight',
+  'Bucket capacity',
+  'Bucket digging force',
+  'Arm crowd force',
+  'Loader breakout force',
+  'Backhoe breakout force',
+  'Loader payload',
+  'Max digging depth',
+  'Max backhoe depth',
+  'Swing speed',
+  'Swing torque',
+  'Fuel tank',
+  'Hydraulic oil interval',
+  'Engine oil interval',
+  'Warranty',
+]
 
-function parseSpecNumber(value) {
-  if (value == null) return null
-  const match = String(value).replace(/,/g, '').match(/[\d.]+/)
-  return match ? parseFloat(match[0]) : null
-}
-
-/** Returns 'win' | 'tie' | 'loss' for TH vs a single competitor on this spec. */
-function thVerdict(spec, thValue, compValue) {
-  const dir = winDirection[spec]
-  if (!dir) return 'tie'
-  const t = parseSpecNumber(thValue)
-  const c = parseSpecNumber(compValue)
-  if (t == null || c == null) return 'tie'
-  // values within 2.5% of each other are treated as a tie
-  if (Math.abs(t - c) / Math.max(t, c) < 0.025) return 'tie'
-  if (dir === 'higher') return t > c ? 'win' : 'loss'
-  return t < c ? 'win' : 'loss'
-}
-
-/** A spec row is shown if Tata Hitachi wins against at least one competitor. */
-function pickWinningSpecs(entry) {
+/** Full Tata Hitachi spec sheet for the machine, in canonical order. */
+function orderedSpecs(entry) {
   if (!entry) return []
-  const competitors = Object.values(entry.competitors)
-  return Object.keys(entry.th).filter((spec) => {
-    if (!(spec in winDirection)) return false
-    return competitors.some((c) => {
-      const cv = c.specs?.[spec]
-      if (cv == null) return false
-      return thVerdict(spec, entry.th[spec], cv) === 'win'
-    })
+  return Object.keys(entry.th).slice().sort((a, b) => {
+    const ia = SPEC_ORDER.indexOf(a)
+    const ib = SPEC_ORDER.indexOf(b)
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib)
   })
 }
 
@@ -714,18 +704,10 @@ export default function Compare() {
 
   const tataProduct = products.find((p) => p.code === classCode) ?? null
   const entry = classMap[classCode] ?? null
-  const equivalents = entry?.competitors ?? {
-    jcb: { name: '—', specs: {} },
-    kobelco: { name: '—', specs: {} },
-    hyundai: { name: '—', specs: {} },
-  }
 
-  const winningSpecs = pickWinningSpecs(entry)
+  const displaySpecs = orderedSpecs(entry)
 
   const tataSpec = (label) => entry?.th?.[label] ?? '—'
-  const jcbSpec = (label) => equivalents.jcb?.specs?.[label] ?? '—'
-  const kobelcoSpec = (label) => equivalents.kobelco?.specs?.[label] ?? '—'
-  const hyundaiSpec = (label) => equivalents.hyundai?.specs?.[label] ?? '—'
 
   return (
     <main className="bg-white">
@@ -818,7 +800,7 @@ export default function Compare() {
         </div>
       </section>
 
-      {/* ─── Machine-class spec comparison (TH wins only) ─────── */}
+      {/* ─── Machine-class spec sheet ─────────────────────────── */}
       <section className="bg-[#f7f5f0] py-16 md:py-20">
         <div className="mx-auto max-w-[1500px] px-6 lg:px-12">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-6 border-b border-gray-300 pb-5">
@@ -827,12 +809,11 @@ export default function Compare() {
                 / Machine by machine
               </p>
               <h2 className="mt-2 text-2xl font-black uppercase leading-[1] tracking-tight text-black md:text-3xl">
-                Where We're Better
+                Specifications
               </h2>
               <p className="mt-2 max-w-xl text-xs text-gray-500">
-                For each machine, we only show the specs where Tata Hitachi
-                beats the competitor. If a spec isn't listed, the competitor
-                is equal or stronger — and we'd rather you know that up front.
+                The key Tata Hitachi specifications for each machine in our
+                Nepal lineup. Pick a model to see its full spec sheet.
               </p>
             </div>
 
@@ -862,11 +843,15 @@ export default function Compare() {
           </div>
 
           <div className="overflow-x-auto border border-gray-300 bg-white">
-            <table className="w-full min-w-[480px] border-collapse">
+            <table className="w-full min-w-[480px] table-fixed border-collapse">
+              <colgroup>
+                <col className="w-1/2" />
+                <col className="w-1/2" />
+              </colgroup>
               <thead>
                 <tr className="bg-black">
                   <th className="border-r border-white/10 px-6 py-6 text-left text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
-                    Where TH is better
+                    Specification
                   </th>
                   <th className="px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-[#f37022]">
@@ -879,18 +864,18 @@ export default function Compare() {
                 </tr>
               </thead>
               <tbody>
-                {winningSpecs.length === 0 ? (
+                {displaySpecs.length === 0 ? (
                   <tr className="bg-white">
                     <td
                       colSpan={2}
                       className="px-6 py-10 text-center text-sm text-gray-500"
                     >
-                      Spec sheet matches the competition closely on this class
-                      — talk to us about service, parts, and resale instead.
+                      Spec sheet coming soon — talk to us for the full
+                      datasheet on this machine.
                     </td>
                   </tr>
                 ) : (
-                  winningSpecs.map((label, rowIdx) => (
+                  displaySpecs.map((label, rowIdx) => (
                     <tr
                       key={label}
                       className={rowIdx % 2 === 0 ? 'bg-white' : 'bg-[#f7f5f0]'}
@@ -933,9 +918,8 @@ export default function Compare() {
 
           <p className="mt-4 text-xs italic text-gray-500">
             Spec values are taken from the latest official Tata Hitachi
-            brochures and from competitor manufacturer literature. Verify
-            against the current local brochure before quoting — specs change
-            by year and market trim.
+            brochures. Verify against the current local brochure before
+            quoting — specs change by year and market trim.
           </p>
         </div>
       </section>
