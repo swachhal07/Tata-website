@@ -173,7 +173,7 @@ const classMap = {
   'ZAXIS-220LC': {
     th: {
       'Engine power': '168 HP',
-      'Operating weight': '21.55 t',
+      'Operating weight': '21.7 t',
       'Bucket capacity': '1.22 m³',
       'Bucket digging force': '158 kN',
       'Arm crowd force': '139 kN',
@@ -862,42 +862,18 @@ export default function Compare() {
           </div>
 
           <div className="overflow-x-auto border border-gray-300 bg-white">
-            <table className="w-full min-w-[720px] border-collapse">
+            <table className="w-full min-w-[480px] border-collapse">
               <thead>
                 <tr className="bg-black">
                   <th className="border-r border-white/10 px-6 py-6 text-left text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Where TH is better
                   </th>
-                  <th className="border-r border-white/10 px-6 py-6 text-left">
+                  <th className="px-6 py-6 text-left">
                     <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-[#f37022]">
                       / Tata Hitachi
                     </p>
                     <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-[#f37022] md:text-xl">
                       {tataProduct?.name ?? '—'}
-                    </p>
-                  </th>
-                  <th className="border-r border-white/10 px-6 py-6 text-left">
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      / JCB
-                    </p>
-                    <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
-                      {equivalents.jcb.name}
-                    </p>
-                  </th>
-                  <th className="border-r border-white/10 px-6 py-6 text-left">
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      / {equivalents.kobelco.brand ?? 'Kobelco'}
-                    </p>
-                    <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
-                      {equivalents.kobelco.name}
-                    </p>
-                  </th>
-                  <th className="px-6 py-6 text-left">
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
-                      / {equivalents.hyundai.brand ?? 'Hyundai'}
-                    </p>
-                    <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-white md:text-xl">
-                      {equivalents.hyundai.name}
                     </p>
                   </th>
                 </tr>
@@ -906,7 +882,7 @@ export default function Compare() {
                 {winningSpecs.length === 0 ? (
                   <tr className="bg-white">
                     <td
-                      colSpan={5}
+                      colSpan={2}
                       className="px-6 py-10 text-center text-sm text-gray-500"
                     >
                       Spec sheet matches the competition closely on this class
@@ -922,17 +898,8 @@ export default function Compare() {
                       <td className="border-r border-gray-200 px-6 py-5 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                         {label}
                       </td>
-                      <td className="border-r border-gray-200 bg-[#f37022]/8 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-[#f37022]">
+                      <td className="bg-[#f37022]/8 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-[#f37022]">
                         {tataSpec(label)}
-                      </td>
-                      <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                        {jcbSpec(label)}
-                      </td>
-                      <td className="border-r border-gray-200 px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                        {kobelcoSpec(label)}
-                      </td>
-                      <td className="px-6 py-5 font-mono text-lg font-bold tabular-nums tracking-tight text-gray-700">
-                        {hyundaiSpec(label)}
                       </td>
                     </tr>
                   ))
@@ -943,61 +910,13 @@ export default function Compare() {
                   <td className="border-r border-gray-200 px-6 py-5 align-top text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Built for
                   </td>
-                  <td className="border-r border-gray-200 px-6 py-5 align-top">
+                  <td className="px-6 py-5 align-top">
                     {tataProduct ? (
                       <div className="flex flex-wrap gap-1.5">
                         {tataProduct.applications.map((a) => (
                           <span
                             key={a}
                             className="border border-[#f37022]/40 bg-[#f37022]/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#f37022]"
-                          >
-                            {a}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="border-r border-gray-200 px-6 py-5 align-top">
-                    {tataProduct && equivalents.jcb.name !== '—' ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {tataProduct.applications.map((a) => (
-                          <span
-                            key={a}
-                            className="border border-gray-300 bg-gray-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-600"
-                          >
-                            {a}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="border-r border-gray-200 px-6 py-5 align-top">
-                    {tataProduct && !equivalents.kobelco.name.startsWith('—') ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {tataProduct.applications.map((a) => (
-                          <span
-                            key={a}
-                            className="border border-gray-300 bg-gray-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-600"
-                          >
-                            {a}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-5 align-top">
-                    {tataProduct && !equivalents.hyundai.name.startsWith('—') ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {tataProduct.applications.map((a) => (
-                          <span
-                            key={a}
-                            className="border border-gray-300 bg-gray-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-600"
                           >
                             {a}
                           </span>
