@@ -2,7 +2,7 @@ import boardMotiLal from '../assets/af0b8ecf-4ddc-41f9-9dd1-ba5c0df1b212.webp'
 import boardVivek from '../assets/ae68fbad-4028-45aa-81d5-44d526f4f5af.webp'
 import boardShubham from '../assets/af5ea000-e8c5-4f03-ac64-9fd3a8bb8009.webp'
 import boardNaman from '../assets/eb7eb529-8d15-4359-8ac0-df51b7393d00.webp'
-import mgmtNiraj from '../assets/WhatsApp Image 2026-06-23 at 4.38.36 PM.jpeg'
+import mgmtNiraj from '../assets/_MG_7984.jpg.jpeg'
 import mgmtDipu from '../assets/IMG_5717.JPG.jpeg'
 
 const boardDirectors = [

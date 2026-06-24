@@ -89,7 +89,7 @@ export default function Footer() {
                   +977{' '}
                   <a href="tel:+9779801007228" className="transition-colors hover:text-[#f37022]">9801007228</a>
                   /
-                  <a href="tel:+9779812010558" className="transition-colors hover:text-[#f37022]">9812010558</a>
+                  <a href="tel:+9779712010558" className="transition-colors hover:text-[#f37022]">9712010558</a>
                 </span>
               </li>
               <li className="flex items-start gap-3">
