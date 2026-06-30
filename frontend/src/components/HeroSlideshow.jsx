@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import heroVideo from '../assets/IMG_2023.MOV'
+import heroVideo from '../assets/hero.mp4'
 import slide1 from '../assets/WhatsApp Image 2026-06-23 at 9.56.05 AM.jpeg'
 import slide2 from '../assets/zaxis 370.png'
 import slide3 from '../assets/ex 300 LC prime.jpg'
@@ -38,6 +38,7 @@ export default function HeroSlideshow() {
                 muted={isMuted}
                 loop
                 playsInline
+                preload="auto"
                 className="h-full w-full object-cover scale-[1.35]"
               />
               <div className="absolute bottom-10 left-1/2 z-20 -translate-x-1/2">
