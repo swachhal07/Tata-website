@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import logo from '../assets/Tata-Hitachi-Construction-Machinery-Logo-Vector.png'
+import dugarLogo from '../assets/MVDUGAR-01.png'
 
 const leftNavItems = [
   { to: '/', label: 'Home' },
@@ -150,22 +151,42 @@ export default function Navbar() {
       >
         Contact Us
       </Link>
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <nav className="hidden flex-1 items-center justify-end gap-10 md:flex">
+      <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6 py-4 md:gap-10">
+        <nav className="hidden items-center justify-end gap-10 pr-14 md:flex">
           {leftNavItems.map((item) => (
             <NavItem key={item.to} item={item} isHome={isHome} />
           ))}
         </nav>
 
-        <Link to="/" className="flex items-center md:mx-24">
-          <img
-            src={logo}
-            alt="Tata Hitachi Construction Machinery"
-            className="h-16 w-auto"
-          />
+        <div className="hidden items-center gap-4 md:flex">
+          <Link to="/" className="flex items-center">
+            <img
+              src={logo}
+              alt="Tata Hitachi Construction Machinery"
+              className="h-16 w-auto"
+            />
+          </Link>
+          <span className="h-12 w-px bg-gray-300" aria-hidden="true" />
+          <a
+            href="https://www.mvdugar.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center"
+            aria-label="Visit MV Dugar Group website"
+          >
+            <img
+              src={dugarLogo}
+              alt="MV Dugar Group"
+              className="relative -left-16 h-20 w-auto"
+            />
+          </a>
+        </div>
+
+        <Link to="/" className="flex items-center md:hidden">
+          <img src={logo} alt="Tata Hitachi" className="h-12 w-auto" />
         </Link>
 
-        <nav className="hidden flex-1 items-center gap-10 md:flex">
+        <nav className="hidden items-center justify-start gap-10 -ml-20 md:flex">
           {rightNavItems.map((item) => (
             <NavItem key={item.to} item={item} isHome={isHome} />
           ))}
