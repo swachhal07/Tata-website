@@ -152,13 +152,13 @@ export default function Navbar() {
         Contact Us
       </Link>
       <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6 py-4 md:gap-10">
-        <nav className="hidden items-center justify-end gap-10 pr-14 md:flex">
+        <nav className="hidden items-center justify-end gap-10 pr-8 md:flex">
           {leftNavItems.map((item) => (
             <NavItem key={item.to} item={item} isHome={isHome} />
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-4 md:flex md:translate-x-8">
           <Link to="/" className="flex items-center">
             <img
               src={logo}
@@ -186,7 +186,7 @@ export default function Navbar() {
           <img src={logo} alt="Tata Hitachi" className="h-12 w-auto" />
         </Link>
 
-        <nav className="hidden items-center justify-start gap-10 -ml-20 md:flex">
+        <nav className="hidden items-center justify-start gap-10 -ml-10 md:flex">
           {rightNavItems.map((item) => (
             <NavItem key={item.to} item={item} isHome={isHome} />
           ))}
