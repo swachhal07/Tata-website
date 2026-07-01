@@ -75,11 +75,11 @@ export const products = [
     intro:
       'The site workhorse. Extended undercarriage for stability on uneven ground — the most-deployed machine on infrastructure contracts across Nepal.',
     specs: [
-      { label: 'Operating weight', value: '22.4 t' },
-      { label: 'Engine power', value: '175 HP' },
-      { label: 'Bucket capacity', value: '1.1 m³' },
-      { label: 'Max digging depth', value: '6.8 m' },
-      { label: 'Fuel tank', value: '420 L' },
+      { label: 'Operating weight', value: '21.7 t' },
+      { label: 'Engine power', value: '168 HP' },
+      { label: 'Bucket capacity', value: '1.22 m³' },
+      { label: 'Max digging depth', value: '6.16 m' },
+      { label: 'Fuel tank', value: '400 L' },
       { label: 'Track class', value: 'Long crawler' },
     ],
     applications: ['Infrastructure', 'Road construction', 'Hydropower', 'Earthworks'],

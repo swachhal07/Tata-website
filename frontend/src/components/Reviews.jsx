@@ -31,7 +31,7 @@ const reviews = [
   },
   {
     quote:
-      'Our ZW220 wheel loader handles aggregate loading at the crusher day in, day out. Cycle times are noticeably faster than the machine it replaced.',
+      'Our ZAXIS 370 LCH has been at the pit for eighteen months of continuous extraction. Uptime has held — and the parts team in Kathmandu turns anything we need around within a couple of days.',
     name: 'Prakash Maharjan',
     role: 'Bagmati Aggregates',
   },
@@ -139,22 +139,6 @@ export default function Reviews() {
             <ReviewCard key={`${r.name}-${i}`} review={r} />
           ))}
         </div>
-      </div>
-
-      {/* CTA */}
-      <div className="relative z-[1] mx-auto mt-14 max-w-7xl px-6 text-center">
-        <a
-          href="#"
-          className="group inline-flex items-center gap-3 border-b-2 border-[#f37022] pb-2 text-base font-bold uppercase tracking-[0.2em] text-black transition hover:text-[#f37022] md:text-lg"
-        >
-          Read all customer stories
-          <span
-            aria-hidden
-            className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5"
-          >
-            ↗
-          </span>
-        </a>
       </div>
     </section>
   )

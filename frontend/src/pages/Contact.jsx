@@ -1,10 +1,19 @@
-import { useState } from 'react'
+import { Component, useState } from 'react'
 import { Map, MapMarker, MapControls, MarkerContent } from '../components/MapLibre'
+
+class MapErrorBoundary extends Component {
+  state = { hasError: false }
+  static getDerivedStateFromError() { return { hasError: true } }
+  componentDidCatch(err) { console.error('[Contact map] failed to render', err) }
+  render() {
+    if (this.state.hasError) return this.props.fallback ?? null
+    return this.props.children
+  }
+}
 
 const interests = [
   'Excavators',
   'Backhoe loaders',
-  'Wheel loaders',
   'Mining equipment',
   'Service & maintenance',
   'Genuine parts',
@@ -415,17 +424,11 @@ export default function Contact() {
                   >
                     +977 9801007228
                   </a>
-                </div>
-
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#f37022]">
-                    Toll Free
-                  </p>
                   <a
-                    href="tel:+9779801571065"
+                    href="tel:+9779712010558"
                     className="mt-1 block text-xl font-bold text-white transition-colors hover:text-[#f37022]"
                   >
-                    +977 9801571065
+                    +977 9712010558
                   </a>
                 </div>
 
@@ -575,7 +578,15 @@ export default function Contact() {
             </span>
           </div>
 
-          <NetworkMap locations={serviceLocations} />
+          <MapErrorBoundary
+            fallback={
+              <div className="mb-14 flex h-[320px] items-center justify-center border border-gray-300 bg-white text-xs font-bold uppercase tracking-[0.28em] text-gray-500">
+                Service network map unavailable — see locations below
+              </div>
+            }
+          >
+            <NetworkMap locations={serviceLocations} />
+          </MapErrorBoundary>
 
           <div className="mb-16 grid grid-cols-2 border-l border-t border-gray-300 md:grid-cols-3 lg:grid-cols-5">
             {salesTeam.map((s, i) => (
@@ -661,10 +672,10 @@ export default function Contact() {
               Need help reaching a remote site?
             </p>
             <a
-              href="tel:+9779801571065"
+              href="tel:+9779801007228"
               className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-black transition-colors hover:text-[#f37022]"
             >
-              Call toll-free · +977 9801571065
+              Call sales · +977 9801007228
               <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
             </a>
           </div>

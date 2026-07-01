@@ -15,7 +15,7 @@ const aboutChildren = [
 
 const rightNavItems = [
   { to: '/compare', label: 'Why us' },
-  { to: '/about', label: 'About Us', children: aboutChildren },
+  { to: '/about', label: 'About', children: aboutChildren },
 ]
 
 const allNavItems = [...leftNavItems, ...rightNavItems]
@@ -245,6 +245,14 @@ export default function Navbar() {
               )}
             </div>
           ))}
+
+          <Link
+            to="/contact"
+            onClick={() => setOpen(false)}
+            className="mt-3 inline-flex items-center justify-center rounded-full border border-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-800 transition hover:border-[#f37022] hover:bg-[#f37022] hover:text-white"
+          >
+            Contact Us
+          </Link>
         </nav>
       )}
     </header>

@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 import excavator from '../assets/Tata_Hitachi_ZAXIS_650_H_4_b67b5d4208.webp'
 import backhoe from '../assets/Tata_Hitachi_Shinrai_Power_Over_View_b51f6a79fc.webp'
 import mining from '../assets/zaxis 370.png'
+import { products } from '../data/products'
+
+const excavatorCount = products.filter((p) => p.cat === 'excavators').length
+const backhoeCount = products.filter((p) => p.cat === 'backhoes').length
+const miningCount = products.filter((p) => p.tags?.includes('mining')).length
 
 const divisions = [
   {
@@ -12,12 +17,12 @@ const divisions = [
     heading: 'Built for\nevery dig.',
     description:
       "Tata Hitachi's excavator range spans mini to mining-class machines — engineered for hydropower, road, and infrastructure work across Nepal.",
-    machineCount: 8,
+    machineCount: excavatorCount,
     stats: [
       { label: 'Operating Weight', value: '7 – 65 t' },
       { label: 'Engine Power', value: 'Up to 463 HP' },
       { label: 'Bucket Capacity', value: '0.28 – 3.4 m³' },
-      { label: 'Models', value: '8 variants' },
+      { label: 'Models', value: `${excavatorCount} variants` },
     ],
     cta: 'View Excavators',
     image: excavator,
@@ -29,7 +34,7 @@ const divisions = [
     heading: 'Dig. Load.\nRepeat.',
     description:
       'Versatile backhoe loaders for utility work, urban construction, road maintenance, and material handling on tight sites.',
-    machineCount: 1,
+    machineCount: backhoeCount,
     stats: [
       { label: 'Engine Power', value: '99 HP' },
       { label: 'Backhoe Reach', value: '5.7 m' },
@@ -46,12 +51,12 @@ const divisions = [
     heading: 'Built for\nthe pit.',
     description:
       'Mining-class excavators for high-volume extraction at coal, limestone, and aggregate operations across Nepal.',
-    machineCount: 1,
+    machineCount: miningCount,
     stats: [
-      { label: 'Operating Weight', value: '37.5 t' },
-      { label: 'Engine Power', value: '271 HP' },
-      { label: 'Bucket Capacity', value: '2.1 m³' },
-      { label: 'Series', value: 'ZAXIS Ultra' },
+      { label: 'Operating Weight', value: '30 – 58.3 t' },
+      { label: 'Engine Power', value: '230 – 400 HP' },
+      { label: 'Bucket Capacity', value: '1.5 – 3.8 m³' },
+      { label: 'Series', value: 'ZAXIS · EX Prime' },
     ],
     cta: 'View Mining',
     image: mining,

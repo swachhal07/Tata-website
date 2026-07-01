@@ -28,30 +28,23 @@ function BrochureGate({ product, onClose }) {
     setSubmitting(true)
     setError('')
 
-    try {
-      const res = await fetch('/api/send-mail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'brochure',
-          product: product.name,
-          code: product.code,
-          ...form,
-        }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || 'Send failed')
-      }
-      if (product.pdf) {
-        window.open(product.pdf, '_blank', 'noopener,noreferrer')
-      }
-      onClose()
-    } catch (err) {
-      setError(err.message || 'Could not send. Please try again or call us.')
-    } finally {
-      setSubmitting(false)
+    // Fire-and-forget lead capture — never block the brochure on mail delivery.
+    fetch('/api/send-mail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'brochure',
+        product: product.name,
+        code: product.code,
+        ...form,
+      }),
+    }).catch(() => {})
+
+    if (product.pdf) {
+      window.open(product.pdf, '_blank', 'noopener,noreferrer')
     }
+    setSubmitting(false)
+    onClose()
   }
 
   return (

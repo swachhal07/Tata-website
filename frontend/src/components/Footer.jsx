@@ -54,7 +54,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li><Link to="/" className="transition-colors hover:text-[#f37022]">Home</Link></li>
-              <li><Link to="/products" className="transition-colors hover:text-[#f37022]">Vehicles</Link></li>
+              <li><Link to="/products" className="transition-colors hover:text-[#f37022]">Products</Link></li>
               <li><Link to="/about" className="transition-colors hover:text-[#f37022]">About Us</Link></li>
               <li><Link to="/contact" className="transition-colors hover:text-[#f37022]">Contact Us</Link></li>
             </ul>
@@ -66,10 +66,9 @@ export default function Footer() {
               Equipment
             </h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="transition-colors hover:text-[#f37022]">Excavators</a></li>
-              <li><a href="#" className="transition-colors hover:text-[#f37022]">Backhoe Loaders</a></li>
-              <li><a href="#" className="transition-colors hover:text-[#f37022]">Wheel Loaders</a></li>
-              <li><a href="#" className="transition-colors hover:text-[#f37022]">Mining Equipment</a></li>
+              <li><Link to="/products#excavators" className="transition-colors hover:text-[#f37022]">Excavators</Link></li>
+              <li><Link to="/products#backhoes" className="transition-colors hover:text-[#f37022]">Backhoe Loaders</Link></li>
+              <li><Link to="/products#mining" className="transition-colors hover:text-[#f37022]">Mining Equipment</Link></li>
             </ul>
           </div>
 
@@ -83,18 +82,24 @@ export default function Footer() {
                 <span className="mt-0.5 text-[#f37022]"><PinIcon /></span>
                 <span>Kathmandu, Nepal</span>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-[#f37022]"><PhoneIcon /></span>
+              <li className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-[#f37022]"><PhoneIcon /></span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">Sales</span>
                 <span>
                   +977{' '}
                   <a href="tel:+9779801007228" className="transition-colors hover:text-[#f37022]">9801007228</a>
-                  /
+                  {' / '}
                   <a href="tel:+9779712010558" className="transition-colors hover:text-[#f37022]">9712010558</a>
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 text-[#f37022]"><MailIcon /></span>
-                <span>sales.tatahitachinp@gmail.com</span>
+                <a
+                  href="mailto:sales.tatahitachinp@gmail.com"
+                  className="break-all transition-colors hover:text-[#f37022]"
+                >
+                  sales.tatahitachinp@gmail.com
+                </a>
               </li>
             </ul>
           </div>

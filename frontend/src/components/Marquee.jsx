@@ -4,7 +4,7 @@ const items = [
   'Est. 1995',
   '7 provinces served',
   '48-hour parts dispatch',
-  'ZAXIS · Shinrai · ZW · EX-series',
+  'ZAXIS · Shinrai · EX-series',
 ]
 
 export default function Marquee() {
