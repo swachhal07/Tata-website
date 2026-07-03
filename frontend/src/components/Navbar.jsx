@@ -151,7 +151,7 @@ export default function Navbar() {
       >
         Contact Us
       </Link>
-      <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6 py-4 md:gap-10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-10">
         <nav className="hidden items-center justify-end gap-10 pr-8 md:flex">
           {leftNavItems.map((item) => (
             <NavItem key={item.to} item={item} isHome={isHome} />

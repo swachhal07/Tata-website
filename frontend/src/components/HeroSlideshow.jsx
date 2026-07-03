@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import heroVideo from '../assets/hero.mp4'
 import slide1 from '../assets/WhatsApp Image 2026-06-23 at 9.56.05 AM.jpeg'
 import slide2 from '../assets/zaxis 370.png'
@@ -20,6 +20,51 @@ const slides = [
 export default function HeroSlideshow() {
   const [index, setIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const tryUnmute = () => {
+      if (!video) return
+      video.muted = false
+      const p = video.play()
+      if (p !== undefined) {
+        p.then(() => setIsMuted(false)).catch(() => {
+          video.muted = true
+          setIsMuted(true)
+        })
+      }
+    }
+    tryUnmute()
+
+    const unmuteOnInteraction = () => {
+      tryUnmute()
+      cleanup()
+    }
+    const cleanup = () => {
+      window.removeEventListener('click', unmuteOnInteraction)
+      window.removeEventListener('touchstart', unmuteOnInteraction)
+      window.removeEventListener('keydown', unmuteOnInteraction)
+      window.removeEventListener('scroll', unmuteOnInteraction)
+      window.removeEventListener('mousemove', unmuteOnInteraction)
+    }
+    window.addEventListener('click', unmuteOnInteraction)
+    window.addEventListener('touchstart', unmuteOnInteraction)
+    window.addEventListener('keydown', unmuteOnInteraction)
+    window.addEventListener('scroll', unmuteOnInteraction)
+    window.addEventListener('mousemove', unmuteOnInteraction)
+
+    return cleanup
+  }, [])
+
+  const toggleMute = () => {
+    const video = videoRef.current
+    const next = !isMuted
+    setIsMuted(next)
+    if (video) video.muted = next
+  }
 
   return (
     <section className="relative h-screen w-full overflow-hidden text-white">
@@ -33,9 +78,10 @@ export default function HeroSlideshow() {
           {slide.video ? (
             <>
               <video
+                ref={videoRef}
                 src={slide.video}
                 autoPlay
-                muted={isMuted}
+                muted
                 loop
                 playsInline
                 preload="auto"
@@ -43,7 +89,7 @@ export default function HeroSlideshow() {
               />
               <div className="absolute bottom-10 left-1/2 z-20 -translate-x-1/2">
                 <button
-                  onClick={() => setIsMuted(!isMuted)}
+                  onClick={toggleMute}
                   className="rounded-full bg-white/20 px-6 py-2 text-sm font-semibold backdrop-blur hover:bg-white/30 transition-colors"
                 >
                   {isMuted ? 'Tap to Unmute' : 'Mute'}
