@@ -108,13 +108,16 @@ function NavDropdown({ item, isHome }) {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [hidden, setHidden] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const lastScrollY = useRef(0)
   const { pathname } = useLocation()
   const isHome = pathname === '/'
+  const overHero = isHome && !scrolled
 
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY
+      setScrolled(currentY > 80)
       if (currentY < 80) {
         setHidden(false)
       } else if (currentY > lastScrollY.current + 4) {
@@ -133,18 +136,20 @@ export default function Navbar() {
       className={`group/nav top-0 z-50 transform transition-all duration-300 ease-out ${
         hidden ? '-translate-y-full' : 'translate-y-0'
       } ${
-        isHome
+        overHero
           ? 'absolute inset-x-0 border-b border-white/30 bg-transparent hover:bg-white hover:shadow-sm'
+          : isHome
+          ? 'fixed inset-x-0 border-b border-gray-200 bg-white shadow-sm'
           : 'sticky border-b border-gray-200 bg-white shadow-sm'
       }`}
     >
-      {!isHome && (
+      {!overHero && (
         <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 z-10 h-1 bg-[#f37022]" />
       )}
       <Link
         to="/contact"
         className={`absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border px-6 py-2.5 text-base font-semibold transition md:inline-block ${
-          isHome
+          overHero
             ? 'border-white text-white group-hover/nav:border-gray-800 group-hover/nav:text-gray-800 hover:!border-[#f37022] hover:!bg-[#f37022] hover:!text-white'
             : 'border-gray-800 text-gray-800 hover:!border-[#f37022] hover:!bg-[#f37022] hover:!text-white'
         }`}
@@ -154,7 +159,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-10">
         <nav className="hidden items-center justify-end gap-10 pr-8 md:flex">
           {leftNavItems.map((item) => (
-            <NavItem key={item.to} item={item} isHome={isHome} />
+            <NavItem key={item.to} item={item} isHome={overHero} />
           ))}
         </nav>
 
@@ -188,12 +193,12 @@ export default function Navbar() {
 
         <nav className="hidden items-center justify-start gap-10 -ml-10 md:flex">
           {rightNavItems.map((item) => (
-            <NavItem key={item.to} item={item} isHome={isHome} />
+            <NavItem key={item.to} item={item} isHome={overHero} />
           ))}
         </nav>
 
         <button
-          className={`md:hidden ${isHome ? 'text-white' : 'text-gray-800'}`}
+          className={`md:hidden ${overHero ? 'text-white' : 'text-gray-800'}`}
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}
         >
