@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { categories, products as seedProducts } from '../data/products'
+import { categories, products as seedProducts, orderByList } from '../data/products'
 
 function BrochureGate({ product, onClose }) {
   const [form, setForm] = useState({ name: '', phone: '', company: '', location: '' })
@@ -295,6 +295,7 @@ export default function Products() {
   const [brochureFor, setBrochureFor] = useState(null)
   const [dynamicProducts, setDynamicProducts] = useState([])
   const [hiddenCodes, setHiddenCodes] = useState([])
+  const [order, setOrder] = useState({})
 
   useEffect(() => {
     let cancelled = false
@@ -304,6 +305,7 @@ export default function Products() {
         if (cancelled || !d) return
         if (Array.isArray(d.products)) setDynamicProducts(d.products)
         if (Array.isArray(d.hidden)) setHiddenCodes(d.hidden)
+        if (d.order && typeof d.order === 'object') setOrder(d.order)
       })
       .catch(() => {})
     return () => {
@@ -418,8 +420,17 @@ export default function Products() {
         })
         let visualIdx = 0
         return visible.map((cat) => {
-          const items = products.filter((p) =>
-            cat.id === 'mining' ? p.tags?.includes('mining') : p.cat === cat.id
+          // Mining is a cross-category tag; order it by all categories' saved
+          // orders merged, so mining machines keep their relative placement.
+          const codeOrder =
+            cat.id === 'mining'
+              ? categories.flatMap((c) => order[c.id] || [])
+              : order[cat.id] || []
+          const items = orderByList(
+            products.filter((p) =>
+              cat.id === 'mining' ? p.tags?.includes('mining') : p.cat === cat.id
+            ),
+            codeOrder
           )
           return (
             <div key={cat.id}>

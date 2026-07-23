@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { products as seedProducts } from '../data/products'
+import { products as seedProducts, orderByList } from '../data/products'
 
 const CAT_OPTIONS = [
   { id: 'excavators', label: 'Excavators' },
@@ -71,8 +71,13 @@ export default function Admin() {
   const [success, setSuccess] = useState(null)
   const [overrides, setOverrides] = useState([])
   const [hiddenCodes, setHiddenCodes] = useState([])
+  const [order, setOrder] = useState({})
+  const [drag, setDrag] = useState(null) // { cat, index }
+  const [dragOverIndex, setDragOverIndex] = useState(null)
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
   const imgInputRef = useRef(null)
   const pdfInputRef = useRef(null)
   const formRef = useRef(null)
@@ -97,6 +102,7 @@ export default function Admin() {
       const d = await res.json()
       setOverrides(Array.isArray(d.products) ? d.products : [])
       setHiddenCodes(Array.isArray(d.hidden) ? d.hidden : [])
+      setOrder(d.order && typeof d.order === 'object' ? d.order : {})
     } catch {
       /* ignore */
     }
@@ -106,15 +112,75 @@ export default function Admin() {
     if (authChecked) loadProducts()
   }, [authChecked, loadProducts])
 
-  const allProducts = useMemo(() => {
+  // Products grouped by category, each ordered by the saved drag order.
+  // Rendered as draggable sections; `totalCount` drives the header count.
+  const { groups, totalCount } = useMemo(() => {
     const overrideCodes = new Set(overrides.map((p) => p.code))
     const hidden = new Set(hiddenCodes)
     const visibleSeeds = seedProducts
       .filter((p) => !overrideCodes.has(p.code) && !hidden.has(p.code))
       .map((p) => ({ ...p, _source: 'seed' }))
     const dyn = overrides.map((p) => ({ ...p, _source: 'override' }))
-    return [...dyn, ...visibleSeeds]
-  }, [overrides, hiddenCodes])
+    const merged = [...dyn, ...visibleSeeds]
+    const knownCats = CAT_OPTIONS.map((c) => c.id)
+    const cats = [...new Set([...knownCats, ...merged.map((p) => p.cat)])]
+    const groups = cats
+      .map((cat) => ({
+        cat,
+        label: CAT_OPTIONS.find((c) => c.id === cat)?.label || cat,
+        items: orderByList(merged.filter((p) => p.cat === cat), order[cat] || []),
+      }))
+      .filter((g) => g.items.length > 0)
+    return { groups, totalCount: merged.length }
+  }, [overrides, hiddenCodes, order])
+
+  const saveOrder = useCallback(
+    async (cat, codes) => {
+      try {
+        const res = await fetch('/api/admin/order', {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cat, codes }),
+        })
+        if (res.status === 401) {
+          navigate('/login', { replace: true, state: { from: '/admin' } })
+          return
+        }
+        if (!res.ok) throw new Error('Could not save order')
+      } catch (err) {
+        setError(err.message)
+        loadProducts() // re-sync from server on failure
+      }
+    },
+    [navigate, loadProducts],
+  )
+
+  // Drop the dragged card into `toIndex` within the same category, persist,
+  // and optimistically update local order so the UI reflects it immediately.
+  const handleDrop = (cat, toIndex) => {
+    setDragOverIndex(null)
+    if (!drag || drag.cat !== cat) {
+      setDrag(null)
+      return
+    }
+    const group = groups.find((g) => g.cat === cat)
+    if (!group) {
+      setDrag(null)
+      return
+    }
+    const codes = group.items.map((p) => p.code)
+    const from = drag.index
+    if (from === toIndex) {
+      setDrag(null)
+      return
+    }
+    const [moved] = codes.splice(from, 1)
+    codes.splice(toIndex, 0, moved)
+    setOrder((prev) => ({ ...prev, [cat]: codes }))
+    setDrag(null)
+    saveOrder(cat, codes)
+  }
 
   useEffect(() => {
     if (!imageFile) {
@@ -139,6 +205,20 @@ export default function Admin() {
       document.body.style.overflow = prev
     }
   }, [logoutOpen, signingOut])
+
+  useEffect(() => {
+    if (!deleteTarget) return
+    const onKey = (e) => {
+      if (e.key === 'Escape' && !deleting) setDeleteTarget(null)
+    }
+    window.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [deleteTarget, deleting])
 
   const updateField = (key) => (e) =>
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -197,11 +277,10 @@ export default function Admin() {
 
   const cancelEdit = () => resetForm()
 
-  const deleteProduct = async (product) => {
-    const ok = window.confirm(
-      `Remove "${product.name}" (${product.code}) from the catalogue? You can restore it later from this page.`,
-    )
-    if (!ok) return
+  const confirmDelete = async () => {
+    const product = deleteTarget
+    if (!product) return
+    setDeleting(true)
     try {
       const res = await fetch(`/api/admin/products/${encodeURIComponent(product.code)}`, {
         method: 'DELETE',
@@ -217,8 +296,12 @@ export default function Admin() {
       }
       if (editingCode === product.code) resetForm()
       await loadProducts()
+      setDeleteTarget(null)
     } catch (err) {
       setError(err.message)
+      setDeleteTarget(null)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -350,67 +433,122 @@ export default function Admin() {
       <section className="border-b border-gray-200 py-10">
         <div className="mx-auto max-w-6xl px-6">
           <SectionTitle>
-            In the catalogue · {allProducts.length}
+            In the catalogue · {totalCount}
           </SectionTitle>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {allProducts.map((p) => {
-              const isEditing = editingCode === p.code
-              return (
-                <article
-                  key={p.code}
-                  className={`flex gap-4 rounded-lg border bg-white p-4 transition-colors ${
-                    isEditing
-                      ? 'border-[#f37022] ring-2 ring-[#f37022]/30'
-                      : 'border-gray-200 hover:border-gray-400'
-                  }`}
-                >
-                  <div className="relative h-24 w-24 flex-none overflow-hidden rounded-md bg-gray-100">
-                    {p.image ? (
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        className="absolute inset-0 h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-gray-400">
-                        No image
-                      </div>
-                    )}
-                    {p._source === 'override' && (
-                      <span className="absolute left-1.5 top-1.5 rounded bg-[#f37022] px-1.5 py-0.5 text-xs font-medium text-white">
-                        Edited
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <p className="truncate text-sm text-gray-500">{p.code}</p>
-                    <p className="mt-0.5 truncate text-base font-semibold text-gray-900">
-                      {p.name}
-                    </p>
-                    <p className="mt-0.5 truncate text-sm text-gray-500">
-                      {CAT_OPTIONS.find((c) => c.id === p.cat)?.label || p.cat}
-                    </p>
-                    <div className="mt-auto flex items-center gap-2 pt-3">
-                      <button
-                        type="button"
-                        onClick={() => enterEdit(p)}
-                        className="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[#f37022]"
+          <p className="-mt-2 mb-7 text-sm text-gray-500">
+            Drag any card to reorder it within its category. The new order saves
+            automatically and updates the public catalogue right away.
+          </p>
+
+          <div className="space-y-10">
+            {groups.map((group) => (
+              <div key={group.cat}>
+                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-gray-500">
+                  {group.label} · {group.items.length}
+                </h4>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.items.map((p, idx) => {
+                    const isEditing = editingCode === p.code
+                    const isDragging = drag?.cat === group.cat && drag?.index === idx
+                    const isDragOver =
+                      drag?.cat === group.cat &&
+                      dragOverIndex === idx &&
+                      drag?.index !== idx
+                    return (
+                      <article
+                        key={p.code}
+                        draggable
+                        onDragStart={(e) => {
+                          setDrag({ cat: group.cat, index: idx })
+                          e.dataTransfer.effectAllowed = 'move'
+                        }}
+                        onDragEnd={() => {
+                          setDrag(null)
+                          setDragOverIndex(null)
+                        }}
+                        onDragOver={(e) => {
+                          if (drag?.cat === group.cat) {
+                            e.preventDefault()
+                            setDragOverIndex(idx)
+                          }
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault()
+                          handleDrop(group.cat, idx)
+                        }}
+                        title="Drag to reorder"
+                        className={`flex cursor-grab gap-4 rounded-lg border bg-white p-4 transition-all active:cursor-grabbing ${
+                          isEditing
+                            ? 'border-[#f37022] ring-2 ring-[#f37022]/30'
+                            : 'border-gray-200 hover:border-gray-400'
+                        } ${isDragging ? 'opacity-40' : ''} ${
+                          isDragOver ? 'ring-2 ring-[#f37022]/50' : ''
+                        }`}
                       >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteProduct(p)}
-                        className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
+                        <div className="relative h-24 w-24 flex-none overflow-hidden rounded-md bg-gray-100">
+                          {p.image ? (
+                            <img
+                              src={p.image}
+                              alt={p.name}
+                              className="absolute inset-0 h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-sm text-gray-400">
+                              No image
+                            </div>
+                          )}
+                          {p._source === 'override' && (
+                            <span className="absolute left-1.5 top-1.5 rounded bg-[#f37022] px-1.5 py-0.5 text-xs font-medium text-white">
+                              Edited
+                            </span>
+                          )}
+                          <span
+                            className="absolute right-1.5 top-1.5 rounded bg-gray-900/85 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-white"
+                            title={`Position ${idx + 1} in ${group.label}`}
+                          >
+                            #{idx + 1}
+                          </span>
+                        </div>
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="truncate text-sm text-gray-500">{p.code}</p>
+                            <span
+                              aria-hidden
+                              className="select-none text-base leading-none text-gray-300"
+                            >
+                              ⠿
+                            </span>
+                          </div>
+                          <p className="mt-0.5 truncate text-base font-semibold text-gray-900">
+                            {p.name}
+                          </p>
+                          <p className="mt-0.5 truncate text-sm text-gray-500">
+                            {group.label}
+                          </p>
+                          <div className="mt-auto flex items-center gap-2 pt-3">
+                            <button
+                              type="button"
+                              onClick={() => enterEdit(p)}
+                              className="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[#f37022]"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget(p)}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
 
           {hiddenCodes.length > 0 && (
@@ -816,6 +954,61 @@ export default function Admin() {
                 className="rounded-md bg-[#f37022] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#d95f15] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {signingOut ? 'Signing out…' : 'Sign out'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleting && setDeleteTarget(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-title"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+            style={{ animation: 'fade-up 0.2s ease-out both' }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="mt-0.5 inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-red-100 text-red-600">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
+                  <path
+                    fill="currentColor"
+                    d="M9 3h6l1 2h5v2H3V5h5l1-2Zm-3 6h12l-1 12H7L6 9Zm4 2v8h1v-8h-1Zm3 0v8h1v-8h-1Z"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 id="delete-title" className="text-lg font-bold text-gray-900">
+                  Remove this machine?
+                </h3>
+                <p className="mt-1.5 text-sm text-gray-600">
+                  <span className="font-semibold text-gray-900">{deleteTarget.name}</span>{' '}
+                  <span className="text-gray-500">({deleteTarget.code})</span> will be taken off
+                  the public catalogue right away. You can restore it later from this page.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deleting ? 'Removing…' : 'Remove'}
               </button>
             </div>
           </div>

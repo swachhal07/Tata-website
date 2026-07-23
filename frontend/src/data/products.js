@@ -221,3 +221,22 @@ export const products = [
     pdf: pdfShinrai,
   },
 ]
+
+/**
+ * Order a list of products to match a saved list of codes (set by admin
+ * drag-and-drop). Products present in `codeOrder` are placed in that order;
+ * any product not in the list (e.g. just added) keeps its natural order and
+ * appears first, so new machines still surface at the top until placed.
+ */
+export function orderByList(items, codeOrder) {
+  if (!Array.isArray(codeOrder) || codeOrder.length === 0) return items
+  const rank = new Map(codeOrder.map((c, i) => [c, i]))
+  const known = []
+  const unknown = []
+  for (const p of items) {
+    if (rank.has(p.code)) known.push(p)
+    else unknown.push(p)
+  }
+  known.sort((a, b) => rank.get(a.code) - rank.get(b.code))
+  return [...unknown, ...known]
+}

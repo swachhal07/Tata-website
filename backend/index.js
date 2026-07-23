@@ -45,6 +45,18 @@ console.log(`[mongo] connected to ${MONGODB_DB}`)
 
 const CLOUDINARY_FOLDER = 'tata_hitachi'
 
+// Time an async operation and log how long it took. `label` groups the
+// timings under one request so slow saves are easy to spot in the logs.
+async function timed(label, fn) {
+  const start = process.hrtime.bigint()
+  try {
+    return await fn()
+  } finally {
+    const ms = Number(process.hrtime.bigint() - start) / 1e6
+    console.log(`[timing] ${label}: ${ms.toFixed(0)}ms`)
+  }
+}
+
 function uploadBuffer(buffer, { resourceType = 'auto', originalName }) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -145,6 +157,12 @@ async function readHiddenCodes() {
   return Array.isArray(doc?.codes) ? doc.codes : []
 }
 
+// Manual drag-and-drop ordering, stored as { _id: 'order', cats: { <cat>: [codes] } }.
+async function readOrder() {
+  const doc = await metaCol.findOne({ _id: 'order' })
+  return doc?.cats && typeof doc.cats === 'object' ? doc.cats : {}
+}
+
 async function setHidden(codeToAdd, codesToRemove = []) {
   const update = {}
   if (codesToRemove.length) update.$pull = { codes: { $in: codesToRemove } }
@@ -184,14 +202,15 @@ function parseBody(req) {
 
 app.get('/api/products', async (_req, res) => {
   try {
-    const [products, hidden] = await Promise.all([
+    const [products, hidden, order] = await Promise.all([
       productsCol
         .find({}, { projection: { _id: 0 } })
         .sort({ addedAt: -1 })
         .toArray(),
       readHiddenCodes(),
+      readOrder(),
     ])
-    res.json({ products, hidden })
+    res.json({ products, hidden, order })
   } catch (err) {
     console.error('[products] read failed', err)
     res.status(500).json({ error: 'Could not load products' })
@@ -222,15 +241,21 @@ app.post(
       const pdfFile = req.files?.pdf?.[0]
 
       const code = b.code.trim()
-      const conflict = await productsCol.findOne({ code }, { projection: { _id: 1 } })
+      const conflict = await timed('POST mongo.findOne(conflict)', () =>
+        productsCol.findOne({ code }, { projection: { _id: 1 } }),
+      )
       if (conflict) {
         return res.status(409).json({ error: `A product with code ${code} already exists` })
       }
 
-      const [imageResult, pdfResult] = await Promise.all([
-        imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
-        pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
-      ])
+      const [imageResult, pdfResult] = await timed(
+        `POST cloudinary.upload (image=${imageFile ? (imageFile.size / 1024).toFixed(0) + 'KB' : 'none'}, pdf=${pdfFile ? (pdfFile.size / 1024).toFixed(0) + 'KB' : 'none'})`,
+        () =>
+          Promise.all([
+            imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
+            pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
+          ]),
+      )
 
       const product = {
         code,
@@ -244,8 +269,8 @@ app.post(
       delete product.tags // re-added conditionally above
       if (parsed.tags.length) product.tags = parsed.tags
 
-      await productsCol.insertOne({ ...product })
-      await setHidden(null, [code])
+      await timed('POST mongo.insertOne', () => productsCol.insertOne({ ...product }))
+      await timed('POST mongo.setHidden', () => setHidden(null, [code]))
       res.json({ product })
     } catch (err) {
       console.error('[admin/products POST] failed', err)
@@ -279,26 +304,28 @@ app.put(
       const pdfFile = req.files?.pdf?.[0]
       const newCode = (b.code?.trim() || targetCode)
 
-      const existing = await productsCol.findOne(
-        { code: targetCode },
-        { projection: { _id: 0 } },
+      const existing = await timed('PUT mongo.findOne(existing)', () =>
+        productsCol.findOne({ code: targetCode }, { projection: { _id: 0 } }),
       )
 
       // If renaming code, ensure new code isn't taken
       if (newCode !== targetCode) {
-        const conflict = await productsCol.findOne(
-          { code: newCode },
-          { projection: { _id: 1 } },
+        const conflict = await timed('PUT mongo.findOne(conflict)', () =>
+          productsCol.findOne({ code: newCode }, { projection: { _id: 1 } }),
         )
         if (conflict) {
           return res.status(409).json({ error: `Code ${newCode} is already in use` })
         }
       }
 
-      const [imageResult, pdfResult] = await Promise.all([
-        imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
-        pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
-      ])
+      const [imageResult, pdfResult] = await timed(
+        `PUT cloudinary.upload (image=${imageFile ? (imageFile.size / 1024).toFixed(0) + 'KB' : 'none'}, pdf=${pdfFile ? (pdfFile.size / 1024).toFixed(0) + 'KB' : 'none'})`,
+        () =>
+          Promise.all([
+            imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
+            pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
+          ]),
+      )
 
       const product = {
         code: newCode,
@@ -314,13 +341,15 @@ app.put(
       if (parsed.tags.length) product.tags = parsed.tags
 
       if (existing) {
-        await productsCol.replaceOne({ code: targetCode }, { ...product })
+        await timed('PUT mongo.replaceOne', () =>
+          productsCol.replaceOne({ code: targetCode }, { ...product }),
+        )
       } else {
-        await productsCol.insertOne({ ...product })
+        await timed('PUT mongo.insertOne', () => productsCol.insertOne({ ...product }))
       }
 
       // Editing un-hides the code; if renamed, also un-hide new code
-      await setHidden(null, [targetCode, newCode])
+      await timed('PUT mongo.setHidden', () => setHidden(null, [targetCode, newCode]))
 
       res.json({ product })
     } catch (err) {
@@ -340,6 +369,28 @@ app.delete('/api/admin/products/:code', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('[admin/products DELETE] failed', err)
     res.status(500).json({ error: 'Could not delete' })
+  }
+})
+
+// Save the drag-and-drop order for one category: { cat, codes: [...] }
+app.put('/api/admin/order', requireAuth, async (req, res) => {
+  try {
+    const { cat, codes } = req.body || {}
+    if (typeof cat !== 'string' || !cat.trim() || !Array.isArray(codes)) {
+      return res.status(400).json({ error: 'cat and codes[] are required' })
+    }
+    const clean = codes
+      .filter((c) => typeof c === 'string' && c.trim())
+      .map((c) => c.trim())
+    await metaCol.updateOne(
+      { _id: 'order' },
+      { $set: { [`cats.${cat.trim()}`]: clean } },
+      { upsert: true },
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[admin/order PUT] failed', err)
+    res.status(500).json({ error: 'Could not save order' })
   }
 })
 
