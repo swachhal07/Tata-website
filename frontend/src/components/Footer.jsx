@@ -87,9 +87,9 @@ export default function Footer() {
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">Sales</span>
                 <span>
                   +977{' '}
-                  <a href="tel:+9779801007228" className="transition-colors hover:text-[#f37022]">9801007228</a>
+                  <a href="tel:+9779802591430" className="transition-colors hover:text-[#f37022]">9802591430</a>
                   {' / '}
-                  <a href="tel:+9779712010558" className="transition-colors hover:text-[#f37022]">9712010558</a>
+                  <a href="tel:+9779801571065" className="transition-colors hover:text-[#f37022]">9801571065</a>
                 </span>
               </li>
               <li className="flex items-start gap-3">

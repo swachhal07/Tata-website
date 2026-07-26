@@ -419,16 +419,16 @@ export default function Contact() {
                     Sales
                   </p>
                   <a
-                    href="tel:+9779801007228"
+                    href="tel:+9779802591430"
                     className="mt-1 block text-xl font-bold text-white transition-colors hover:text-[#f37022]"
                   >
-                    +977 9801007228
+                    +977 9802591430
                   </a>
                   <a
-                    href="tel:+9779712010558"
+                    href="tel:+9779801571065"
                     className="mt-1 block text-xl font-bold text-white transition-colors hover:text-[#f37022]"
                   >
-                    +977 9712010558
+                    +977 9801571065
                   </a>
                 </div>
 
@@ -672,10 +672,10 @@ export default function Contact() {
               Need help reaching a remote site?
             </p>
             <a
-              href="tel:+9779801007228"
+              href="tel:+9779802591430"
               className="group inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-black transition-colors hover:text-[#f37022]"
             >
-              Call sales · +977 9801007228
+              Call sales · +977 9802591430
               <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
             </a>
           </div>

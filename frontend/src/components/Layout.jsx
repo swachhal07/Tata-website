@@ -22,8 +22,8 @@ class PageErrorBoundary extends Component {
           </h1>
           <p className="mt-5 text-base leading-relaxed text-gray-700">
             Please try refreshing. For anything urgent, call{' '}
-            <a href="tel:+9779801007228" className="font-bold text-black underline decoration-[#f37022] underline-offset-4 hover:text-[#f37022]">
-              +977 9801007228
+            <a href="tel:+9779802591430" className="font-bold text-black underline decoration-[#f37022] underline-offset-4 hover:text-[#f37022]">
+              +977 9802591430
             </a>{' '}
             or email{' '}
             <a href="mailto:sales.tatahitachinp@gmail.com" className="font-bold text-black underline decoration-[#f37022] underline-offset-4 hover:text-[#f37022]">
