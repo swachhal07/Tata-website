@@ -67,7 +67,7 @@ export default function HeroSlideshow() {
   }
 
   return (
-    <section className="relative h-screen w-full overflow-hidden text-white">
+    <section className="relative h-[calc(100vh-61px)] w-full overflow-hidden text-white md:h-[calc(100vh-81px)]">
       {slides.map((slide, i) => (
         <div
           key={i}
@@ -108,7 +108,7 @@ export default function HeroSlideshow() {
         </div>
       ))}
 
-      {/* Arrows — manual navigation only (no auto-advance) */}
+      {/* Arrows - manual navigation only (no auto-advance) */}
       <button
         onClick={() => setIndex((i) => (i - 1 + slides.length) % slides.length)}
         aria-label="Previous slide"

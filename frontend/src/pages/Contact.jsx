@@ -1,5 +1,6 @@
-import { Component, useState } from 'react'
+import { Component, useEffect, useMemo, useState } from 'react'
 import { Map, MapMarker, MapControls, MarkerContent } from '../components/MapLibre'
+import { seedLocations, splitLocations } from '../data/locations'
 
 class MapErrorBoundary extends Component {
   state = { hasError: false }
@@ -21,41 +22,31 @@ const interests = [
   'Something else',
 ]
 
-const offices = [
-  { city: 'Jeetpur',    activeFor: 'Service & Parts', coordinator: 'Sahzad Ansari',    phone: '9802919537' },
-  { city: 'Biratnagar', activeFor: 'Service & Parts', coordinator: 'Jakir Hussain',    phone: '9801558692' },
-  { city: 'Bardibaas',  activeFor: 'Service',         coordinator: 'Jakir Hussain',    phone: '9801558692' },
-  { city: 'Kathmandu',  activeFor: 'Service & Parts', coordinator: 'Rupesh Mahato',    phone: '9800018809' },
-  { city: 'Nepalgunj',  activeFor: 'Service & Parts', coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
-  { city: 'Dhangadi',   activeFor: 'Service',         coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
-  { city: 'Surkhet',    activeFor: 'Service',         coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
-  { city: 'Dang',       activeFor: 'Service',         coordinator: 'Rahul Kumar Jha',  phone: '9802573217' },
-  { city: 'Pokhara',    activeFor: 'Service & Parts', coordinator: 'Dipendra Paudel',  phone: '9802773245' },
-  { city: 'Butwal',     activeFor: 'Service',         coordinator: 'Dipendra Paudel',  phone: '9802773245' },
-]
+/* The branch network is managed from the admin console and served by
+ * `GET /api/locations`; the bundled seed list is the fallback if that
+ * request fails. */
+function useLocations() {
+  const [locations, setLocations] = useState(seedLocations)
 
-const salesTeam = [
-  { branch: 'Biratnagar', name: 'Jagarnath Sah',    phone: '9801500928' },
-  { branch: 'Birgunj',    name: 'Binod Manandhar',  phone: '9705475443' },
-  { branch: 'Birgunj',    name: 'Bikendra Subedi',  phone: '9802058089' },
-  { branch: 'Pokhara',    name: 'Amrit Bhujel',     phone: '9802855225' },
-  { branch: 'Nepalgunj',  name: 'Aman Raj Sidiqi',  phone: '9704589586' },
-  { branch: 'Kathmandu',  name: 'Prem Lama',        phone: '9801007228' },
-  { branch: 'Kathmandu',  name: 'Suman Pujari',     phone: '9812010556' },
-]
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/locations')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad response'))))
+      .then((d) => {
+        if (!cancelled && Array.isArray(d.locations) && d.locations.length) {
+          setLocations(d.locations)
+        }
+      })
+      .catch(() => {
+        /* keep the seed list */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
-const serviceLocations = [
-  { city: 'Biratnagar', lat: 26.4525, lng: 87.2718, labelOffset: 'right' },
-  { city: 'Jeetpur',    lat: 27.2167, lng: 84.9667, labelOffset: 'down'  },
-  { city: 'Bardibaas',  lat: 26.9833, lng: 85.9000, labelOffset: 'down'  },
-  { city: 'Kathmandu',  lat: 27.7172, lng: 85.3240, labelOffset: 'up'    },
-  { city: 'Pokhara',    lat: 28.2096, lng: 83.9856, labelOffset: 'up'    },
-  { city: 'Butwal',     lat: 27.7000, lng: 83.4486, labelOffset: 'down'  },
-  { city: 'Dang',       lat: 28.0333, lng: 82.4833, labelOffset: 'down'  },
-  { city: 'Surkhet',    lat: 28.6000, lng: 81.6333, labelOffset: 'up'    },
-  { city: 'Nepalgunj',  lat: 28.0500, lng: 81.6167, labelOffset: 'left'  },
-  { city: 'Dhangadi',   lat: 28.6953, lng: 80.5898, labelOffset: 'down'  },
-]
+  return useMemo(() => splitLocations(locations), [locations])
+}
 
 function NetworkMap({ locations }) {
   return (
@@ -83,12 +74,12 @@ function NetworkMap({ locations }) {
               b.labelOffset === 'up'
                 ? 'bottom-full left-1/2 mb-6 -translate-x-1/2'
                 : b.labelOffset === 'down'
-                ? 'top-full left-1/2 mt-2 -translate-x-1/2'
-                : b.labelOffset === 'left'
-                ? 'right-full top-1/2 mr-2 -translate-y-1/2'
-                : 'left-full top-1/2 ml-2 -translate-y-1/2'
+                  ? 'top-full left-1/2 mt-2 -translate-x-1/2'
+                  : b.labelOffset === 'left'
+                    ? 'right-full top-1/2 mr-2 -translate-y-1/2'
+                    : 'left-full top-1/2 ml-2 -translate-y-1/2'
             return (
-              <MapMarker key={b.city} longitude={b.lng} latitude={b.lat}>
+              <MapMarker key={b.id ?? b.city} longitude={b.lng} latitude={b.lat}>
                 <MarkerContent>
                   <div className="relative">
                     <span className="pointer-events-none absolute inset-0 -m-1.5 animate-ping rounded-full bg-[#f37022] opacity-40" />
@@ -137,7 +128,7 @@ function SuccessState({ onReset }) {
       </h3>
       <p className="mt-5 max-w-md text-base leading-relaxed text-gray-600">
         Our team in Kathmandu will be in touch within one working day. For
-        anything urgent — a machine down on site, a part you need today —
+        anything urgent, like a machine down on site or a part you need today,
         call us directly on the number on the right.
       </p>
       <button
@@ -152,6 +143,7 @@ function SuccessState({ onReset }) {
 }
 
 export default function Contact() {
+  const { salesTeam, offices, mapPins } = useLocations()
   const [form, setForm] = useState({
     name: '',
     company: '',
@@ -239,7 +231,7 @@ export default function Contact() {
               </div>
               <p className="max-w-md text-base leading-relaxed text-gray-700 md:text-lg">
                 Whether you're sizing a fleet for a hydropower project,
-                booking a service visit, or sourcing genuine parts — our team
+                booking a service visit, or sourcing genuine parts, our team
                 in Kathmandu answers the phone and gets back to you the same day.
               </p>
             </div>
@@ -302,7 +294,7 @@ export default function Contact() {
                         required
                         inputMode="tel"
                         pattern="[0-9+\s-]{7,15}"
-                        title="Digits only — at least 7 numbers"
+                        title="Digits only, at least 7 numbers"
                         value={form.phone}
                         onChange={update('phone')}
                         placeholder="+977 98•••••••"
@@ -394,7 +386,7 @@ export default function Contact() {
               )}
             </div>
 
-            {/* ── Info panel — black slab ── */}
+            {/* ── Info panel - black slab ── */}
             <aside
               className="relative self-start bg-black p-8 text-white md:p-10 lg:sticky lg:top-28"
               style={{ animation: 'fade-up 0.7s ease-out 0.4s both' }}
@@ -458,15 +450,15 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Hours — control-panel style */}
+              {/* Hours - control-panel style */}
               <div className="mt-8 border-t border-white/10 pt-8">
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                   Hours
                 </p>
                 <ul className="mt-4 space-y-2.5 text-sm tabular-nums">
                   <li className="flex items-baseline justify-between">
-                    <span className="text-white">Sun — Fri</span>
-                    <span className="font-bold text-[#f37022]">09:30 — 18:30</span>
+                    <span className="text-white">Sun to Fri</span>
+                    <span className="font-bold text-[#f37022]">09:30 to 18:30</span>
                   </li>
                   <li className="flex items-baseline justify-between">
                     <span className="text-gray-500">Saturday</span>
@@ -503,7 +495,7 @@ export default function Contact() {
                 Find us
               </div>
               <h3 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-black md:text-5xl">
-                Our showroom.{' '}
+                Our Office.{' '}
                 <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
                   In Kathmandu.
                 </span>
@@ -511,7 +503,7 @@ export default function Contact() {
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-gray-600 sm:text-right">
               On the ring road in Balaju, north Kathmandu. Walk-ins welcome
-              during business hours — or call ahead to schedule a meeting
+              during business hours, or call ahead to schedule a meeting
               with our sales team.
             </p>
           </div>
@@ -520,7 +512,7 @@ export default function Contact() {
             <span className="pointer-events-none absolute left-0 top-0 z-10 h-1 w-32 bg-[#f37022]" />
             <iframe
               title="Dugar Earthmovers Pvt. Ltd. showroom location, Kathmandu"
-              src="https://maps.google.com/maps?q=27.7300363,85.3020595&hl=en&z=17&output=embed"
+              src="https://maps.google.com/maps?q=27.7290605,85.3013446&hl=en&z=18&output=embed"
               width="100%"
               height="520"
               loading="lazy"
@@ -531,7 +523,7 @@ export default function Contact() {
 
           <div className="mt-8 flex justify-center">
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=27.7300363,85.3020595"
+              href="https://www.google.com/maps/dir/?api=1&destination=27.7290605,85.3013446"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-3 border border-gray-800 bg-white px-7 py-4 text-xs font-bold uppercase tracking-[0.28em] text-gray-900 transition-colors hover:border-[#f37022] hover:bg-[#f37022] hover:text-white"
@@ -565,7 +557,7 @@ export default function Contact() {
             <p className="max-w-xl text-base leading-relaxed text-gray-700 lg:justify-self-end lg:text-right">
               Service centres and field-deployable technicians in every major
               region. A machine on site is never more than a day's reach from
-              help — wherever you're working.
+              help, wherever you're working.
             </p>
           </div>
 
@@ -581,17 +573,17 @@ export default function Contact() {
           <MapErrorBoundary
             fallback={
               <div className="mb-14 flex h-[320px] items-center justify-center border border-gray-300 bg-white text-xs font-bold uppercase tracking-[0.28em] text-gray-500">
-                Service network map unavailable — see locations below
+                Service network map unavailable. See locations below
               </div>
             }
           >
-            <NetworkMap locations={serviceLocations} />
+            <NetworkMap locations={mapPins} />
           </MapErrorBoundary>
 
           <div className="mb-16 grid grid-cols-2 border-l border-t border-gray-300 md:grid-cols-3 lg:grid-cols-5">
             {salesTeam.map((s, i) => (
               <div
-                key={`${s.branch}-${s.name}`}
+                key={s.id ?? `${s.city}-${s.contact}`}
                 className="group relative flex flex-col border-b border-r border-gray-300 bg-[#f7f5f0] p-6 transition-colors hover:bg-white"
               >
                 <div className="mb-5 flex items-center justify-between">
@@ -603,10 +595,10 @@ export default function Contact() {
                   </span>
                 </div>
                 <p className="text-xl font-black uppercase leading-none tracking-tight text-black">
-                  {s.branch}
+                  {s.city}
                 </p>
                 <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
-                  Sales
+                  {s.contact || s.label || 'Sales'}
                 </p>
                 <div className="mt-auto pt-5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
@@ -618,6 +610,16 @@ export default function Contact() {
                   >
                     {s.phone}
                   </a>
+                  {s.mapUrl && (
+                    <a
+                      href={s.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500 transition-colors hover:text-[#f37022]"
+                    >
+                      Directions ↗
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -635,7 +637,7 @@ export default function Contact() {
           <div className="grid grid-cols-2 gap-px overflow-hidden border border-gray-300 bg-gray-300 md:grid-cols-3 lg:grid-cols-5">
             {offices.map((o, i) => (
               <div
-                key={o.city}
+                key={o.id ?? o.city}
                 className="group relative flex flex-col bg-[#f7f5f0] p-6 transition-colors hover:bg-white"
               >
                 <div className="mb-5 flex items-center justify-between">
@@ -650,7 +652,7 @@ export default function Contact() {
                   {o.city}
                 </p>
                 <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
-                  {o.activeFor}
+                  {o.label}
                 </p>
                 <div className="mt-auto pt-5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-400">
@@ -662,6 +664,16 @@ export default function Contact() {
                   >
                     {o.phone}
                   </a>
+                  {o.mapUrl && (
+                    <a
+                      href={o.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500 transition-colors hover:text-[#f37022]"
+                    >
+                      Directions ↗
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

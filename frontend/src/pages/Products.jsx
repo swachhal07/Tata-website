@@ -28,7 +28,7 @@ function BrochureGate({ product, onClose }) {
     setSubmitting(true)
     setError('')
 
-    // Fire-and-forget lead capture — never block the brochure on mail delivery.
+    // Fire-and-forget lead capture - never block the brochure on mail delivery.
     fetch('/api/send-mail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -72,7 +72,7 @@ function BrochureGate({ product, onClose }) {
           A quick intro before you download.
         </h3>
         <p className="mt-3 text-sm leading-relaxed text-gray-600">
-          We share the full PDF in seconds — and our sales team gets in touch
+          We share the full PDF in seconds, and our sales team gets in touch
           if you'd like a yard visit or pricing.
         </p>
 
@@ -98,7 +98,7 @@ function BrochureGate({ product, onClose }) {
               required
               inputMode="tel"
               pattern="[0-9+\s-]{7,15}"
-              title="Digits only — at least 7 numbers"
+              title="Digits only, at least 7 numbers"
               value={form.phone}
               onChange={update('phone')}
               className="mt-2 block w-full border-0 border-b border-gray-300 bg-transparent pb-2 text-base text-black focus:border-black focus:outline-none"

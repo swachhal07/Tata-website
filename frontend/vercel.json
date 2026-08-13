@@ -2,6 +2,10 @@
   "rewrites": [
     { "source": "/api/products",            "destination": "https://tata-website.onrender.com/api/products" },
     { "source": "/api/products/:path*",     "destination": "https://tata-website.onrender.com/api/products/:path*" },
+    { "source": "/api/locations",           "destination": "https://tata-website.onrender.com/api/locations" },
+    { "source": "/api/people",              "destination": "https://tata-website.onrender.com/api/people" },
+    { "source": "/api/posts",               "destination": "https://tata-website.onrender.com/api/posts" },
+    { "source": "/api/posts/:path*",        "destination": "https://tata-website.onrender.com/api/posts/:path*" },
     { "source": "/api/admin/:path*",        "destination": "https://tata-website.onrender.com/api/admin/:path*" },
     { "source": "/api/login",               "destination": "https://tata-website.onrender.com/api/login" },
     { "source": "/api/logout",              "destination": "https://tata-website.onrender.com/api/logout" },

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { products as seedProducts, orderByList } from '../data/products'
+import AdminShell from '../components/AdminShell'
 
 const CAT_OPTIONS = [
   { id: 'excavators', label: 'Excavators' },
@@ -54,7 +55,6 @@ function SectionTitle({ children, action }) {
 
 export default function Admin() {
   const navigate = useNavigate()
-  const [authChecked, setAuthChecked] = useState(false)
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [specs, setSpecs] = useState(
@@ -74,26 +74,11 @@ export default function Admin() {
   const [order, setOrder] = useState({})
   const [drag, setDrag] = useState(null) // { cat, index }
   const [dragOverIndex, setDragOverIndex] = useState(null)
-  const [logoutOpen, setLogoutOpen] = useState(false)
-  const [signingOut, setSigningOut] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const imgInputRef = useRef(null)
   const pdfInputRef = useRef(null)
   const formRef = useRef(null)
-
-  useEffect(() => {
-    fetch('/api/me', { credentials: 'include' })
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d.admin) {
-          navigate('/login', { replace: true, state: { from: '/admin' } })
-        } else {
-          setAuthChecked(true)
-        }
-      })
-      .catch(() => navigate('/login', { replace: true, state: { from: '/admin' } }))
-  }, [navigate])
 
   const loadProducts = useCallback(async () => {
     try {
@@ -109,8 +94,8 @@ export default function Admin() {
   }, [])
 
   useEffect(() => {
-    if (authChecked) loadProducts()
-  }, [authChecked, loadProducts])
+    loadProducts()
+  }, [loadProducts])
 
   // Products grouped by category, each ordered by the saved drag order.
   // Rendered as draggable sections; `totalCount` drives the header count.
@@ -191,20 +176,6 @@ export default function Admin() {
     setImagePreview(url)
     return () => URL.revokeObjectURL(url)
   }, [imageFile])
-
-  useEffect(() => {
-    if (!logoutOpen) return
-    const onKey = (e) => {
-      if (e.key === 'Escape' && !signingOut) setLogoutOpen(false)
-    }
-    window.addEventListener('keydown', onKey)
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prev
-    }
-  }, [logoutOpen, signingOut])
 
   useEffect(() => {
     if (!deleteTarget) return
@@ -367,71 +338,41 @@ export default function Admin() {
     }
   }
 
-  const confirmLogout = async () => {
-    setSigningOut(true)
-    await fetch('/api/logout', { method: 'POST', credentials: 'include' })
-    navigate('/login', { replace: true })
-  }
-
-  if (!authChecked) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-50">
-        <p className="text-base text-gray-500">Verifying session…</p>
-      </main>
-    )
-  }
+  const jumpToForm = () =>
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   return (
-    <main className="min-h-screen bg-gray-50 text-gray-900">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-          <div className="flex items-center gap-3">
-            <span className="block h-7 w-1 rounded-sm bg-[#f37022]" aria-hidden />
-            <div>
-              <p className="text-sm text-gray-500">Admin</p>
-              <p className="text-base font-semibold text-gray-900">Tata Hitachi · Dugar</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link
-              to="/products"
-              target="_blank"
-              className="hidden text-sm font-medium text-gray-600 transition-colors hover:text-[#f37022] sm:block"
-            >
-              View catalogue ↗
-            </Link>
-            <button
-              type="button"
-              onClick={() => setLogoutOpen(true)}
-              className="rounded-lg border border-gray-300 bg-white px-3.5 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Page intro */}
-      <section className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-10">
-          <p className="text-sm font-medium text-[#f37022]">
-            {editingCode ? `Editing ${editingCode}` : 'Manage products'}
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {editingCode ? 'Edit machine' : 'Catalogue'}
-          </h1>
-          <p className="mt-3 max-w-xl text-base text-gray-600">
-            {editingCode
-              ? 'Make your changes below. Saving updates the public catalogue immediately.'
-              : 'Add new machines, or edit and remove anything in the catalogue. Changes go live instantly.'}
-          </p>
-        </div>
-      </section>
-
+    <AdminShell
+      eyebrow={editingCode ? `Editing ${editingCode}` : 'Catalogue'}
+      title={editingCode ? 'Edit machine' : 'Products'}
+      description={
+        editingCode
+          ? 'Make your changes below. Saving updates the public catalogue immediately.'
+          : 'Add new machines, or edit and remove anything in the catalogue. Changes go live instantly.'
+      }
+      meta={`${totalCount} machines · ${groups.length} categories`}
+      actions={
+        <>
+          <Link
+            to="/products"
+            target="_blank"
+            className="hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 sm:inline-block"
+          >
+            View catalogue ↗
+          </Link>
+          <button
+            type="button"
+            onClick={jumpToForm}
+            className="rounded-md bg-[#f37022] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#d95f15]"
+          >
+            {editingCode ? 'Go to form' : '+ Add a machine'}
+          </button>
+        </>
+      }
+    >
       {/* Existing products */}
-      <section className="border-b border-gray-200 py-10">
-        <div className="mx-auto max-w-6xl px-6">
+      <section className="pb-10">
+        <div>
           <SectionTitle>
             In the catalogue · {totalCount}
           </SectionTitle>
@@ -578,8 +519,8 @@ export default function Admin() {
       </section>
 
       {/* Form */}
-      <section className="py-10" ref={formRef}>
-        <div className="mx-auto max-w-6xl px-6">
+      <section className="scroll-mt-6 border-t border-gray-200 pt-10" ref={formRef}>
+        <div>
           {success && (
             <div className="mb-8 flex items-start gap-3 rounded-lg border border-[#f37022]/30 bg-orange-50 p-4">
               <div className="mt-0.5 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#f37022] text-white">
@@ -632,7 +573,7 @@ export default function Admin() {
             onSubmit={submit}
             className="grid grid-cols-1 gap-8 rounded-xl border border-gray-200 bg-white p-6 sm:p-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12 lg:p-10"
           >
-            {/* LEFT — fields */}
+            {/* LEFT - fields */}
             <div className="space-y-9">
               <div>
                 <SectionTitle>Identity</SectionTitle>
@@ -790,7 +731,7 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* RIGHT — media + submit */}
+            {/* RIGHT - media + submit */}
             <div className="space-y-8 lg:sticky lg:top-24 lg:self-start">
               <div>
                 <SectionTitle>Media</SectionTitle>
@@ -849,7 +790,7 @@ export default function Admin() {
                 )}
 
                 <div className="mt-5">
-                  <Field label="Brochure PDF" hint="Optional — shown when buyers click 'View brochure'.">
+                  <Field label="Brochure PDF" hint="Optional. Shown when buyers click 'View brochure'.">
                     <div className="flex items-center gap-3">
                       <input
                         ref={pdfInputRef}
@@ -906,60 +847,6 @@ export default function Admin() {
         </div>
       </section>
 
-      {logoutOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          onClick={() => !signingOut && setLogoutOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="logout-title"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
-            style={{ animation: 'fade-up 0.2s ease-out both' }}
-          >
-            <div className="flex items-start gap-4">
-              <div className="mt-0.5 inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-orange-100 text-[#f37022]">
-                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
-                  <path
-                    fill="currentColor"
-                    d="M15 4v2H5v12h10v2H3V4h12Zm4.293 4.293 4 4-4 4-1.414-1.414L20.172 12H9v-2h11.172l-2.293-2.293 1.414-1.414Z"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 id="logout-title" className="text-lg font-bold text-gray-900">
-                  Sign out of the console?
-                </h3>
-                <p className="mt-1.5 text-sm text-gray-600">
-                  You'll need to enter the admin email and password again to make
-                  more changes. Your work in the form will be lost.
-                </p>
-              </div>
-            </div>
-            <div className="mt-6 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setLogoutOpen(false)}
-                disabled={signingOut}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 disabled:opacity-60"
-              >
-                Stay signed in
-              </button>
-              <button
-                type="button"
-                onClick={confirmLogout}
-                disabled={signingOut}
-                className="rounded-md bg-[#f37022] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#d95f15] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {signingOut ? 'Signing out…' : 'Sign out'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {deleteTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -1014,6 +901,6 @@ export default function Admin() {
           </div>
         </div>
       )}
-    </main>
+    </AdminShell>
   )
 }

@@ -17,7 +17,7 @@ export default function Login() {
       .then((d) => {
         if (d.admin) navigate(from, { replace: true })
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [from, navigate])
 
   const submit = async (e) => {
@@ -72,7 +72,7 @@ export default function Login() {
       </div>
 
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-65px)] max-w-[1400px] grid-cols-1 items-center gap-12 px-6 py-12 md:px-12 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
-        {/* Left — headline */}
+        {/* Left - headline */}
         <div style={{ animation: 'fade-up 0.7s ease-out both' }}>
           <p className="mb-6 font-mono text-[11px] font-bold uppercase tracking-[0.32em] text-[#f37022]">
             / Admin access
@@ -94,7 +94,7 @@ export default function Login() {
           <div className="mt-12 grid max-w-md grid-cols-3 border-l border-t border-black/15">
             {[
               ['Network', '10 branches'],
-              ['Est.', '1995'],
+              ['Est.', '2020'],
               ['Region', 'Nepal'],
             ].map(([k, v]) => (
               <div
@@ -112,7 +112,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right — card */}
+        {/* Right - card */}
         <div
           className="relative bg-white p-8 md:p-12"
           style={{

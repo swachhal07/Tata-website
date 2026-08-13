@@ -53,7 +53,10 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         // Admin + products endpoints live on the Express backend
-        '/api/products': { target: API_TARGET, changeOrigin: true },
+        '/api/products':  { target: API_TARGET, changeOrigin: true },
+        '/api/locations': { target: API_TARGET, changeOrigin: true },
+        '/api/people':    { target: API_TARGET, changeOrigin: true },
+        '/api/posts':     { target: API_TARGET, changeOrigin: true },
         '/api/admin':    { target: API_TARGET, changeOrigin: true },
         '/api/login':    { target: API_TARGET, changeOrigin: true },
         '/api/logout':   { target: API_TARGET, changeOrigin: true },

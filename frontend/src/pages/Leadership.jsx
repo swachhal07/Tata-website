@@ -1,22 +1,38 @@
-import boardMotiLal from '../assets/af0b8ecf-4ddc-41f9-9dd1-ba5c0df1b212.webp'
-import boardVivek from '../assets/ae68fbad-4028-45aa-81d5-44d526f4f5af.webp'
-import boardShubham from '../assets/af5ea000-e8c5-4f03-ac64-9fd3a8bb8009.webp'
-import boardNaman from '../assets/eb7eb529-8d15-4359-8ac0-df51b7393d00.webp'
-import mgmtNiraj from '../assets/_MG_7984.jpg.jpeg'
-import mgmtDipu from '../assets/IMG_5717.JPG.jpeg'
+import { useEffect, useMemo, useState } from 'react'
+import { seedPeople, photoFor } from '../data/people'
 
-const boardDirectors = [
-  { index: '01', name: 'Moti Lal Dugar', role: 'Chairman', photo: boardMotiLal },
-  { index: '02', name: 'Vivek Dugar', role: 'Vice Chairman', photo: boardVivek },
-  { index: '03', name: 'Shubham Dugar', role: 'Director', photo: boardShubham },
-  { index: '04', name: 'Naman Dugar', role: 'Director', photo: boardNaman },
-]
+/* The roster is managed from the admin console (`/admin/people`) and
+ * served by `GET /api/people`; the bundled seed is the fallback. */
+function useTeam() {
+  const [people, setPeople] = useState(seedPeople)
 
-// Photos to be supplied — import above and set `photo` to swap the initials.
-const managementTeam = [
-  { index: '01', name: 'Niraj Sapkota', role: 'Business Head', photo: mgmtNiraj },
-  { index: '02', name: 'Dipu Kumar Singh', role: 'Head — After Sales', photo: mgmtDipu },
-]
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/people')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad response'))))
+      .then((d) => {
+        if (!cancelled && Array.isArray(d.people) && d.people.length) setPeople(d.people)
+      })
+      .catch(() => {
+        /* keep the seed roster */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return useMemo(
+    () => ({
+      boardDirectors: people.filter((p) => p.kind === 'board'),
+      managementTeam: people.filter((p) => p.kind === 'management'),
+    }),
+    [people],
+  )
+}
+
+function range(items) {
+  return items.length ? `01 - ${String(items.length).padStart(2, '0')}` : '-'
+}
 
 function splitName(name) {
   const parts = name.split(' ')
@@ -33,17 +49,18 @@ function initials(name) {
     .toUpperCase()
 }
 
-function PersonCard({ person, delay }) {
+function PersonCard({ person, index, delay }) {
   const { first, surname } = splitName(person.name)
+  const photo = photoFor(person)
   return (
     <article
       className="group relative overflow-hidden bg-[#1a1714] shadow-[0_22px_45px_-26px_rgba(60,40,20,0.55)] ring-1 ring-black/5"
       style={{ animation: `fade-up 0.6s ease-out ${delay}s both` }}
     >
       <div className="relative aspect-[3/4]">
-        {person.photo ? (
+        {photo ? (
           <img
-            src={person.photo}
+            src={photo}
             alt={person.name}
             className="absolute inset-0 h-full w-full object-cover object-[50%_20%] brightness-[0.92] transition-[transform,filter] duration-[900ms] ease-out group-hover:scale-[1.05] group-hover:brightness-[1.04]"
           />
@@ -67,7 +84,7 @@ function PersonCard({ person, delay }) {
 
         {/* Index numeral */}
         <span className="absolute right-4 top-4 font-mono text-[11px] font-bold tabular-nums tracking-[0.2em] text-white/45 transition-colors duration-500 group-hover:text-[#f37022]">
-          {person.index}
+          {index}
         </span>
 
         {/* Top orange hairline draws in on hover */}
@@ -127,6 +144,8 @@ function SectionIntro({ kicker, lead, accent, range }) {
 }
 
 export default function Leadership() {
+  const { boardDirectors, managementTeam } = useTeam()
+
   return (
     <main className="bg-white">
       {/* ─── Hero ─────────────────────────────────────────────── */}
@@ -157,10 +176,10 @@ export default function Leadership() {
               </span>
             </h1>
             <p className="mt-9 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">
-              Three generations of family leadership have guided Dugar
+              Five generations of family leadership have guided Dugar
               Earthmovers from a single dealership into Nepal's trusted Tata
-              Hitachi partner — with the same long-term view that has defined
-              the business since 1995.
+              Hitachi partner, with the same long-term view that has defined
+              the business since 2020.
             </p>
           </div>
         </div>
@@ -175,11 +194,16 @@ export default function Leadership() {
               kicker="Board of Directors"
               lead="Guided by"
               accent="family."
-              range="01 — 04"
+              range={range(boardDirectors)}
             />
             <div className="grid grid-cols-2 gap-5 sm:gap-6 lg:grid-cols-4">
               {boardDirectors.map((d, i) => (
-                <PersonCard key={d.name} person={d} delay={0.08 * i} />
+                <PersonCard
+                  key={d.id ?? d.name}
+                  person={d}
+                  index={String(i + 1).padStart(2, '0')}
+                  delay={0.08 * i}
+                />
               ))}
             </div>
           </div>
@@ -192,11 +216,16 @@ export default function Leadership() {
               kicker="Management Team"
               lead="Running the"
               accent="day-to-day."
-              range="01 — 02"
+              range={range(managementTeam)}
             />
             <div className="mx-auto grid max-w-3xl grid-cols-2 gap-5 sm:gap-6">
               {managementTeam.map((m, i) => (
-                <PersonCard key={m.name} person={m} delay={0.08 * i} />
+                <PersonCard
+                  key={m.id ?? m.name}
+                  person={m}
+                  index={String(i + 1).padStart(2, '0')}
+                  delay={0.08 * i}
+                />
               ))}
             </div>
           </div>

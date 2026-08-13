@@ -3,7 +3,7 @@ import { useState } from 'react'
 const faqs = [
   {
     q: 'What warranty comes with a new Tata Hitachi machine?',
-    a: 'Every new machine ships with a standard manufacturer warranty covering structural components and major hydraulic systems. Extended warranty packages are available — speak to your Dugar sales contact for the option that fits your fleet usage.',
+    a: 'Every new machine ships with a standard manufacturer warranty covering structural components and major hydraulic systems. Extended warranty packages are available. Speak to your Dugar sales contact for the option that fits your fleet usage.',
   },
   {
     q: 'How do I schedule a service visit?',
@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: 'Where are your service centres located?',
-    a: 'Ten branches across seven provinces — Kathmandu (HQ), Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang, and Butwal. Each runs a factory-trained technician team that can be on a project site within 24 hours. For sites further out, we deploy field crews on demand.',
+    a: 'Ten branches across seven provinces: Kathmandu (HQ), Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang, and Butwal. Each runs a factory-trained technician team that can be on a project site within 24 hours. For sites further out, we deploy field crews on demand.',
   },
   {
     q: 'Is operator training included at the time of delivery?',
@@ -75,7 +75,7 @@ export default function Faqs() {
     <section className="bg-[#f7f5f0] py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
-          {/* Left — heading */}
+          {/* Left - heading */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <div className="mb-5 flex items-center gap-3 text-lg font-bold uppercase tracking-[0.3em] text-[#f37022] md:text-xl">
               <span className="h-px w-10 bg-[#f37022]" />
@@ -105,7 +105,7 @@ export default function Faqs() {
             </a>
           </div>
 
-          {/* Right — accordion */}
+          {/* Right - accordion */}
           <div className="border-t border-gray-200">
             {faqs.map((faq, i) => (
               <FaqItem

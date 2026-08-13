@@ -8,7 +8,7 @@ import { products } from '../data/products'
 const brandRows = [
   {
     label: 'Authorized distributor in Nepal',
-    value: 'Dugar Earthmovers · since 1995',
+    value: 'Dugar Earthmovers · since 2020',
     tataWins: true,
   },
   {
@@ -33,7 +33,7 @@ const brandRows = [
   },
   {
     label: 'Same / next-day parts dispatch',
-    value: 'Yes — most parts',
+    value: 'Yes, most parts',
     tataWins: true,
   },
   {
@@ -48,7 +48,7 @@ const brandRows = [
   },
   {
     label: 'Resale market in Nepal',
-    value: 'Strong — large installed base',
+    value: 'Strong, large installed base',
     tataWins: true,
   },
 ]
@@ -58,7 +58,7 @@ const brandRows = [
  *  For each Tata Hitachi machine we store the full TH spec sheet
  *  plus the equivalent competitor specs from manufacturer
  *  brochures / public spec sites. Rows are rendered per machine
- *  only where Tata Hitachi beats at least one competitor — i.e.
+ *  only where Tata Hitachi beats at least one competitor - i.e.
  *  this section only shows features that are *better* on TH.
  * ───────────────────────────────────────────────────────────── */
 
@@ -633,7 +633,7 @@ const classMap = {
 /* ─────────────────────────────────────────────────────────────
  *  Canonical spec order. Every machine renders its spec rows in
  *  this sequence so the table reads consistently across models.
- *  A machine simply omits any spec it doesn't carry — excavators
+ *  A machine simply omits any spec it doesn't carry - excavators
  *  and the Shinrai backhoe draw from the same ordered list.
  * ───────────────────────────────────────────────────────────── */
 const SPEC_ORDER = [
@@ -681,7 +681,7 @@ function BrandPill({ name, isTata }) {
   )
 }
 
-/* Dropdown order — smallest machine first, scaling up. Shinrai (BHL) leads. */
+/* Dropdown order - smallest machine first, scaling up. Shinrai (BHL) leads. */
 const MODEL_ORDER = [
   'SHINRAI-POWER',
   'EX-70-SUPER',
@@ -707,7 +707,7 @@ export default function Compare() {
 
   const displaySpecs = orderedSpecs(entry)
 
-  const tataSpec = (label) => entry?.th?.[label] ?? '—'
+  const tataSpec = (label) => entry?.th?.[label] ?? '-'
 
   return (
     <main className="bg-white">
@@ -737,7 +737,7 @@ export default function Compare() {
             </h1>
             <p className="mt-8 max-w-xl text-base leading-relaxed text-gray-700 md:text-lg">
               You can buy a machine from anyone. Here's what you get when
-              you buy from us — the people who'll still be on the phone five
+              you buy from us: the people who'll still be on the phone five
               years from now, when the machine is on its third project and
               needs its third part.
             </p>
@@ -842,6 +842,64 @@ export default function Compare() {
             </div>
           </div>
 
+          {/* Selected machine - visual reference. No frame: the machine sits
+              straight on the section surface so nothing boxes it in. */}
+          <figure key={tataProduct?.code ?? 'none'} className="relative mb-10">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[420px] w-[820px] -translate-x-1/2 -translate-y-1/2 md:block"
+              style={{
+                background:
+                  'radial-gradient(closest-side, rgba(243,112,34,0.10), transparent 75%)',
+              }}
+            />
+
+            <div className="relative grid items-center gap-8 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+              <figcaption
+                className="order-2 md:order-1"
+                style={{ animation: 'fade-up 0.5s ease-out both' }}
+              >
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-[#f37022]">
+                  / Now viewing
+                </p>
+                <p className="mt-3 text-3xl font-black uppercase leading-[0.95] tracking-[-0.02em] text-black md:text-5xl">
+                  {tataProduct?.name ?? '-'}
+                </p>
+                {tataProduct?.series && (
+                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-gray-600">
+                    {tataProduct.series}
+                  </p>
+                )}
+                {tataProduct?.pdf && (
+                  <a
+                    href={tataProduct.pdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 inline-flex items-center gap-2 border-b-2 border-[#f37022] pb-1 text-xs font-bold uppercase tracking-[0.2em] text-black transition-colors hover:text-[#f37022] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f37022] focus-visible:ring-offset-2"
+                  >
+                    Download brochure
+                    <svg viewBox="0 0 16 16" className="h-3 w-3 fill-[#f37022]" aria-hidden>
+                      <path d="M7 0h2v9.6l3.3-3.3 1.4 1.4L8 13.4 2.3 7.7l1.4-1.4L7 9.6V0zM1 14h14v2H1z" />
+                    </svg>
+                  </a>
+                )}
+              </figcaption>
+
+              <div className="order-1 flex h-56 items-center justify-center md:order-2 md:h-[340px]">
+                {tataProduct?.image ? (
+                  <img
+                    src={tataProduct.image}
+                    alt={`Tata Hitachi ${tataProduct.name} on site in Nepal`}
+                    className="h-full w-auto max-w-full object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.16)]"
+                    style={{ animation: 'fade-up 0.5s ease-out 0.06s both' }}
+                  />
+                ) : (
+                  <span className="text-xs text-gray-400">No image available</span>
+                )}
+              </div>
+            </div>
+          </figure>
+
           <div className="overflow-x-auto border border-gray-300 bg-white">
             <table className="w-full min-w-[480px] table-fixed border-collapse">
               <colgroup>
@@ -858,7 +916,7 @@ export default function Compare() {
                       / Tata Hitachi
                     </p>
                     <p className="mt-1.5 text-lg font-black uppercase leading-tight tracking-tight text-[#f37022] md:text-xl">
-                      {tataProduct?.name ?? '—'}
+                      {tataProduct?.name ?? '-'}
                     </p>
                   </th>
                 </tr>
@@ -870,7 +928,7 @@ export default function Compare() {
                       colSpan={2}
                       className="px-6 py-10 text-center text-sm text-gray-500"
                     >
-                      Spec sheet coming soon — talk to us for the full
+                      Spec sheet coming soon. Talk to us for the full
                       datasheet on this machine.
                     </td>
                   </tr>
@@ -890,7 +948,7 @@ export default function Compare() {
                   ))
                 )}
 
-                {/* Applications row — same class = same jobs */}
+                {/* Applications row - same class = same jobs */}
                 <tr className="bg-white">
                   <td className="border-r border-gray-200 px-6 py-5 align-top text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Built for
@@ -908,7 +966,7 @@ export default function Compare() {
                         ))}
                       </div>
                     ) : (
-                      <span className="text-gray-400">—</span>
+                      <span className="text-gray-400">-</span>
                     )}
                   </td>
                 </tr>
@@ -919,7 +977,7 @@ export default function Compare() {
           <p className="mt-4 text-xs italic text-gray-500">
             Spec values are taken from the latest official Tata Hitachi
             brochures. Verify against the current local brochure before
-            quoting — specs change by year and market trim.
+            quoting. Specs change by year and market trim.
           </p>
         </div>
       </section>
@@ -944,7 +1002,7 @@ export default function Compare() {
               {
                 tag: '01',
                 title: 'Parts inside a working week',
-                body: 'Our central warehouse stocks fast-movers for every machine we sell. Most parts ship same or next day — even to a project in Karnali.',
+                body: 'Our central warehouse stocks fast-movers for every machine we sell. Most parts ship same or next day, even to a project in Karnali.',
               },
               {
                 tag: '02',
@@ -954,7 +1012,7 @@ export default function Compare() {
               {
                 tag: '03',
                 title: 'A machine that resells',
-                body: 'The Tata Hitachi installed base in Nepal is large. When the project ends, the machine has a deep used market — not a guessing game.',
+                body: 'The Tata Hitachi installed base in Nepal is large. When the project ends, the machine has a deep used market, not a guessing game.',
               },
             ].map((card) => (
               <div key={card.tag} className="bg-white p-8 md:p-10">

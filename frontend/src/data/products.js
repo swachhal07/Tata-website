@@ -73,7 +73,7 @@ export const products = [
     name: 'ZAXIS 220 LC',
     series: 'Medium excavator · Long crawler',
     intro:
-      'The site workhorse. Extended undercarriage for stability on uneven ground — the most-deployed machine on infrastructure contracts across Nepal.',
+      'The site workhorse. Extended undercarriage for stability on uneven ground. The most-deployed machine on infrastructure contracts across Nepal.',
     specs: [
       { label: 'Operating weight', value: '21.7 t' },
       { label: 'Engine power', value: '168 HP' },

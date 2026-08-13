@@ -1,41 +1,33 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import logo from '../assets/Tata-Hitachi-Construction-Machinery-Logo-Vector.png'
 import dugarLogo from '../assets/MVDUGAR-01.png'
-
-const leftNavItems = [
-  { to: '/', label: 'Home' },
-  { to: '/products', label: 'Products' },
-]
 
 const aboutChildren = [
   { to: '/about', label: 'About Us' },
   { to: '/leadership', label: 'Leadership' },
 ]
 
-const rightNavItems = [
+const allNavItems = [
+  { to: '/', label: 'Home' },
+  { to: '/products', label: 'Products' },
   { to: '/compare', label: 'Why us' },
+  { to: '/blog', label: 'Blog' },
   { to: '/about', label: 'About', children: aboutChildren },
 ]
 
-const allNavItems = [...leftNavItems, ...rightNavItems]
-
-function NavItem({ item, isHome }) {
+function NavItem({ item }) {
   if (item.children) {
-    return <NavDropdown item={item} isHome={isHome} />
+    return <NavDropdown item={item} />
   }
   return (
     <NavLink
       to={item.to}
       end={item.to === '/'}
       className={({ isActive }) =>
-        `relative inline-flex pb-1 text-base font-medium transition after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:bg-[#f37022] after:transition-transform after:duration-200 after:origin-left ${
+        `relative inline-flex pb-1 text-base font-semibold transition after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:bg-[#f37022] after:transition-transform after:duration-200 after:origin-left ${
           isActive ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100'
-        } ${
-          isHome
-            ? 'text-white group-hover/nav:text-black'
-            : 'text-gray-800 hover:text-black'
-        }`
+        } ${isActive ? 'text-[#f37022]' : 'text-gray-600 hover:text-black'}`
       }
     >
       {item.label}
@@ -43,7 +35,7 @@ function NavItem({ item, isHome }) {
   )
 }
 
-function NavDropdown({ item, isHome }) {
+function NavDropdown({ item }) {
   const { pathname } = useLocation()
   const isActive = item.children.some((c) => c.to === pathname)
 
@@ -51,30 +43,24 @@ function NavDropdown({ item, isHome }) {
     <div className="group/dd relative">
       <NavLink
         to={item.to}
-        className={`relative inline-flex items-center gap-1.5 pb-1 text-base font-medium transition after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:bg-[#f37022] after:transition-transform after:duration-200 after:origin-left ${
+        className={`relative inline-flex items-center gap-1.5 pb-1 text-base font-semibold transition after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:bg-[#f37022] after:transition-transform after:duration-200 after:origin-left ${
           isActive
             ? 'after:scale-x-100'
             : 'after:scale-x-0 group-hover/dd:after:scale-x-100'
-        } ${
-          isHome
-            ? 'text-white group-hover/nav:text-black'
-            : 'text-gray-800 hover:text-black'
-        }`}
+        } ${isActive ? 'text-[#f37022]' : 'text-gray-600 hover:text-black'}`}
       >
         {item.label}
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black/5 group-hover/dd:bg-[#f37022]/15">
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            className="transition-transform duration-200 group-hover/dd:rotate-180"
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </span>
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          className="transition-transform duration-200 group-hover/dd:rotate-180"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </NavLink>
 
       {/* Dropdown panel */}
@@ -107,98 +93,54 @@ function NavDropdown({ item, isHome }) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const [hidden, setHidden] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const lastScrollY = useRef(0)
-  const { pathname } = useLocation()
-  const isHome = pathname === '/'
-  const overHero = isHome && !scrolled
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY
-      setScrolled(currentY > 80)
-      if (currentY < 80) {
-        setHidden(false)
-      } else if (currentY > lastScrollY.current + 4) {
-        setHidden(true)
-      } else if (currentY < lastScrollY.current - 4) {
-        setHidden(false)
-      }
-      lastScrollY.current = currentY
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   return (
     <header
-      className={`group/nav top-0 z-50 transform transition-all duration-300 ease-out ${
-        hidden ? '-translate-y-full' : 'translate-y-0'
-      } ${
-        overHero
-          ? 'absolute inset-x-0 border-b border-white/30 bg-transparent hover:bg-white hover:shadow-sm'
-          : isHome
-          ? 'fixed inset-x-0 border-b border-gray-200 bg-white shadow-sm'
-          : 'sticky border-b border-gray-200 bg-white shadow-sm'
-      }`}
+      className="group/nav sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm"
     >
-      {!overHero && (
-        <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 z-10 h-1 bg-[#f37022]" />
-      )}
-      <Link
-        to="/contact"
-        className={`absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border px-6 py-2.5 text-base font-semibold transition md:inline-block ${
-          overHero
-            ? 'border-white text-white group-hover/nav:border-gray-800 group-hover/nav:text-gray-800 hover:!border-[#f37022] hover:!bg-[#f37022] hover:!text-white'
-            : 'border-gray-800 text-gray-800 hover:!border-[#f37022] hover:!bg-[#f37022] hover:!text-white'
-        }`}
-      >
-        Contact Us
-      </Link>
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-10">
-        <nav className="hidden items-center justify-end gap-10 pr-8 md:flex">
-          {leftNavItems.map((item) => (
-            <NavItem key={item.to} item={item} isHome={overHero} />
-          ))}
-        </nav>
-
-        <div className="hidden items-center gap-4 md:flex md:translate-x-8">
-          <Link to="/" className="flex items-center">
-            <img
-              src={logo}
-              alt="Tata Hitachi Construction Machinery"
-              className="h-16 w-auto"
-            />
-          </Link>
-          <span className="h-12 w-px bg-gray-300" aria-hidden="true" />
+      <span className="pointer-events-none absolute inset-x-0 -bottom-0.5 z-10 h-1 bg-[#f37022]" />
+      <div className="flex w-full items-center justify-between gap-6 px-4 py-3 md:grid md:grid-cols-[1fr_auto_1fr] md:px-8">
+        {/* Logo lockup - left */}
+        <div className="flex items-center gap-4">
           <a
             href="https://www.mvdugar.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center"
+            className="hidden items-center md:flex"
             aria-label="Visit MV Dugar Group website"
           >
             <img
               src={dugarLogo}
               alt="MV Dugar Group"
-              className="relative -left-16 h-20 w-auto"
+              className="h-14 w-14 object-cover"
             />
           </a>
+          <span className="hidden h-10 w-px bg-gray-300 md:block" aria-hidden="true" />
+          <Link to="/" className="flex items-center">
+            <img
+              src={logo}
+              alt="Tata Hitachi Construction Machinery"
+              className="h-9 w-auto md:h-11"
+            />
+          </Link>
         </div>
 
-        <Link to="/" className="flex items-center md:hidden">
-          <img src={logo} alt="Tata Hitachi" className="h-12 w-auto" />
-        </Link>
-
-        <nav className="hidden items-center justify-start gap-10 -ml-10 md:flex">
-          {rightNavItems.map((item) => (
-            <NavItem key={item.to} item={item} isHome={overHero} />
+        {/* Links - centred */}
+        <nav className="hidden items-center justify-center gap-9 md:flex">
+          {allNavItems.map((item) => (
+            <NavItem key={item.to} item={item} />
           ))}
         </nav>
 
+        <Link
+          to="/contact"
+          className="hidden rounded-full border-2 border-[#f37022] bg-transparent px-7 py-2.5 text-base font-bold text-[#f37022] transition hover:bg-[#f37022] hover:text-white md:ml-auto md:inline-block md:w-fit md:justify-self-end"
+        >
+          Contact Us
+        </Link>
+
         <button
-          className={`md:hidden ${overHero ? 'text-white' : 'text-gray-800'}`}
+          className="text-gray-800 md:hidden"
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}
         >
@@ -254,7 +196,7 @@ export default function Navbar() {
           <Link
             to="/contact"
             onClick={() => setOpen(false)}
-            className="mt-3 inline-flex items-center justify-center rounded-full border border-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-800 transition hover:border-[#f37022] hover:bg-[#f37022] hover:text-white"
+            className="mt-3 inline-flex items-center justify-center rounded-full bg-[#f37022] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#d95f16]"
           >
             Contact Us
           </Link>

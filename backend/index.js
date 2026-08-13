@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import multer from 'multer'
 import crypto from 'node:crypto'
 import dns from 'node:dns'
+import { readFile } from 'node:fs/promises'
 import { Readable } from 'node:stream'
 import { MongoClient } from 'mongodb'
 import { v2 as cloudinary } from 'cloudinary'
@@ -40,8 +41,61 @@ await mongo.connect()
 const db = mongo.db(MONGODB_DB)
 const productsCol = db.collection('products')
 const metaCol = db.collection('meta')
+const locationsCol = db.collection('locations')
+const peopleCol = db.collection('people')
+const postsCol = db.collection('posts')
 await productsCol.createIndex({ code: 1 }, { unique: true })
+await locationsCol.createIndex({ id: 1 }, { unique: true })
+await peopleCol.createIndex({ id: 1 }, { unique: true })
+await postsCol.createIndex({ slug: 1 }, { unique: true })
 console.log(`[mongo] connected to ${MONGODB_DB}`)
+
+// First boot: load the branch network that used to be hardcoded in the
+// frontend so the admin console has something to edit. Runs only when the
+// collection is empty - it never overwrites live edits.
+{
+  const count = await locationsCol.countDocuments()
+  if (count === 0) {
+    const seed = JSON.parse(
+      await readFile(new URL('./data/locations.json', import.meta.url), 'utf8'),
+    )
+    if (seed.length) {
+      await locationsCol.insertMany(seed.map((l) => ({ ...l })))
+      console.log(`[mongo] seeded ${seed.length} locations`)
+    }
+  }
+}
+
+// Same for the leadership roster. Seeded photos are null: the frontend
+// falls back to the bundled portrait for these ids until an admin
+// uploads a replacement.
+{
+  const count = await peopleCol.countDocuments()
+  if (count === 0) {
+    const seed = JSON.parse(
+      await readFile(new URL('./data/people.json', import.meta.url), 'utf8'),
+    )
+    if (seed.length) {
+      await peopleCol.insertMany(seed.map((p) => ({ ...p })))
+      console.log(`[mongo] seeded ${seed.length} people`)
+    }
+  }
+}
+
+// Starter blog posts so the public blog isn't empty on launch. These are
+// meant to be edited or replaced from the admin console.
+{
+  const count = await postsCol.countDocuments()
+  if (count === 0) {
+    const seed = JSON.parse(
+      await readFile(new URL('./data/posts.json', import.meta.url), 'utf8'),
+    )
+    if (seed.length) {
+      await postsCol.insertMany(seed.map((p) => ({ ...p })))
+      console.log(`[mongo] seeded ${seed.length} blog posts`)
+    }
+  }
+}
 
 const CLOUDINARY_FOLDER = 'tata_hitachi'
 
@@ -402,6 +456,489 @@ app.post('/api/admin/products/:code/restore', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('[admin/products restore] failed', err)
     res.status(500).json({ error: 'Could not restore' })
+  }
+})
+
+/* ─────────── Locations (branch network) ───────────
+ * One doc per branch entry. `kind` splits the two lists on the Contact
+ * page: 'sales' (sales representatives) and 'service' (service & spare
+ * centres). Entries with coordinates and showOnMap render as map pins.
+ */
+
+const LABEL_OFFSETS = ['up', 'down', 'left', 'right']
+
+// Pull coordinates out of a Google Maps URL. Covers the shapes people
+// actually paste: the /@lat,lng,17z form from the address bar, the
+// !3dlat!4dlng form inside place URLs, and the ?q= / ?ll= / ?destination=
+// query params from "share" and "directions" links.
+function coordsFromUrl(url) {
+  const patterns = [
+    /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
+    /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,
+    /[?&](?:q|ll|query|destination|center|daddr)=(-?\d+(?:\.\d+)?)(?:,|%2C)(-?\d+(?:\.\d+)?)/i,
+    /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
+  ]
+  for (const re of patterns) {
+    const m = url.match(re)
+    if (m) {
+      const lat = Number(m[1])
+      const lng = Number(m[2])
+      if (Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+        return { lat, lng }
+      }
+    }
+  }
+  return null
+}
+
+// Short links (maps.app.goo.gl / goo.gl/maps) carry no coordinates - ask
+// Google where they point and parse the expanded URL instead.
+async function expandShortLink(url) {
+  try {
+    const res = await fetch(url, {
+      redirect: 'follow',
+      signal: AbortSignal.timeout(6000),
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    })
+    return res.url && res.url !== url ? res.url : null
+  } catch (err) {
+    console.warn('[locations] could not expand short link', err.message)
+    return null
+  }
+}
+
+async function parseLocation(body) {
+  const b = body || {}
+  const city = String(b.city ?? '').trim()
+  if (!city) throw new Error('City is required')
+
+  const kind = b.kind === 'sales' ? 'sales' : 'service'
+
+  const mapUrl = String(b.mapUrl ?? '').trim()
+  if (mapUrl && !/^https?:\/\//i.test(mapUrl)) {
+    throw new Error('The map link must start with http:// or https://')
+  }
+
+  let lat = null
+  let lng = null
+  if (mapUrl) {
+    let coords = coordsFromUrl(mapUrl)
+    if (!coords && /(goo\.gl|maps\.app\.goo\.gl)/i.test(mapUrl)) {
+      const expanded = await expandShortLink(mapUrl)
+      if (expanded) coords = coordsFromUrl(expanded)
+    }
+    if (coords) {
+      lat = coords.lat
+      lng = coords.lng
+    }
+  }
+
+  return {
+    mapUrl,
+    kind,
+    city,
+    label: String(b.label ?? '').trim() || (kind === 'sales' ? 'Sales' : 'Service'),
+    contact: String(b.contact ?? '').trim(),
+    phone: String(b.phone ?? '').trim(),
+    lat,
+    lng,
+    labelOffset: LABEL_OFFSETS.includes(b.labelOffset) ? b.labelOffset : 'down',
+    // A pin needs coordinates, so an entry without them is never on the map.
+    showOnMap: (b.showOnMap === true || b.showOnMap === 'true') && lat !== null && lng !== null,
+  }
+}
+
+app.get('/api/locations', async (_req, res) => {
+  try {
+    const locations = await locationsCol
+      .find({}, { projection: { _id: 0 } })
+      .sort({ order: 1, city: 1 })
+      .toArray()
+    res.json({ locations })
+  } catch (err) {
+    console.error('[locations] read failed', err)
+    res.status(500).json({ error: 'Could not load locations' })
+  }
+})
+
+app.post('/api/admin/locations', requireAuth, async (req, res) => {
+  try {
+    let parsed
+    try {
+      parsed = await parseLocation(req.body)
+    } catch (err) {
+      return res.status(400).json({ error: err.message })
+    }
+    const last = await locationsCol.find({}, { projection: { order: 1 } }).sort({ order: -1 }).limit(1).toArray()
+    const location = {
+      id: crypto.randomUUID(),
+      ...parsed,
+      order: Number.isFinite(last[0]?.order) ? last[0].order + 1 : 0,
+      addedAt: new Date().toISOString(),
+    }
+    await locationsCol.insertOne({ ...location })
+    res.json({ location })
+  } catch (err) {
+    console.error('[admin/locations POST] failed', err)
+    res.status(500).json({ error: 'Could not save location' })
+  }
+})
+
+app.put('/api/admin/locations/:id', requireAuth, async (req, res) => {
+  try {
+    let parsed
+    try {
+      parsed = await parseLocation(req.body)
+    } catch (err) {
+      return res.status(400).json({ error: err.message })
+    }
+    const id = req.params.id
+    const existing = await locationsCol.findOne({ id }, { projection: { _id: 0 } })
+    if (!existing) return res.status(404).json({ error: 'Location not found' })
+
+    const location = {
+      ...existing,
+      ...parsed,
+      id,
+      updatedAt: new Date().toISOString(),
+    }
+    await locationsCol.replaceOne({ id }, { ...location })
+    res.json({ location })
+  } catch (err) {
+    console.error('[admin/locations PUT] failed', err)
+    res.status(500).json({ error: 'Could not update location' })
+  }
+})
+
+app.delete('/api/admin/locations/:id', requireAuth, async (req, res) => {
+  try {
+    const result = await locationsCol.deleteOne({ id: req.params.id })
+    if (!result.deletedCount) return res.status(404).json({ error: 'Location not found' })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[admin/locations DELETE] failed', err)
+    res.status(500).json({ error: 'Could not delete location' })
+  }
+})
+
+// Re-order the whole list: { ids: [...] } in the desired display order.
+app.put('/api/admin/locations-order', requireAuth, async (req, res) => {
+  try {
+    const { ids } = req.body || {}
+    if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids[] is required' })
+    const ops = ids
+      .filter((id) => typeof id === 'string' && id.trim())
+      .map((id, i) => ({ updateOne: { filter: { id }, update: { $set: { order: i } } } }))
+    if (ops.length) await locationsCol.bulkWrite(ops)
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[admin/locations-order PUT] failed', err)
+    res.status(500).json({ error: 'Could not save order' })
+  }
+})
+
+/* ─────────── People (board + management) ───────────
+ * Drives the Leadership page. `kind` is 'board' or 'management'.
+ * `photo` is a Cloudinary URL once an admin uploads one; until then it
+ * is null and the frontend uses the portrait bundled for that id.
+ */
+
+function parsePerson(body) {
+  const b = body || {}
+  const name = String(b.name ?? '').trim()
+  if (!name) throw new Error('Name is required')
+  return {
+    kind: b.kind === 'management' ? 'management' : 'board',
+    name,
+    role: String(b.role ?? '').trim(),
+  }
+}
+
+app.get('/api/people', async (_req, res) => {
+  try {
+    const people = await peopleCol
+      .find({}, { projection: { _id: 0 } })
+      .sort({ order: 1, name: 1 })
+      .toArray()
+    res.json({ people })
+  } catch (err) {
+    console.error('[people] read failed', err)
+    res.status(500).json({ error: 'Could not load the team' })
+  }
+})
+
+app.post(
+  '/api/admin/people',
+  requireAuth,
+  upload.single('photo'),
+  async (req, res) => {
+    try {
+      let parsed
+      try {
+        parsed = parsePerson(req.body)
+      } catch (err) {
+        return res.status(400).json({ error: err.message })
+      }
+      const uploaded = req.file
+        ? await timed('POST people cloudinary.upload', () =>
+            uploadBuffer(req.file.buffer, { resourceType: 'image' }),
+          )
+        : null
+      const last = await peopleCol
+        .find({}, { projection: { order: 1 } })
+        .sort({ order: -1 })
+        .limit(1)
+        .toArray()
+      const person = {
+        id: crypto.randomUUID(),
+        ...parsed,
+        photo: uploaded?.secure_url || null,
+        order: Number.isFinite(last[0]?.order) ? last[0].order + 1 : 0,
+        addedAt: new Date().toISOString(),
+      }
+      await peopleCol.insertOne({ ...person })
+      res.json({ person })
+    } catch (err) {
+      console.error('[admin/people POST] failed', err)
+      res.status(500).json({ error: 'Could not save' })
+    }
+  },
+)
+
+app.put(
+  '/api/admin/people/:id',
+  requireAuth,
+  upload.single('photo'),
+  async (req, res) => {
+    try {
+      let parsed
+      try {
+        parsed = parsePerson(req.body)
+      } catch (err) {
+        return res.status(400).json({ error: err.message })
+      }
+      const id = req.params.id
+      const existing = await peopleCol.findOne({ id }, { projection: { _id: 0 } })
+      if (!existing) return res.status(404).json({ error: 'Person not found' })
+
+      const uploaded = req.file
+        ? await timed('PUT people cloudinary.upload', () =>
+            uploadBuffer(req.file.buffer, { resourceType: 'image' }),
+          )
+        : null
+
+      const person = {
+        ...existing,
+        ...parsed,
+        id,
+        // A new upload replaces the old one; otherwise keep what's there.
+        photo: uploaded?.secure_url || existing.photo || null,
+        updatedAt: new Date().toISOString(),
+      }
+      await peopleCol.replaceOne({ id }, { ...person })
+      res.json({ person })
+    } catch (err) {
+      console.error('[admin/people PUT] failed', err)
+      res.status(500).json({ error: 'Could not update' })
+    }
+  },
+)
+
+app.delete('/api/admin/people/:id', requireAuth, async (req, res) => {
+  try {
+    const result = await peopleCol.deleteOne({ id: req.params.id })
+    if (!result.deletedCount) return res.status(404).json({ error: 'Person not found' })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[admin/people DELETE] failed', err)
+    res.status(500).json({ error: 'Could not delete' })
+  }
+})
+
+app.put('/api/admin/people-order', requireAuth, async (req, res) => {
+  try {
+    const { ids } = req.body || {}
+    if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids[] is required' })
+    const ops = ids
+      .filter((id) => typeof id === 'string' && id.trim())
+      .map((id, i) => ({ updateOne: { filter: { id }, update: { $set: { order: i } } } }))
+    if (ops.length) await peopleCol.bulkWrite(ops)
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[admin/people-order PUT] failed', err)
+    res.status(500).json({ error: 'Could not save order' })
+  }
+})
+
+/* ─────────── Blog posts ───────────
+ * Draft/publish workflow: only published posts are served publicly.
+ * `slug` is derived from the title and is what the public URL uses.
+ */
+
+function slugify(input) {
+  return String(input)
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+}
+
+function parsePost(body) {
+  const b = body || {}
+  const title = String(b.title ?? '').trim()
+  if (!title) throw new Error('Title is required')
+  const bodyText = String(b.body ?? '').trim()
+  if (!bodyText) throw new Error('The post needs some body text')
+
+  const slug = slugify(b.slug || title)
+  if (!slug) throw new Error('Could not build a URL from that title. Add some letters or numbers')
+
+  const tags = String(b.tags || '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+
+  const published = b.published === true || b.published === 'true'
+
+  return {
+    slug,
+    title,
+    excerpt: String(b.excerpt ?? '').trim(),
+    body: bodyText,
+    author: String(b.author ?? '').trim(),
+    tags,
+    published,
+  }
+}
+
+// Public list - published only, newest first.
+app.get('/api/posts', async (_req, res) => {
+  try {
+    const posts = await postsCol
+      .find({ published: true }, { projection: { _id: 0 } })
+      .sort({ publishedAt: -1, addedAt: -1 })
+      .toArray()
+    res.json({ posts })
+  } catch (err) {
+    console.error('[posts] read failed', err)
+    res.status(500).json({ error: 'Could not load posts' })
+  }
+})
+
+app.get('/api/posts/:slug', async (req, res) => {
+  try {
+    const post = await postsCol.findOne(
+      { slug: req.params.slug, published: true },
+      { projection: { _id: 0 } },
+    )
+    if (!post) return res.status(404).json({ error: 'Post not found' })
+    res.json({ post })
+  } catch (err) {
+    console.error('[posts] read one failed', err)
+    res.status(500).json({ error: 'Could not load the post' })
+  }
+})
+
+// Admin list - includes drafts.
+app.get('/api/admin/posts', requireAuth, async (_req, res) => {
+  try {
+    const posts = await postsCol
+      .find({}, { projection: { _id: 0 } })
+      .sort({ addedAt: -1 })
+      .toArray()
+    res.json({ posts })
+  } catch (err) {
+    console.error('[admin/posts] read failed', err)
+    res.status(500).json({ error: 'Could not load posts' })
+  }
+})
+
+app.post('/api/admin/posts', requireAuth, upload.single('cover'), async (req, res) => {
+  try {
+    let parsed
+    try {
+      parsed = parsePost(req.body)
+    } catch (err) {
+      return res.status(400).json({ error: err.message })
+    }
+    const clash = await postsCol.findOne({ slug: parsed.slug }, { projection: { _id: 1 } })
+    if (clash) {
+      return res.status(409).json({ error: `A post already lives at /blog/${parsed.slug}` })
+    }
+    const uploaded = req.file
+      ? await timed('POST posts cloudinary.upload', () =>
+          uploadBuffer(req.file.buffer, { resourceType: 'image' }),
+        )
+      : null
+    const now = new Date().toISOString()
+    const post = {
+      id: crypto.randomUUID(),
+      ...parsed,
+      cover: uploaded?.secure_url || null,
+      addedAt: now,
+      publishedAt: parsed.published ? now : null,
+    }
+    await postsCol.insertOne({ ...post })
+    res.json({ post })
+  } catch (err) {
+    console.error('[admin/posts POST] failed', err)
+    res.status(500).json({ error: 'Could not save the post' })
+  }
+})
+
+app.put('/api/admin/posts/:id', requireAuth, upload.single('cover'), async (req, res) => {
+  try {
+    let parsed
+    try {
+      parsed = parsePost(req.body)
+    } catch (err) {
+      return res.status(400).json({ error: err.message })
+    }
+    const id = req.params.id
+    const existing = await postsCol.findOne({ id }, { projection: { _id: 0 } })
+    if (!existing) return res.status(404).json({ error: 'Post not found' })
+
+    if (parsed.slug !== existing.slug) {
+      const clash = await postsCol.findOne({ slug: parsed.slug }, { projection: { _id: 1 } })
+      if (clash) {
+        return res.status(409).json({ error: `A post already lives at /blog/${parsed.slug}` })
+      }
+    }
+
+    const uploaded = req.file
+      ? await timed('PUT posts cloudinary.upload', () =>
+          uploadBuffer(req.file.buffer, { resourceType: 'image' }),
+        )
+      : null
+
+    const post = {
+      ...existing,
+      ...parsed,
+      id,
+      cover: uploaded?.secure_url || existing.cover || null,
+      // First time it goes live is the publish date; later edits don't reset it.
+      publishedAt: parsed.published
+        ? existing.publishedAt || new Date().toISOString()
+        : null,
+      updatedAt: new Date().toISOString(),
+    }
+    await postsCol.replaceOne({ id }, { ...post })
+    res.json({ post })
+  } catch (err) {
+    console.error('[admin/posts PUT] failed', err)
+    res.status(500).json({ error: 'Could not update the post' })
+  }
+})
+
+app.delete('/api/admin/posts/:id', requireAuth, async (req, res) => {
+  try {
+    const result = await postsCol.deleteOne({ id: req.params.id })
+    if (!result.deletedCount) return res.status(404).json({ error: 'Post not found' })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[admin/posts DELETE] failed', err)
+    res.status(500).json({ error: 'Could not delete the post' })
   }
 })
 

@@ -16,7 +16,7 @@ const divisions = [
     badge: 'Mini · Medium · Large',
     heading: 'Built for\nevery dig.',
     description:
-      "Tata Hitachi's excavator range spans mini to mining-class machines — engineered for hydropower, road, and infrastructure work across Nepal.",
+      "Tata Hitachi's excavator range spans mini to mining-class machines, engineered for hydropower, road, and infrastructure work across Nepal.",
     machineCount: excavatorCount,
     stats: [
       { label: 'Operating Weight', value: '7 – 65 t' },
@@ -168,7 +168,7 @@ export default function OurDivisions() {
             </Link>
           </div>
 
-          {/* Right column — image card */}
+          {/* Right column - image card */}
           <div className="relative overflow-hidden rounded-3xl bg-gray-900 min-h-[360px] md:min-h-0">
             <img
               src={active.image}

@@ -5,14 +5,7 @@ import service from '../assets/IMG_5286.JPG.jpeg'
 import parts from '../assets/IMG_5291.JPG.jpeg'
 
 const cards = [
-  {
-    number: '01',
-    title: 'Excavators',
-    description:
-      'Mini to mining-class Tata Hitachi excavators built for hydropower, road, and infrastructure work across Nepal.',
-    image: mining,
-    featured: true,
-  },
+  { number: '01', title: 'Excavators', image: mining },
   { number: '02', title: 'Backhoe Loaders', image: backhoe },
   { number: '03', title: 'Mining Equipment', image: excavator },
   { number: '04', title: 'Service & Maintenance', image: service },
@@ -21,11 +14,7 @@ const cards = [
 
 function Card({ card }) {
   return (
-    <article
-      className={`group relative overflow-hidden rounded-2xl bg-gray-900 ${
-        card.featured ? 'md:row-span-2 min-h-[420px] md:min-h-0' : 'min-h-[240px]'
-      }`}
-    >
+    <article className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-900 md:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]">
       <img
         src={card.image}
         alt={card.title}
@@ -34,18 +23,9 @@ function Card({ card }) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
 
       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-        <h3
-          className={`font-extrabold uppercase tracking-wide text-white ${
-            card.featured ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'
-          }`}
-        >
+        <h3 className="text-xl font-extrabold uppercase tracking-wide text-white md:text-2xl">
           {card.title}
         </h3>
-        {card.featured && card.description && (
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-200 md:text-base">
-            {card.description}
-          </p>
-        )}
       </div>
     </article>
   )
@@ -70,7 +50,7 @@ export default function WhatWeDo() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-3">
+        <div className="flex flex-wrap justify-center gap-4">
           {cards.map((c) => (
             <Card key={c.number} card={c} />
           ))}

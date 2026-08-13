@@ -7,23 +7,23 @@ import nodemailer from 'nodemailer'
  *  system fonts only — Gmail / Outlook / Apple Mail safe.
  * ───────────────────────────────────────────────────────────── */
 
-const SANS  = "'Helvetica Neue', Helvetica, Arial, sans-serif"
+const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif"
 const SERIF = "Georgia, 'Times New Roman', Times, serif"
-const MONO  = "ui-monospace, Consolas, 'Courier New', monospace"
+const MONO = "ui-monospace, Consolas, 'Courier New', monospace"
 
 const C = {
-  brand:     '#f37022',
+  brand: '#f37022',
   brandDeep: '#a4360c',
-  pillBg:    '#fdecdf',
-  paper:     '#f7f5f0',
-  card:      '#ffffff',
-  ink:       '#0e0d0b',
-  body:      '#1c1a17',
-  sub:       '#5d574c',
-  caption:   '#908a7c',
-  border:    '#eae4d4',
-  cream:     '#fdf5ec',
-  darkMute:  '#b8b2a3',
+  pillBg: '#fdecdf',
+  paper: '#f7f5f0',
+  card: '#ffffff',
+  ink: '#0e0d0b',
+  body: '#1c1a17',
+  sub: '#5d574c',
+  caption: '#908a7c',
+  border: '#eae4d4',
+  cream: '#fdf5ec',
+  darkMute: '#b8b2a3',
 }
 
 const escapeHtml = (s = '') =>
@@ -196,7 +196,7 @@ function shell({
                     / Dugar Earthmovers
                   </p>
                   <p style="margin:6px 0 0 0;font:500 12px/1.5 ${SANS};color:${C.darkMute};">
-                    Authorised Tata Hitachi distributor &middot; Est. 1995 &middot; Kathmandu
+                    Authorised Tata Hitachi distributor &middot; Est. 2020 &middot; Kathmandu
                   </p>
                 </td>
                 <td align="right" valign="middle" style="vertical-align:middle;">

@@ -1,7 +1,7 @@
 const items = [
   'Authorised Tata Hitachi distributor',
   'Kathmandu',
-  'Est. 1995',
+  'Est. 2020',
   '7 provinces served',
   '48-hour parts dispatch',
   'ZAXIS · Shinrai · EX-series',

@@ -1,13 +1,13 @@
 const reviews = [
   {
     quote:
-      'Bought a ZAXIS 220 for our hydropower access road work in Dolakha. Machine has clocked over 4,000 hours with zero downtime — Dugar service team handled every scheduled check on site.',
+      'Bought a ZAXIS 220 for our hydropower access road work in Dolakha. Machine has clocked over 4,000 hours with zero downtime. The Dugar service team handled every scheduled check on site.',
     name: 'Bishal Shrestha',
     role: 'Himalayan Infra Builders',
   },
   {
     quote:
-      'We run a fleet of 6 Tata Hitachi excavators across Bara and Parsa. Parts availability is the real reason we keep coming back — never had to wait more than 48 hours for genuine spares.',
+      'We run a fleet of 6 Tata Hitachi excavators across Bara and Parsa. Parts availability is the real reason we keep coming back. We have never had to wait more than 48 hours for genuine spares.',
     name: 'Ramesh Patel',
     role: 'Patel Construction Pvt. Ltd.',
   },
@@ -25,19 +25,19 @@ const reviews = [
   },
   {
     quote:
-      'Switched to Tata Hitachi after struggling with imported brands for years. Service network reaches Surkhet within 24 hours — that alone changed how we plan our project timelines.',
+      'Switched to Tata Hitachi after struggling with imported brands for years. Service network reaches Surkhet within 24 hours, and that alone changed how we plan our project timelines.',
     name: 'Anjali Karki',
     role: 'Karnali Builders',
   },
   {
     quote:
-      'Our ZAXIS 370 LCH has been at the pit for eighteen months of continuous extraction. Uptime has held — and the parts team in Kathmandu turns anything we need around within a couple of days.',
+      'Our ZAXIS 370 LCH has been at the pit for eighteen months of continuous extraction. Uptime has held, and the parts team in Kathmandu turns anything we need around within a couple of days.',
     name: 'Prakash Maharjan',
     role: 'Bagmati Aggregates',
   },
   {
     quote:
-      'Bought two Shinrai backhoes for road maintenance contracts in Lumbini. Operators picked them up in a day — controls are intuitive and the cab keeps the dust out.',
+      'Bought two Shinrai backhoes for road maintenance contracts in Lumbini. Operators picked them up in a day. The controls are intuitive and the cab keeps the dust out.',
     name: 'Manoj Gurung',
     role: 'Gurung Road Contractors',
   },
@@ -129,7 +129,7 @@ export default function Reviews() {
         </div>
       </div>
 
-      {/* Marquee track — full bleed, with edge fades */}
+      {/* Marquee track - full bleed, with edge fades */}
       <div className="group relative z-[1] overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent" />

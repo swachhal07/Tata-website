@@ -41,7 +41,7 @@ export default function Footer() {
               />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-gray-400">
-              Authorised Tata Hitachi distributor in Nepal — serving contractors,
+              Authorised Tata Hitachi distributor in Nepal, serving contractors,
               fleet owners, and operators with construction and mining equipment,
               certified service, and genuine spare parts.
             </p>
@@ -56,6 +56,7 @@ export default function Footer() {
               <li><Link to="/" className="transition-colors hover:text-[#f37022]">Home</Link></li>
               <li><Link to="/products" className="transition-colors hover:text-[#f37022]">Products</Link></li>
               <li><Link to="/about" className="transition-colors hover:text-[#f37022]">About Us</Link></li>
+              <li><Link to="/blog" className="transition-colors hover:text-[#f37022]">Blog</Link></li>
               <li><Link to="/contact" className="transition-colors hover:text-[#f37022]">Contact Us</Link></li>
             </ul>
           </div>
@@ -108,18 +109,33 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center sm:flex-row sm:text-left">
-          <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} Dugar Earthmovers P. Ltd — Authorised Tata Hitachi distributor in Nepal. All rights reserved.
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-6 py-5 text-center sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+          <p className="text-xs text-gray-500 sm:justify-self-start sm:text-left">
+            © {new Date().getFullYear()} Dugar Earthmovers P. Ltd. All rights reserved.
           </p>
-          <p className="font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.25em] text-gray-500">
+          <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-gray-500">
+            <Link
+              to="/privacy"
+              className="underline-offset-4 transition-colors hover:text-[#f37022] hover:underline"
+            >
+              Privacy Policy
+            </Link>
+            <span aria-hidden className="text-[#f37022]">·</span>
+            <Link
+              to="/terms"
+              className="underline-offset-4 transition-colors hover:text-[#f37022] hover:underline"
+            >
+              Terms &amp; Conditions
+            </Link>
+          </p>
+          <p className="font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.25em] text-gray-500 sm:justify-self-end">
             <span className="font-serif text-xs normal-case text-gray-500">Developed by</span>
             <span className="mx-2 text-[#f37022]">·</span>
             <a
               href="https://swachhalportfolio.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-[#f37022]"
+              className="text-xs transition-colors hover:text-[#f37022] md:text-[13px]"
             >
               Swachhal Lamsal
             </a>

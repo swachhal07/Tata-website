@@ -7,7 +7,7 @@ import logo1 from '../assets/1.png'
 import logo2 from '../assets/2.png'
 import logoCgCement from '../assets/demo-cg-cement-logo-colored.png'
 import logo4 from '../assets/4.png'
-import logo5 from '../assets/5.png'
+import logoSumo from '../assets/sumo-construction-engineering.png'
 import logo6 from '../assets/6.png'
 import mvDugarLogo from '../assets/MVDUGAR-01.png'
 import salesTeamPhoto from '../assets/WhatsApp Image 2026-06-17 at 3.32.19 PM.jpeg'
@@ -21,7 +21,7 @@ const partnerLogos = [
   { src: logoCgCement, alt: 'CG Cement', invert: false },
   { src: logo4, alt: 'Partner 4', invert: false },
   { src: logo2, alt: 'Riddhi Siddhi Cement', invert: true },
-  { src: logo5, alt: 'Partner 5', invert: false },
+  { src: logoSumo, alt: 'Sumo Construction & Engineering', invert: false },
   { src: logo6, alt: 'Partner 6', invert: false },
 ]
 
@@ -39,8 +39,8 @@ const teamGroups = [
     headline: 'Built around',
     accent: 'the buyer.',
     photos: [salesTeamPhoto],
-    caption: 'Kathmandu showroom · 2026',
-    bio: "Our sales floor pairs technical depth with on-the-ground experience. They walk job sites, talk through applications, and stay involved long after the invoice is signed — because the relationship is the product.",
+    caption: 'Jeetpur showroom · 2026',
+    bio: "Our sales floor pairs technical depth with on-the-ground experience. They walk job sites, talk through applications, and stay involved long after the invoice is signed, because the relationship is the product.",
     capabilities: [
       'Showroom walk-throughs & site visits',
       'Application sizing & spec advice',
@@ -55,7 +55,7 @@ const teamGroups = [
     accent: 'stay close.',
     photos: [serviceTeamPhoto1, serviceTeamPhoto2],
     caption: 'Service centre · 2026',
-    bio: 'Factory-trained, parts-stocked, and always reachable. The service team carries the machine from first commissioning to its tenth season — through warranty work, scheduled servicing, and the late-night calls from remote sites.',
+    bio: 'Factory-trained, parts-stocked, and always reachable. The service team carries the machine from first commissioning to its tenth season, through warranty work, scheduled servicing, and the late-night calls from remote sites.',
     capabilities: [
       'Factory-trained technicians',
       'Scheduled servicing & warranty',
@@ -101,9 +101,8 @@ function TeamPhoto({ photos, label, number }) {
               type="button"
               aria-label={`Show photo ${i + 1}`}
               onClick={() => setIdx(i)}
-              className={`h-1 w-7 transition-colors ${
-                i === idx ? 'bg-[#f37022]' : 'bg-white/70 hover:bg-white'
-              }`}
+              className={`h-1 w-7 transition-colors ${i === idx ? 'bg-[#f37022]' : 'bg-white/70 hover:bg-white'
+                }`}
             />
           ))}
         </div>
@@ -166,7 +165,7 @@ export default function About() {
                     Established
                   </p>
                   <p className="text-5xl font-black tabular-nums tracking-[-0.04em] text-black md:text-6xl">
-                    1995
+                    2020
                   </p>
                   <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
                     Kathmandu, Nepal
@@ -175,7 +174,7 @@ export default function About() {
               </div>
               <p className="max-w-md text-base leading-relaxed text-gray-700 md:text-lg">
                 Dugar Earthmovers P. Ltd is the authorised Tata Hitachi distributor for
-                Nepal — supplying, servicing, and standing behind the machines
+                Nepal, supplying, servicing, and standing behind the machines
                 that build the country's roads, hydropower, and quarries.
               </p>
               <div className="mt-6 inline-flex items-center border border-black/15 bg-white/60 px-4 py-2">
@@ -199,9 +198,8 @@ export default function About() {
                     key={i}
                     src={src}
                     alt=""
-                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
-                      i === storyIndex ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${i === storyIndex ? 'opacity-100' : 'opacity-0'
+                      }`}
                   />
                 ))}
                 <span className="absolute left-0 top-0 z-10 h-1 w-32 bg-[#f37022]" />
@@ -211,7 +209,7 @@ export default function About() {
                   Coordinates
                 </p>
                 <p className="mt-1 font-mono text-sm tabular-nums">
-                  27.7300° N · 85.3020° E
+                  27.7291° N · 85.3013° E
                 </p>
               </div>
             </div>
@@ -222,7 +220,7 @@ export default function About() {
                 Our story
               </div>
               <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-black md:text-5xl lg:text-6xl">
-                Three generations.{' '}
+                Five generations.{' '}
                 <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
                   One promise.
                 </span>
@@ -274,13 +272,13 @@ export default function About() {
           </div>
         </div>
 
-        {/* Scrolling partner logos — full-bleed, left-to-right */}
+        {/* Scrolling partner logos - full-bleed, left-to-right */}
         <div className="relative w-full overflow-hidden">
           <div className="flex w-max animate-marquee-partners items-center py-8 [animation-direction:reverse]">
             {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((logo, i) => (
               <div
                 key={i}
-                className="flex h-48 w-56 shrink-0 items-center justify-center md:h-60 md:w-72 lg:h-72 lg:w-96"
+                className="flex h-48 w-56 shrink-0 items-center justify-center px-4 md:h-60 md:w-72 lg:h-72 lg:w-96"
               >
                 <img
                   src={logo.src}
@@ -340,9 +338,8 @@ export default function About() {
                 >
                   <span
                     aria-hidden
-                    className={`pointer-events-none absolute -top-6 z-0 select-none font-serif text-[180px] font-black italic leading-none text-black/[0.04] md:-top-10 md:text-[260px] lg:text-[320px] ${
-                      isReversed ? 'left-0' : 'right-0'
-                    }`}
+                    className={`pointer-events-none absolute -top-6 z-0 select-none font-serif text-[180px] font-black italic leading-none text-black/[0.04] md:-top-10 md:text-[260px] lg:text-[320px] ${isReversed ? 'left-0' : 'right-0'
+                      }`}
                   >
                     {g.number}
                   </span>
@@ -418,7 +415,7 @@ export default function About() {
             </h2>
             <p className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-gray-700 md:text-lg">
               Every machine we deliver is supported by the same team for as
-              long as it's working — the people who answer the call know the
+              long as it's working. The people who answer the call know the
               machine, the operator, and the project it's on.
             </p>
           </div>

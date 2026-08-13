@@ -57,7 +57,7 @@ export default function TextHoverEffect({ text, className = '' }) {
         </mask>
       </defs>
 
-      {/* Base stroke — appears faintly when hovered */}
+      {/* Base stroke - appears faintly when hovered */}
       <text
         x="50%"
         y="50%"
@@ -71,7 +71,7 @@ export default function TextHoverEffect({ text, className = '' }) {
         {text}
       </text>
 
-      {/* Animated draw-in stroke — orange */}
+      {/* Animated draw-in stroke - orange */}
       <text
         x="50%"
         y="50%"
@@ -88,7 +88,7 @@ export default function TextHoverEffect({ text, className = '' }) {
         {text}
       </text>
 
-      {/* Reveal layer — colourful gradient inside the cursor mask */}
+      {/* Reveal layer - colourful gradient inside the cursor mask */}
       <text
         x="50%"
         y="50%"
