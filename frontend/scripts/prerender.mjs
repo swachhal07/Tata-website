@@ -360,7 +360,10 @@ function buildPage(template, { title, description, canonical, image, type, block
   /* Drop the homepage defaults baked into index.html, then insert this
    * route's tags where they were. */
   const stripped = template
-    .replace(/\s*<title>[\s\S]*?<\/title>/i, '')
+    /* `[^<]*`, not `[\s\S]*?` — index.html mentions `<title>` inside a head
+     * comment, and a lazy any-char match starts there and eats through the
+     * comment's `-->`, leaving the rest of the document commented out. */
+    .replace(/\s*<title>[^<]*<\/title>/i, '')
     .replace(/\s*<(?:meta|link)\b[^>]*\bdata-seo\b[^>]*>/gi, '')
     .replace(/<\/head>/i, `  ${head}\n</head>`)
 
