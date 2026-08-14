@@ -15,7 +15,9 @@ import {
   CONTACT,
   DEFAULT_OG_IMAGE,
   absoluteUrl,
-} from './siteMeta'
+  /* Extension is required: scripts/prerender.mjs imports this module under
+   * plain Node, which does not do extensionless resolution the way Vite does. */
+} from './siteMeta.js'
 
 const ORG_ID = `${SITE_URL}/#organization`
 const SITE_ID = `${SITE_URL}/#website`

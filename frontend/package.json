@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-sitemap.mjs && vite build",
+    "build": "node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.mjs",
+    "prerender": "node scripts/prerender.mjs",
     "optimize:assets": "node scripts/optimize-assets.mjs",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "lint": "eslint .",
