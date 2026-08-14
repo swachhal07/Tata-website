@@ -1,0 +1,475 @@
+{
+  "summary": {
+    "health_score": 22,
+    "business_type": "Local Service / B2B dealer - multi-location heavy equipment distributor (authorised Tata Hitachi distributor, Nepal). Hybrid brick-and-mortar plus service-area.",
+    "audit_date": "2026-08-14",
+    "target_url": "https://www.dugarearthmovers.com.np/",
+    "stack": "Vite + React 19 SPA, react-router-dom v7, client-side rendering only. Vercel behind Cloudflare; API on Render.",
+    "pages_audited": 10,
+    "top_findings": [
+      "Every page serves an identical 830-byte empty HTML shell - pure client-side rendering with no pre-rendering.",
+      "All 10 public routes share one hardcoded title 'Tata Hitachi Nepal'; no meta descriptions, canonicals, or Open Graph tags exist anywhere.",
+      "Unknown URLs return HTTP 200 with a blank rendered page - soft 404s across the entire site.",
+      "Homepage transfers 46.9 MB of images, including a single 29.3 MB JPEG displayed at 935x816, plus a 22 MB autoplaying hero video.",
+      "robots.txt (Cloudflare-managed) blocks GPTBot, ClaudeBot, CCBot, Google-Extended, Applebot-Extended, Bytespider and meta-externalagent - excluding the site from AI answers and Google AI Overviews grounding."
+    ],
+    "quick_wins": [
+      "Add per-route title, meta description and canonical via react-helmet-async (~2h) - largest single ranking lever available.",
+      "Ship a static /public/sitemap.xml for the 10 public routes and add a Sitemap: directive to robots.txt.",
+      "Re-export the 29.3 MB and 13.0 MB hero JPEGs to ~200 KB WebP at 1920px - removes ~42 MB from the homepage with no visible quality loss.",
+      "Add LocalBusiness + Organization JSON-LD from the already-structured data in frontend/src/data/locations.js.",
+      "Add an <h1> to the homepage hero and alt text to the 6 unlabelled homepage images."
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 30,
+      "weight": 22,
+      "what_works": [
+        "HTTPS enforced with strict-transport-security: max-age=63072000.",
+        "Apex to www canonicalised with a 308 redirect; http:// also 308s.",
+        "Fast server response - TTFB 67 ms, Vercel edge cache HIT.",
+        "Clean, readable URL structure with no query-string or ID noise.",
+        "html lang=\"en\" set correctly.",
+        "Admin routes are auth-gated and render nothing to crawlers."
+      ],
+      "findings": [
+        {
+          "title": "Client-side rendering only - no HTML content for crawlers",
+          "severity": "Critical",
+          "description": "Raw GET / returns 830 bytes: head plus <div id=\"root\"></div>. The rendered DOM contains 6,663 characters of homepage text. vercel.json rewrites /((?!api/).*) to /index.html so this applies to all 10 routes. Bing and every AI crawler receive an empty document.",
+          "recommendation": "Add build-time pre-rendering via vite-react-ssg or vite-plugin-prerender, listing the 10 public routes. The app still hydrates as an SPA afterwards. Verify with curl that body copy is present without JS."
+        },
+        {
+          "title": "Soft 404s - unknown URLs return HTTP 200",
+          "severity": "Critical",
+          "description": "https://www.dugarearthmovers.com.np/this-page-does-not-exist-12345 returns 200 and renders a blank page (1 word of text). App.jsx has no catch-all route.",
+          "recommendation": "Add <Route path=\"*\" element={<NotFound />} /> inside the Layout route with robots noindex, and return a real 404 status once pre-rendering is in place."
+        },
+        {
+          "title": "No XML sitemap",
+          "severity": "High",
+          "description": "/sitemap.xml and /sitemap_index.xml both return the SPA shell as text/html with status 200.",
+          "recommendation": "Generate frontend/public/sitemap.xml with the 10 public routes; build blog URLs at deploy time from GET /api/posts."
+        },
+        {
+          "title": "robots.txt is Cloudflare-managed, blocks AI crawlers and has no Sitemap directive",
+          "severity": "High",
+          "description": "Allow: / for User-agent: * with Content-Signal: search=yes is correct for Googlebot and Bingbot. But GPTBot, ClaudeBot, CCBot, Google-Extended, Applebot-Extended, Bytespider, meta-externalagent and CloudflareBrowserRenderingCrawler are all disallowed. No Sitemap: line.",
+          "recommendation": "Add a Sitemap: directive. Reconsider the Google-Extended block via the Cloudflare AI Crawler Control dashboard - hand-editing the file will be overwritten by the managed rule."
+        },
+        {
+          "title": "Missing security headers",
+          "severity": "Medium",
+          "description": "content-security-policy, x-frame-options, x-content-type-options, referrer-policy and permissions-policy are all absent. The site accepts form submissions.",
+          "recommendation": "Add a headers block to vercel.json with nosniff, referrer-policy: strict-origin-when-cross-origin, and x-frame-options: SAMEORIGIN."
+        },
+        {
+          "title": "No llms.txt",
+          "severity": "Medium",
+          "description": "/llms.txt returns the SPA shell. Optional and ignored by Google Search, but a low-cost signal for AI assistants.",
+          "recommendation": "Add frontend/public/llms.txt once the AI crawler policy is settled."
+        },
+        {
+          "title": "Build output is 149.58 MB",
+          "severity": "Low",
+          "description": "Symptom of the unoptimised asset pipeline; slows every build and deploy.",
+          "recommendation": "Adopt vite-imagetools so assets are compressed and resized at build time."
+        }
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 48,
+      "weight": 23,
+      "what_works": [
+        "Copy is distinctive and human-written with no AI-generic filler.",
+        "Strong raw E-E-A-T material: five-generation family business, named authorised distributor relationship, named branch contacts across 10 cities.",
+        "Real machine specifications sourced from 10 downloadable OEM brochures.",
+        "On-site operator reviews from real customers.",
+        "Privacy (656 words) and Terms (774 words) are substantive and site-specific, not boilerplate.",
+        "Every page except the homepage has a unique, well-written h1."
+      ],
+      "findings": [
+        {
+          "title": "Homepage has no h1",
+          "severity": "High",
+          "description": "The heading tree starts at H2 'FIVE SPECIALTIES. One yard.' HeroSlideshow.jsx renders only a video, images and nav arrows - no text overlay at all. The most important page has no primary heading and no above-the-fold copy naming the business, brand or country.",
+          "recommendation": "Add a hero overlay with <h1>Tata Hitachi Excavators & Backhoe Loaders in Nepal</h1> plus a one-line subhead."
+        },
+        {
+          "title": "Thin content across several pages",
+          "severity": "High",
+          "description": "Rendered word counts: /blog 104, /leadership 159, /about 443, /contact 471, /compare 490, /privacy 656, /terms 774, /products 814. /products covers 10 machines in 814 words - roughly 80 words per machine.",
+          "recommendation": "Expand each page; individual product pages are the highest-value fix (see below)."
+        },
+        {
+          "title": "No individual product URLs",
+          "severity": "High",
+          "description": "All 10 machines live on one /products page with #excavators-style anchors. Commercial-intent searches such as 'ZAXIS 220LC price Nepal' have no page to land on.",
+          "recommendation": "Create /products/:slug for all 10 machines from the structured data already in frontend/src/data/products.js, 400-600 words each."
+        },
+        {
+          "title": "Blog looks empty to a crawler",
+          "severity": "Medium",
+          "description": "/blog measured at 104 words. The API in fact serves five published posts - blog.js has no bundled fallback, so the page renders its skeleton and only fills in once GET /api/posts returns. The backend sleeps on Render's free tier and a cold request can take ~30s, so anything sampling the page before then sees an empty blog. That is what a crawler gets.",
+          "recommendation": "The content is fine; delivery is the problem. Pre-render the blog index, or keep the backend warm. Then keep publishing - 8-12 posts on machine selection, monsoon service intervals and genuine vs aftermarket parts."
+        },
+        {
+          "title": "No author attribution or dates on content",
+          "severity": "Medium",
+          "description": "BlogPost.jsx renders posts with no Person byline or credential. In a technical B2B vertical, a named reviewer with stated experience carries more E-E-A-T weight than the article itself.",
+          "recommendation": "Add author bios with credentials and datePublished, backed by BlogPosting schema."
+        },
+        {
+          "title": "No service-area or location landing pages",
+          "severity": "Medium",
+          "description": "Ten branches with named contacts exist in locations.js but appear only as a list and map on /contact. Queries like 'excavator service Pokhara' have nowhere to rank.",
+          "recommendation": "Create /locations/:city pages for the 10 service branches with genuinely local content."
+        }
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 12,
+      "weight": 20,
+      "what_works": [
+        "Nine of ten pages have unique, descriptive, well-written h1 elements.",
+        "Heading hierarchy within pages is logical (h1 to h2 to h3).",
+        "Internal linking between the main sections is complete via the navbar and footer.",
+        "URL slugs are clean and keyword-relevant."
+      ],
+      "findings": [
+        {
+          "title": "One title tag for the entire site",
+          "severity": "Critical",
+          "description": "All 10 public routes return <title>Tata Hitachi Nepal</title>, hardcoded in frontend/index.html. 19 characters, well under the ~60-character budget, with no service, product or location terms.",
+          "recommendation": "Set unique per-route titles. Draft copy is in FULL-AUDIT-REPORT.md under On-Page SEO."
+        },
+        {
+          "title": "No meta descriptions anywhere",
+          "severity": "Critical",
+          "description": "The only meta tags in the document are charset and viewport. With no homepage h1 and no intro copy, Google has very little to scrape for a snippet.",
+          "recommendation": "Add a unique 150-155 character meta description per route."
+        },
+        {
+          "title": "No canonical tags",
+          "severity": "Critical",
+          "description": "Zero <link rel=\"canonical\"> on any page. The apex 308 covers the main duplication risk, but anchor URLs and future UTM traffic have no canonical anchor.",
+          "recommendation": "Add a self-referencing canonical to every route."
+        },
+        {
+          "title": "No Open Graph or Twitter Card tags",
+          "severity": "Critical",
+          "description": "Every share on WhatsApp, Facebook, LinkedIn or Viber renders as a bare link with no image and no description. In Nepal's B2B market where WhatsApp sharing drives referral traffic, this is a direct commercial loss.",
+          "recommendation": "Add og:title, og:description, og:image, og:url, og:type and twitter:card=summary_large_image. Produce one 1200x630 default OG image."
+        },
+        {
+          "title": "No head-management library installed",
+          "severity": "High",
+          "description": "frontend/package.json contains no react-helmet-async, @unhead/react or equivalent. There is currently no mechanism to set per-page meta.",
+          "recommendation": "Install react-helmet-async, or write a small useDocumentHead hook - the site is small enough not to need the dependency."
+        }
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 0,
+      "weight": 10,
+      "what_works": [],
+      "findings": [
+        {
+          "title": "Zero structured data on the entire site",
+          "severity": "Critical",
+          "description": "document.querySelectorAll('script[type=\"application/ld+json\"]').length === 0 on every one of the 10 routes.",
+          "recommendation": "Start with Organization/AutoDealer sitewide and LocalBusiness for the 10 branches."
+        },
+        {
+          "title": "Missing LocalBusiness schema for 10 branches",
+          "severity": "Critical",
+          "description": "frontend/src/data/locations.js already holds city, lat/lng, contact name, phone and Google Maps URL for each branch. This is the highest-ROI schema on the site and is a data transform rather than new research.",
+          "recommendation": "Emit 10 LocalBusiness blocks with name, address, geo, telephone, openingHours and parentOrganization. Requires collecting street addresses and opening hours, which are not currently in the codebase."
+        },
+        {
+          "title": "Missing Product schema for 10 machines",
+          "severity": "High",
+          "description": "No Product markup exists. Currently blocked by the absence of individual product URLs.",
+          "recommendation": "After creating /products/:slug, add Product schema with name, brand: Tata Hitachi, image, description and spec additionalProperty entries."
+        },
+        {
+          "title": "Missing FAQPage schema",
+          "severity": "Medium",
+          "description": "Faqs.jsx already renders a Q&A section ('LET'S CLEAR IT UP.') on the homepage with no markup on it.",
+          "recommendation": "Add FAQPage JSON-LD mirroring the rendered questions and answers."
+        },
+        {
+          "title": "Missing BreadcrumbList and BlogPosting schema",
+          "severity": "Medium",
+          "description": "No breadcrumb markup anywhere; /blog/:slug in particular would benefit. Blog posts carry no BlogPosting headline, datePublished, author or image.",
+          "recommendation": "Add both once the blog has published content."
+        },
+        {
+          "title": "Missing Review markup on existing reviews",
+          "severity": "Low",
+          "description": "Reviews.jsx renders real operator reviews with no schema. Note Google restricts self-serving review snippets on LocalBusiness.",
+          "recommendation": "Apply Review/AggregateRating to Product entities where the reviews are genuinely machine-specific."
+        }
+      ]
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": 8,
+      "weight": 10,
+      "what_works": [
+        "TTFB 67 ms - excellent, Vercel edge cache HIT.",
+        "FCP 192 ms.",
+        "CLS 0.000 - no layout shift observed.",
+        "Only 18 requests; JS and CSS transfer is negligible next to imagery."
+      ],
+      "findings": [
+        {
+          "title": "46.9 MB of images on the homepage",
+          "severity": "Critical",
+          "description": "Measured transfer breakdown is effectively 100% img. Worst offenders: ZX220LC Ultra 6.jpg at 29.3 MB (5760x3840 natural, 935x816 displayed, ~99% waste), ZAXIS 140H Ultra.JPG at 13.0 MB (6000x4000), IMG_5291.JPG at 2.3 MB and IMG_5286.JPG at 1.5 MB (both 4032x2268 displayed at 435x327). On a 10 Mbps Nepali 4G connection this is roughly 38 seconds of download.",
+          "recommendation": "Re-export all hero and card imagery to WebP, max 1920px wide, quality 80. Target 47 MB down to under 1.5 MB. Adopt vite-imagetools for automatic build-time processing."
+        },
+        {
+          "title": "All 7 hero slides load eagerly on first paint",
+          "severity": "Critical",
+          "description": "HeroSlideshow.jsx mounts every slide as a div with opacity-0, so the browser fetches all six images plus the 22 MB video immediately - even though only slide 0 is visible and there is no auto-advance.",
+          "recommendation": "Render only the active slide and the next one; lazy-load slides 2-6."
+        },
+        {
+          "title": "Lab LCP of 216 ms is misleading",
+          "severity": "High",
+          "description": "The LCP element resolved against an early-painting overlay while 47 MB of imagery was still streaming. Measured on desktop from Kathmandu on a warm cache. No CrUX field data available - the site is likely below the reporting threshold.",
+          "recommendation": "Re-measure after image optimisation, and connect Search Console to get real field data."
+        },
+        {
+          "title": "22 MB hero video with preload=auto and autoplay",
+          "severity": "Medium",
+          "description": "hero.mp4 is 22.1 MB, set to autoPlay with preload=\"auto\" and no poster attribute.",
+          "recommendation": "Add a poster image, switch to preload=\"metadata\", and re-encode to 1080p H.264 targeting 2-3 MB for a 15-second loop."
+        },
+        {
+          "title": "No responsive images and no explicit dimensions",
+          "severity": "High",
+          "description": "No srcset, sizes or <picture> anywhere - mobile downloads the same 29 MB file as desktop. No width/height attributes on any img; CLS is 0 only because the layout is fully CSS-constrained, which is fragile.",
+          "recommendation": "Add srcset at 1920/1280/640 widths and explicit width/height on every img."
+        }
+      ]
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": 8,
+      "weight": 10,
+      "what_works": [
+        "Content-Signal: search=yes permits classic search indexing.",
+        "Underlying content is factual, specific and would be highly citable if it were reachable and restructured."
+      ],
+      "findings": [
+        {
+          "title": "AI crawlers blocked at robots.txt",
+          "severity": "Critical",
+          "description": "Cloudflare's managed block disallows GPTBot (ChatGPT), ClaudeBot (Claude), CCBot (Common Crawl, which feeds many models and Perplexity's index), Google-Extended (Gemini and Google AI Overviews grounding), Applebot-Extended, Bytespider and meta-externalagent. Combined with Content-Signal: ai-train=no, use=reference. When a contractor asks an AI assistant who sells Tata Hitachi excavators in Nepal, this site cannot be cited.",
+          "recommendation": "Business decision. Reconsider Google-Extended first - it governs AI Overviews grounding that appears directly above the organic results a buyer already sees, and unblocking it does not affect classic Search ranking. Content-Signal: ai-train=no already reserves training rights separately. Change via the Cloudflare AI Crawler Control dashboard, not by editing the file."
+        },
+        {
+          "title": "Content invisible to AI crawlers even if unblocked",
+          "severity": "Critical",
+          "description": "Every AI crawler listed fetches raw HTML and does not execute JavaScript. Even with robots.txt opened up, they would receive the 830-byte empty shell.",
+          "recommendation": "Pre-rendering is a hard prerequisite for any GEO work here."
+        },
+        {
+          "title": "No structured data for entity resolution",
+          "severity": "High",
+          "description": "The strongest machine-readable signal for AI systems to resolve the business as an entity is entirely absent.",
+          "recommendation": "Ship Organization and LocalBusiness JSON-LD (see Schema category)."
+        },
+        {
+          "title": "Low passage-level citability",
+          "severity": "Medium",
+          "description": "Copy is stylish but rhetorical - 'FIVE SPECIALTIES. One yard.' AI systems cite self-contained factual passages, not headlines.",
+          "recommendation": "Add citable statements such as 'Dugar Earthmovers is the authorised Tata Hitachi distributor for Nepal, operating 10 service and parts branches from Biratnagar to Dhangadi.'"
+        },
+        {
+          "title": "No llms.txt and weak brand-mention footprint",
+          "severity": "Low",
+          "description": "/llms.txt returns the SPA shell. The site's only external outbound authority link is to mvdugar.com.",
+          "recommendation": "Add llms.txt once crawler policy is settled; pursue industry directory and trade-body mentions."
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 15,
+      "weight": 5,
+      "what_works": [
+        "Products, Leadership, Compare, Contact and Blog have complete alt coverage.",
+        "Existing alt text is descriptive rather than keyword-stuffed."
+      ],
+      "findings": [
+        {
+          "title": "6 of 15 homepage images have empty alt",
+          "severity": "High",
+          "description": "All six are hero slides with alt=\"\" hardcoded in HeroSlideshow.jsx. Decorative-empty-alt is defensible for a pure background, but these are the product photos that define the page. The About page has 4 of 35 images with empty alt.",
+          "recommendation": "Replace with real machine descriptions naming the model."
+        },
+        {
+          "title": "Images grossly oversized for display",
+          "severity": "Critical",
+          "description": "Roughly 99% byte waste on the largest assets - see the Performance category for the full table.",
+          "recommendation": "Resize and convert to WebP at build time."
+        },
+        {
+          "title": "Mixed and unoptimised formats",
+          "severity": "Medium",
+          "description": "A mix of .JPG, .jpeg, .png and one .webp. The 1.1 MB zaxis 370.png is a photograph stored as PNG.",
+          "recommendation": "Standardise on WebP with JPEG fallback."
+        },
+        {
+          "title": "Non-descriptive filenames with spaces",
+          "severity": "Medium",
+          "description": "IMG_5291.JPG, IMG_5286.JPG and 'WhatsApp Image 2026-06-23 at 9.56.05 AM.jpeg' hurt image search; spaces force URL-encoding on every request.",
+          "recommendation": "Rename to lowercase hyphenated descriptive filenames, e.g. tata-hitachi-parts-store-nepal.webp."
+        },
+        {
+          "title": "No image sitemap",
+          "severity": "Low",
+          "description": "No image entries in any sitemap - and no sitemap exists at all.",
+          "recommendation": "Include image:image entries when generating sitemap.xml."
+        }
+      ]
+    },
+    {
+      "name": "Local SEO",
+      "score": 25,
+      "weight": 0,
+      "what_works": [
+        "10 service and parts branches with city, coordinates, named contact and direct phone, admin-managed via locations.js.",
+        "7 additional named sales contacts across Biratnagar, Birgunj, Pokhara, Nepalgunj and Kathmandu.",
+        "Interactive MapLibre map on /contact with Google Maps deep links per branch.",
+        "tel: links used throughout - strong mobile conversion mechanics."
+      ],
+      "findings": [
+        {
+          "title": "NAP is incomplete and inconsistent",
+          "severity": "High",
+          "description": "The footer gives only 'Kathmandu, Nepal' - no street address, no postal code, no opening hours anywhere on the site. locations.js has coordinates but no streetAddress field.",
+          "recommendation": "Collect and publish full street addresses and opening hours per branch; keep them identical across the site, GBP and directories."
+        },
+        {
+          "title": "No per-location pages",
+          "severity": "High",
+          "description": "Ten branches, zero URLs to rank for '[service] [city]' queries.",
+          "recommendation": "Create /locations/:city pages with 300+ words of genuinely local content each."
+        },
+        {
+          "title": "Generic Gmail address as primary contact",
+          "severity": "Medium",
+          "description": "sales.tatahitachinp@gmail.com is used sitewide on a business that owns its own domain - a weak trust signal for users and local ranking alike.",
+          "recommendation": "Move to sales@dugarearthmovers.com.np."
+        },
+        {
+          "title": "Google Business Profile status not verifiable from the site",
+          "severity": "Medium",
+          "description": "No GBP links and no review widgets pulling from Google. Local pack visibility for this business will come more from GBP than from the website.",
+          "recommendation": "Confirm all 10 branches have claimed, correctly-categorised GBP listings with matching NAP, photos and an active review-request habit."
+        }
+      ]
+    },
+    {
+      "name": "Search Experience (SXO)",
+      "score": 30,
+      "weight": 0,
+      "what_works": [
+        "Conversion mechanics are stronger than acquisition mechanics - tel: links throughout, named humans per branch, working enquiry form.",
+        "Navigation is clear and every main section is reachable in one click."
+      ],
+      "findings": [
+        {
+          "title": "Page-type mismatch on /products",
+          "severity": "High",
+          "description": "Commercial queries for a specific machine model expect a product detail page. A single category listing with anchors cannot satisfy that intent.",
+          "recommendation": "Individual product URLs - the highest-value content investment on the site."
+        },
+        {
+          "title": "No above-the-fold value proposition",
+          "severity": "High",
+          "description": "The hero is pure imagery with no text. A visitor arriving from search sees a video with no statement of who this is or what they sell until they scroll.",
+          "recommendation": "Add hero headline and subhead copy naming the brand, the distributor relationship and the coverage."
+        },
+        {
+          "title": "Persona gap - the parts buyer",
+          "severity": "Medium",
+          "description": "'Genuine Parts' is one homepage tile with no destination page, despite being a high-frequency, high-intent, repeat-purchase query cluster.",
+          "recommendation": "Build a dedicated genuine parts landing page."
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical Fixes",
+        "timeframe": "Week 1",
+        "items": [
+          "Per-page title, meta description, canonical and Open Graph tags via react-helmet-async (~2h) - highest ROI on the site.",
+          "Pre-render the SPA to static HTML with vite-react-ssg for the 10 public routes (~4-6h) - unblocks everything else.",
+          "Fix the 47 MB homepage: re-export the 29.3 MB and 13.0 MB JPEGs to WebP, lazy-load hero slides 2-6, add a video poster and preload=metadata (~3h).",
+          "Add a catch-all 404 route with robots noindex (~30m).",
+          "Publish /public/sitemap.xml and add a Sitemap: directive to robots.txt (~1h).",
+          "Add a homepage h1 and alt text for the 6 unlabelled hero images (~1h).",
+          "Decide the AI crawler policy in Cloudflare AI Crawler Control, starting with Google-Extended (~15m decision)."
+        ]
+      },
+      {
+        "name": "Phase 2: High-Impact Improvements",
+        "timeframe": "Weeks 2-3",
+        "items": [
+          "Individual product pages at /products/:slug for all 10 machines, 400-600 words each (~1-2d) - biggest content lever.",
+          "LocalBusiness JSON-LD for the 10 branches plus sitewide Organization/AutoDealer (~3h).",
+          "Product schema on the new product pages (~2h).",
+          "FAQPage schema on the existing homepage FAQ section (~1h).",
+          "Per-location pages at /locations/:city for the 10 service branches (~1-2d).",
+          "Security headers in vercel.json - nosniff, referrer-policy, x-frame-options (~30m).",
+          "Lazy-load below-the-fold images, add srcset and explicit width/height, rename non-descriptive files (~2h)."
+        ]
+      },
+      {
+        "name": "Phase 3: Content & Authority",
+        "timeframe": "Month 2",
+        "items": [
+          "Launch the blog with 8-12 posts on machine selection, monsoon service intervals and genuine vs aftermarket parts.",
+          "Build a dedicated genuine parts landing page (~4h).",
+          "Add E-E-A-T signals: named author bios with credentials, certifications, distributor agreements (~4h).",
+          "Move from sales.tatahitachinp@gmail.com to sales@dugarearthmovers.com.np (~30m).",
+          "Claim and optimise Google Business Profile for all 10 branches (~1d).",
+          "Publish case studies with named contractors and machine models."
+        ]
+      },
+      {
+        "name": "Phase 4: Monitoring & Iteration",
+        "timeframe": "Ongoing",
+        "items": [
+          "Set up Google Search Console and Bing Webmaster Tools and submit the sitemap - nothing is measurable until GSC is connected.",
+          "Add GA4 with conversion events on tel: clicks and enquiry-form submissions.",
+          "Monthly check of GSC Coverage for soft-404 regressions and CrUX Core Web Vitals field data.",
+          "Re-run this audit quarterly and baseline SEO-critical elements so deploys can be diffed for regressions.",
+          "Track rankings for: tata hitachi nepal, excavator dealer nepal, [model] price nepal, excavator service [city]."
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "Indexation status not verified - WebSearch was unavailable in this session and no Google Search Console credentials are configured.",
+    "No CrUX field data available; all Core Web Vitals figures are lab measurements from a single warm-cache desktop session in Kathmandu.",
+    "Screenshots were not captured to disk.",
+    "The /blog/:slug route was not audited with live content - the blog is API-driven and currently renders no posts."
+  ],
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}

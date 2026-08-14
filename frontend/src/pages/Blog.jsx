@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Seo from '../seo/Seo'
 import { Link } from 'react-router-dom'
 import { autoExcerpt, formatDate, readingTime } from '../data/blog'
 
@@ -35,7 +36,9 @@ function LeadPost({ post }) {
         {post.cover ? (
           <img
             src={post.cover}
-            alt=""
+            alt={post.title}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
         ) : (
@@ -76,7 +79,9 @@ function PostCard({ post, index }) {
         {post.cover ? (
           <img
             src={post.cover}
-            alt=""
+            alt={post.title}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
         ) : (
@@ -138,6 +143,7 @@ export default function Blog() {
 
   return (
     <main className="bg-white">
+      <Seo path="/blog" />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-20 pb-16 md:pt-28 md:pb-20">
         <div

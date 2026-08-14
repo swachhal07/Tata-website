@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { categories, products as seedProducts, orderByList } from '../data/products'
+import { productPath } from '../data/slug'
+import Seo from '../seo/Seo'
+import { itemListSchema, breadcrumbSchema } from '../seo/structuredData'
 
 function BrochureGate({ product, onClose }) {
   const [form, setForm] = useState({ name: '', phone: '', company: '', location: '' })
@@ -160,7 +163,9 @@ function ProductSpread({ product, index, flipped, onRequestBrochure }) {
           <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 lg:aspect-auto lg:h-full lg:min-h-[640px]">
             <img
               src={product.image}
-              alt={product.name}
+              alt={`Tata Hitachi ${product.name} — ${product.series}`}
+              loading={index < 2 ? 'eager' : 'lazy'}
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
             />
             <span className="absolute left-0 top-0 h-1 w-32 bg-[#f37022]" />
@@ -199,7 +204,12 @@ function ProductSpread({ product, index, flipped, onRequestBrochure }) {
             {product.series}
           </p>
           <h3 className="mt-4 text-5xl font-black uppercase leading-[0.95] tracking-[-0.02em] text-black md:text-6xl lg:text-7xl">
-            {product.name}
+            <Link
+              to={productPath(product)}
+              className="transition-colors hover:text-[#f37022]"
+            >
+              {product.name}
+            </Link>
           </h3>
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-gray-700 md:text-lg">
@@ -245,11 +255,17 @@ function ProductSpread({ product, index, flipped, onRequestBrochure }) {
           {/* CTA */}
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
-              to="/contact"
+              to={productPath(product)}
               className="group inline-flex items-center gap-3 bg-black px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition-colors hover:bg-[#f37022]"
             >
-              Request a quote
+              Full specifications
               <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
+            <Link
+              to="/contact"
+              className="group inline-flex items-center gap-3 border border-gray-800 px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-black transition-colors hover:border-[#f37022] hover:text-[#f37022]"
+            >
+              Request a quote
             </Link>
             <button
               type="button"
@@ -330,6 +346,18 @@ export default function Products() {
 
   return (
     <main className="bg-white">
+      <Seo
+        path="/products"
+        jsonLd={[
+          itemListSchema(
+            products.map((p) => ({ name: `Tata Hitachi ${p.name}`, path: productPath(p) })),
+          ),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Machines', path: '/products' },
+          ]),
+        ]}
+      />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-20 pb-20 md:pt-28 md:pb-24">
         <div

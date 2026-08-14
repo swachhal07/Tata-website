@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Seo from '../seo/Seo'
 import { products } from '../data/products'
 
 /* ─────────────────────────────────────────────────────────────
@@ -711,6 +712,7 @@ export default function Compare() {
 
   return (
     <main className="bg-white">
+      <Seo path="/compare" />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-20 pb-20 md:pt-28 md:pb-24">
         <div

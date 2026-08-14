@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import Seo from '../seo/Seo'
 
 /* Shared chrome for every admin screen: session check, sidebar navigation,
  * page header and the sign-out flow. Pages render their own body only. */
@@ -178,6 +179,11 @@ export default function AdminShell({ title, eyebrow, description, meta, actions,
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
+      <Seo
+        title={`${title} — Console`}
+        description="Admin console for the Dugar Earthmovers site."
+        noindex
+      />
       {/* Sidebar - desktop */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col justify-between border-r border-gray-200 bg-white px-4 py-6 lg:flex">
         <div>

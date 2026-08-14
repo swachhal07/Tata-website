@@ -3,6 +3,8 @@ import Layout from './components/Layout'
 import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Products from './pages/Products'
+import ProductDetail from './pages/ProductDetail'
+import NotFound from './pages/NotFound'
 import About from './pages/About'
 import Leadership from './pages/Leadership'
 import Compare from './pages/Compare'
@@ -25,6 +27,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/leadership" element={<Leadership />} />
           <Route path="/compare" element={<Compare />} />
@@ -33,6 +36,9 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          {/* Catch-all: renders the 404 page with robots noindex so mistyped
+              and stale URLs are not indexed as empty pages. */}
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />

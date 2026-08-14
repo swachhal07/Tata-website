@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import Seo from '../seo/Seo'
 import { seedPeople, photoFor } from '../data/people'
 
 /* The roster is managed from the admin console (`/admin/people`) and
@@ -148,6 +149,7 @@ export default function Leadership() {
 
   return (
     <main className="bg-white">
+      <Seo path="/leadership" />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-24 pb-20 md:pt-32 md:pb-24">
         <div

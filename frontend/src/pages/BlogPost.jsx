@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { formatDate, parseBody, readingTime } from '../data/blog'
+import { autoExcerpt, formatDate, parseBody, readingTime } from '../data/blog'
+import Seo from '../seo/Seo'
+import { blogPostingSchema, breadcrumbSchema } from '../seo/structuredData'
 
 function Body({ text }) {
   const blocks = parseBody(text)
@@ -88,6 +90,11 @@ export default function BlogPost() {
   if (state !== 'ready' || !post) {
     return (
       <main className="bg-white">
+        <Seo
+          title="Story not found — Dugar Earthmovers"
+          description="This story is no longer available. Browse the rest of the Tata Hitachi Nepal blog."
+          noindex
+        />
         <div className="mx-auto max-w-2xl px-6 py-32 text-center">
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.28em] text-[#f37022]">
             {state === 'missing' ? '/ 404' : '/ Something broke'}
@@ -131,8 +138,28 @@ export default function BlogPost() {
     .filter(Boolean)
     .join(' · ')
 
+  const postPath = `/blog/${slug}`
+
   return (
     <main className="bg-white">
+      <Seo
+        title={`${post.title} — Tata Hitachi Nepal`.slice(0, 65)}
+        description={(post.excerpt || autoExcerpt(post.body)).slice(0, 158)}
+        path={postPath}
+        image={post.cover}
+        type="article"
+        jsonLd={[
+          blogPostingSchema(
+            { ...post, excerpt: post.excerpt || autoExcerpt(post.body), image: post.cover },
+            postPath,
+          ),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Blog', path: '/blog' },
+            { name: post.title, path: postPath },
+          ]),
+        ]}
+      />
       {/* ─── Title block ──────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-16 pb-14 md:pt-24 md:pb-20">
         <div
@@ -174,7 +201,8 @@ export default function BlogPost() {
             <div className="relative aspect-[16/9] overflow-hidden bg-[#efece5]">
               <img
                 src={post.cover}
-                alt=""
+                alt={post.title}
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
                 style={{ animation: 'fade-up 0.6s ease-out 0.08s both' }}
               />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Seo from '../seo/Seo'
 import storySlide1 from '../assets/WhatsApp Image 2026-06-14 at 1.13.27 PM.jpeg'
 import storySlide2 from '../assets/WhatsApp Image 2026-06-14 at 1.19.34 PM.jpeg'
 import storySlide3 from '../assets/WhatsApp Image 2026-06-14 at 1.19.35 PM.jpeg'
@@ -122,6 +123,7 @@ export default function About() {
 
   return (
     <main className="bg-white">
+      <Seo path="/about" />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-20 pb-28 md:pt-28 md:pb-36">
         <div
@@ -197,7 +199,9 @@ export default function About() {
                   <img
                     key={i}
                     src={src}
-                    alt=""
+                    alt={`Dugar Earthmovers Tata Hitachi machines and team at work in Nepal (${i + 1} of ${storySlides.length})`}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
                     className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${i === storyIndex ? 'opacity-100' : 'opacity-0'
                       }`}
                   />

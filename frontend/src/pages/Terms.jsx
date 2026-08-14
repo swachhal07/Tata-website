@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Seo from '../seo/Seo'
 
 const UPDATED = '10 August 2026'
 
@@ -78,6 +79,7 @@ const sections = [
 export default function Terms() {
   return (
     <main className="bg-white">
+      <Seo path="/terms" />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-20 pb-14 md:pt-28 md:pb-20">
         <div

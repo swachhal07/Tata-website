@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
+import Seo from '../seo/Seo'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -45,6 +46,11 @@ export default function Login() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#f7f5f0] text-black">
+      <Seo
+        title="Sign in — Dugar Earthmovers"
+        description="Admin sign-in for the Dugar Earthmovers site."
+        noindex
+      />
       <div
         aria-hidden
         className="pointer-events-none absolute -left-32 -top-32 hidden h-[520px] w-[520px] lg:block"

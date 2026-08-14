@@ -1,4 +1,6 @@
 import { Component, useEffect, useMemo, useState } from 'react'
+import Seo from '../seo/Seo'
+import { branchSchema } from '../seo/structuredData'
 import { Map, MapMarker, MapControls, MarkerContent } from '../components/MapLibre'
 import { seedLocations, splitLocations } from '../data/locations'
 
@@ -190,6 +192,10 @@ export default function Contact() {
 
   return (
     <main className="bg-white">
+      <Seo
+        path="/contact"
+        jsonLd={offices.map(branchSchema).filter(Boolean)}
+      />
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-20 pb-28 md:pt-28 md:pb-36">
         <div

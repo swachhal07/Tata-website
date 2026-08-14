@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
-const faqs = [
+/* Exported so Home can feed the same questions to FAQPage JSON-LD — the
+ * markup and the rendered accordion must never drift apart. */
+export const faqs = [
   {
     q: 'What warranty comes with a new Tata Hitachi machine?',
     a: 'Every new machine ships with a standard manufacturer warranty covering structural components and major hydraulic systems. Extended warranty packages are available. Speak to your Dugar sales contact for the option that fits your fleet usage.',
