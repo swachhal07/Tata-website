@@ -32,6 +32,25 @@
   <meta data-seo name="twitter:description"
     content="Authorised Tata Hitachi distributor in Nepal. Excavators, backhoe loaders, mining equipment, genuine parts and service across 10 branches nationwide." />
   <meta data-seo name="twitter:image" content="https://www.dugarearthmovers.com.np/og-default.jpg" />
+
+  <!-- The prerender step injects a plain-HTML snapshot of each route into
+       #root so crawlers that do not execute JavaScript have something to read.
+       React clears it on mount, but until the bundle arrives it was the
+       visible page - a wall of unstyled text flashing before the real site.
+       Hide it whenever JavaScript is available: crawlers read raw HTML and are
+       unaffected, and a visitor with JS never sees it. If React still has not
+       mounted after four seconds the bundle is slow or broken, so reveal the
+       snapshot again rather than leaving a blank page. -->
+  <style>.js #prerender-snapshot { display: none }</style>
+  <script>
+    (function () {
+      var root = document.documentElement
+      root.classList.add('js')
+      setTimeout(function () {
+        if (document.getElementById('prerender-snapshot')) root.classList.remove('js')
+      }, 4000)
+    })()
+  </script>
 </head>
 
 <body>

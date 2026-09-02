@@ -299,8 +299,10 @@ function staticBody(route, meta, { products, posts, locations }) {
 
 /* ── Document assembly ────────────────────────────────────────────── */
 
-/* Modest inline styling. The snapshot is replaced the moment React mounts, but
- * on a slow connection it is briefly the visible page — legible plain type
+/* Modest inline styling. index.html hides the snapshot outright whenever
+ * JavaScript is available, so a visitor never sees it flash; it is revealed
+ * again only if React has not mounted after four seconds, or for a visitor
+ * with JS off. In those cases it is the visible page, and legible plain type
  * beats unstyled default margins. Inline because the CSS bundle may not have
  * arrived either. */
 const SNAPSHOT_STYLE = [
@@ -369,7 +371,7 @@ function buildPage(template, { title, description, canonical, image, type, block
 
   return stripped.replace(
     /<div id="root">\s*<\/div>/i,
-    `<div id="root"><div style="${SNAPSHOT_STYLE}">${body}</div></div>`,
+    `<div id="root"><div id="prerender-snapshot" style="${SNAPSHOT_STYLE}">${body}</div></div>`,
   )
 }
 
