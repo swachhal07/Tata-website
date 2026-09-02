@@ -111,14 +111,31 @@ async function timed(label, fn) {
   }
 }
 
-function uploadBuffer(buffer, { resourceType = 'auto', originalName }) {
+// Cloudinary derives the delivery Content-Type of a `raw` asset from the
+// public_id's extension. Without one it serves application/octet-stream with
+// `Content-Disposition: attachment`, so a brochure downloads as a nameless
+// blob instead of opening in the browser's PDF viewer. `use_filename` does
+// not add the extension for raw uploads, so build the public_id ourselves.
+function rawPublicId(originalName, extension) {
+  const base = String(originalName || 'brochure')
+    .replace(/\.[^.]+$/, '')
+    .normalize('NFKD')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+  const suffix = crypto.randomBytes(4).toString('hex')
+  return `${base || 'brochure'}-${suffix}${extension}`
+}
+
+function uploadBuffer(buffer, { resourceType = 'auto', originalName, extension }) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: CLOUDINARY_FOLDER,
         resource_type: resourceType,
-        // Keep PDFs identifiable by original filename in the Cloudinary console
-        ...(originalName ? { public_id: undefined, use_filename: true, unique_filename: true } : {}),
+        // Keep the original filename readable, and — for raw assets — carry the
+        // extension so Cloudinary serves the right Content-Type.
+        ...(extension ? { public_id: rawPublicId(originalName, extension) } : {}),
       },
       (err, result) => (err ? reject(err) : resolve(result)),
     )
@@ -307,7 +324,7 @@ app.post(
         () =>
           Promise.all([
             imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
-            pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
+            pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname, extension: '.pdf' }) : null,
           ]),
       )
 
@@ -377,7 +394,7 @@ app.put(
         () =>
           Promise.all([
             imageFile ? uploadBuffer(imageFile.buffer, { resourceType: 'image' }) : null,
-            pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname }) : null,
+            pdfFile ? uploadBuffer(pdfFile.buffer, { resourceType: 'raw', originalName: pdfFile.originalname, extension: '.pdf' }) : null,
           ]),
       )
 

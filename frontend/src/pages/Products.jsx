@@ -4,8 +4,9 @@ import { categories, products as seedProducts, orderByList } from '../data/produ
 import { productPath } from '../data/slug'
 import Seo from '../seo/Seo'
 import { itemListSchema, breadcrumbSchema } from '../seo/structuredData'
+import BrochureViewer from '../components/BrochureViewer'
 
-function BrochureGate({ product, onClose }) {
+function BrochureGate({ product, onClose, onUnlocked }) {
   const [form, setForm] = useState({ name: '', phone: '', company: '', location: '' })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -43,11 +44,18 @@ function BrochureGate({ product, onClose }) {
       }),
     }).catch(() => {})
 
-    if (product.pdf) {
-      window.open(product.pdf, '_blank', 'noopener,noreferrer')
-    }
     setSubmitting(false)
-    onClose()
+
+    if (!product.pdf) {
+      setError(
+        'We could not find the PDF for this machine. Your details are with our team — we will email the brochure shortly.',
+      )
+      return
+    }
+
+    // Hand off to the inline reader rather than opening a new tab, so the
+    // buyer stays on the page they came from.
+    onUnlocked(product)
   }
 
   return (
@@ -309,6 +317,7 @@ export default function Products() {
   const initial = validIds.includes(hash.replace('#', '')) ? hash.replace('#', '') : 'all'
   const [active, setActive] = useState(initial)
   const [brochureFor, setBrochureFor] = useState(null)
+  const [viewing, setViewing] = useState(null)
   const [dynamicProducts, setDynamicProducts] = useState([])
   const [hiddenCodes, setHiddenCodes] = useState([])
   const [order, setOrder] = useState({})
@@ -488,6 +497,19 @@ export default function Products() {
         <BrochureGate
           product={brochureFor}
           onClose={() => setBrochureFor(null)}
+          onUnlocked={(p) => {
+            setBrochureFor(null)
+            setViewing(p)
+          }}
+        />
+      )}
+
+      {viewing && (
+        <BrochureViewer
+          url={viewing.pdf}
+          title={viewing.name}
+          code={viewing.code}
+          onClose={() => setViewing(null)}
         />
       )}
     </main>
