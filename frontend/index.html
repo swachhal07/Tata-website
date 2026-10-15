@@ -56,6 +56,17 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
+  <!-- MV Dugar chatbot widget -->
+  <script>
+    (function () {
+      var script = document.createElement('script');
+      script.src = "https://backend-omni.mvdugar.com/widget.js";
+      script.setAttribute('data-chatbot-key', "88a614e7dcfc2de0efe49e51b176d5d8");
+      script.async = true;
+      document.head.appendChild(script);
+    })();
+  </script>
 </body>
 
 </html>
