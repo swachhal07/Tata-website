@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import Seo from '../seo/Seo'
 
-/* Rendered for any unmatched path. The route still resolves with HTTP 200 —
- * Vercel rewrites everything to index.html — so the `noindex` on this page is
- * what keeps stale and mistyped URLs out of the index. */
+/* Rendered for any unmatched path. Unknown top-level paths are served from
+ * dist/404.html with a real 404 status; unknown /products/* and /blog/* slugs
+ * still come back 200 (vercel.json rewrites those so machines and posts added
+ * after the last deploy keep working), and the `noindex` here covers them. */
 export default function NotFound() {
   return (
     <main className="bg-white">

@@ -24,6 +24,7 @@ const EMPTY_FORM = {
   cat: 'excavators',
   series: '',
   intro: '',
+  price: '',
   applications: '',
   tags: '',
 }
@@ -225,6 +226,7 @@ export default function Admin() {
       cat: product.cat || 'excavators',
       series: product.series || '',
       intro: product.intro || '',
+      price: product.price ? String(product.price) : '',
       applications: (product.applications || []).join(', '),
       tags: (product.tags || []).join(', '),
     })
@@ -306,6 +308,7 @@ export default function Admin() {
       fd.append('cat', form.cat)
       fd.append('series', form.series.trim())
       fd.append('intro', form.intro.trim())
+      fd.append('price', form.price.trim())
       fd.append('applications', form.applications)
       fd.append('tags', form.tags)
       fd.append(
@@ -644,6 +647,20 @@ export default function Admin() {
                   />
                 </Field>
                 <p className="mt-1 text-right text-sm text-gray-400">{form.intro.length}/400</p>
+                <div className="mt-5" />
+                <Field
+                  label="Starting price (NPR)"
+                  hint="Optional. Shown as “From NPR …” and lets Google show the price in search. Leave blank for price on request."
+                >
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={form.price}
+                    onChange={updateField('price')}
+                    placeholder="9500000"
+                    className={inputCls}
+                  />
+                </Field>
               </div>
 
               <div>

@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import useProducts from '../data/useProducts'
 import { productSlug, productPath } from '../data/slug'
-import { noteFor } from '../data/productNotes'
+import { noteFor, productFaqs } from '../data/productNotes'
 import Seo from '../seo/Seo'
-import { productSchema, breadcrumbSchema } from '../seo/structuredData'
+import { formatNpr } from '../seo/siteMeta'
+import { productSchema, breadcrumbSchema, faqSchema } from '../seo/structuredData'
 import NotFound from './NotFound'
 
 /* Support commitments shown beside the deployment prose. These restate figures
@@ -73,6 +74,112 @@ function SpecRow({ label, value }) {
   )
 }
 
+/* Keep a short trailing token on the same line as the word before it, so a
+ * model name never wraps as "ZAXIS 650 / H." The replacement string is a
+ * non-breaking space (U+00A0), not an ordinary one. */
+const keepTail = (name) => String(name).replace(/ (\S{1,3})$/, ' $1')
+
+/* Dark band between the warm deployment section and the white related
+ * grid. Answers stay rendered while collapsed (grid-rows 0fr, not
+ * unmounted), so the FAQPage JSON-LD always matches text that is on the
+ * page — the same pattern as the homepage <Faqs>. */
+function BuyerQuestions({ name, faqs }) {
+  const [open, setOpen] = useState(0)
+
+  return (
+    <section className="bg-[#0f0f0f] py-24 text-white md:py-28">
+      <div className="mx-auto max-w-[1500px] px-6 lg:px-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.35fr] lg:gap-24">
+          {/* Same sticky rail as the homepage FAQ. No overflow-hidden on any
+            * ancestor here — it silently disables position: sticky. The top
+            * padding lines the eyebrow up with the first question. */}
+          <div className="lg:sticky lg:top-28 lg:self-start lg:pt-7">
+            <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-[#f37022]">
+              <span aria-hidden className="h-px w-10 bg-[#f37022]" />
+              Buyer questions
+            </div>
+            <h2 className="mt-6 text-4xl font-black uppercase leading-[0.95] tracking-[-0.02em] md:text-5xl">
+              Before you buy
+              <span className="mt-1 block text-balance font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
+                {keepTail(name)}.
+              </span>
+            </h2>
+            <p className="mt-6 max-w-sm text-base leading-relaxed text-white/75">
+              Price, running costs, service and finance: what contractors ask
+              us most about this machine.
+            </p>
+
+            <div className="mt-10 max-w-sm border-t border-white/15 pt-8">
+              <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-white/65">
+                Not answered here?
+              </p>
+              <a
+                href="tel:+9779802591430"
+                className="group mt-4 inline-flex items-center gap-4 bg-white py-3 pl-6 pr-3 text-[11px] font-bold uppercase tracking-[0.24em] text-black transition-colors duration-500 hover:bg-[#f37022] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f37022]"
+              >
+                Call sales · +977 980-2591430
+                <span
+                  aria-hidden
+                  className="flex h-8 w-8 items-center justify-center bg-black/[0.06] transition-transform duration-500 group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div className="border-t border-white/15">
+            {faqs.map((f, i) => {
+              const isOpen = open === i
+              return (
+                <div key={f.q} className="border-b border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? -1 : i)}
+                    aria-expanded={isOpen}
+                    className="group flex w-full items-start justify-between gap-6 py-7 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f37022]"
+                  >
+                    <h3
+                      className={`text-lg font-bold leading-snug tracking-tight transition-colors duration-300 md:text-[22px] ${
+                        isOpen ? 'text-[#f37022]' : 'text-white group-hover:text-[#f37022]'
+                      }`}
+                    >
+                      {f.q}
+                    </h3>
+                    <span
+                      aria-hidden
+                      className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                        isOpen
+                          ? 'rotate-45 border-[#f37022] bg-[#f37022] text-white'
+                          : 'border-white/30 text-white/80 group-hover:border-[#f37022] group-hover:bg-[#f37022] group-hover:text-white'
+                      }`}
+                    >
+                      <svg viewBox="0 0 14 14" className="h-3 w-3 fill-current">
+                        <path d="M6 0h2v14H6z M0 6h14v2H0z" />
+                      </svg>
+                    </span>
+                  </button>
+                  <div
+                    className={`grid transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="max-w-2xl pb-8 text-base md:pr-12 leading-[1.8] text-white/70 md:text-[17px]">
+                        {f.a}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function ProductDetail() {
   const { slug } = useParams()
   const { products, ready } = useProducts()
@@ -100,6 +207,7 @@ export default function ProductDetail() {
   const path = productPath(product)
   const title = `Tata Hitachi ${product.name} — Specs & Price in Nepal`
   const description = `${product.intro} Specifications, brochure and pricing from Dugar Earthmovers, Nepal's authorised Tata Hitachi distributor.`
+  const faqs = productFaqs(product, formatNpr)
 
   return (
     <main className="bg-white">
@@ -116,6 +224,7 @@ export default function ProductDetail() {
             { name: 'Machines', path: '/products' },
             { name: product.name, path },
           ]),
+          faqSchema(faqs),
         ]}
       />
 
@@ -200,6 +309,28 @@ export default function ProductDetail() {
                   {product.intro}
                 </p>
               </div>
+
+              {product.applications?.length > 0 && (
+                <p className="mt-5 text-sm text-gray-700" style={REVEAL(0.2)}>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-gray-500">
+                    Best for
+                  </span>
+                  <span className="ml-2 font-semibold text-black">
+                    {product.applications.join(' · ')}
+                  </span>
+                </p>
+              )}
+
+              {product.price > 0 && (
+                <p className="mt-6 text-sm text-gray-700" style={REVEAL(0.21)}>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-gray-500">
+                    Price in Nepal
+                  </span>{' '}
+                  <span className="ml-2 font-mono text-xl font-bold tabular-nums text-black">
+                    From NPR {formatNpr(product.price)}
+                  </span>
+                </p>
+              )}
 
               <div className="mt-9 flex flex-wrap gap-3 md:mt-10" style={REVEAL(0.24)}>
                 <Link
@@ -426,6 +557,9 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+
+      {/* ─── Buyer questions ──────────────────────────────────── */}
+      {faqs.length > 0 && <BuyerQuestions name={product.name} faqs={faqs} />}
 
       {/* ─── Related machines ─────────────────────────────────── */}
       {related.length > 0 && (

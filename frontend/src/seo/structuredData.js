@@ -14,6 +14,7 @@ import {
   PARENT_ORG_URL,
   CONTACT,
   DEFAULT_OG_IMAGE,
+  SAME_AS,
   absoluteUrl,
   /* Extension is required: scripts/prerender.mjs imports this module under
    * plain Node, which does not do extensionless resolution the way Vite does. */
@@ -68,7 +69,7 @@ export function organizationSchema() {
     },
     email: CONTACT.email,
     telephone: CONTACT.salesPhone,
-    sameAs: [PARENT_ORG_URL],
+    sameAs: SAME_AS,
     contactPoint: [
       {
         '@type': 'ContactPoint',
@@ -153,8 +154,11 @@ export function faqSchema(faqs) {
   }
 }
 
+/* Google rejects a Product without a priced Offer (or reviews/ratings) as an
+ * invalid product snippet, so unpriced machines emit no Product block at all
+ * rather than a half-filled one. Set a starting price in the admin to opt in. */
 export function productSchema(product, path) {
-  if (!product?.name) return null
+  if (!product?.name || !(product.price > 0)) return null
   return compact({
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -173,9 +177,17 @@ export function productSchema(product, path) {
     })),
     offers: {
       '@type': 'Offer',
-      // Prices are quoted per enquiry, so no `price` is asserted here.
-      availability: 'https://schema.org/InStock',
+      price: product.price,
       priceCurrency: 'NPR',
+      // A "from" price: the actual quote depends on configuration.
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: product.price,
+        priceCurrency: 'NPR',
+        valueAddedTaxIncluded: true,
+      },
+      availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
       areaServed: { '@type': 'Country', name: 'Nepal' },
       seller: { '@id': ORG_ID },
       url: absoluteUrl(path),

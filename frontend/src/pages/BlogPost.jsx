@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { autoExcerpt, formatDate, parseBody, readingTime } from '../data/blog'
+import useProducts from '../data/useProducts'
+import { productPath, productsMentioned } from '../data/slug'
 import Seo from '../seo/Seo'
 import { blogPostingSchema, breadcrumbSchema } from '../seo/structuredData'
 
@@ -46,6 +48,7 @@ export default function BlogPost() {
   // Tracked together with the slug they belong to, so navigating to
   // another post shows the skeleton instead of the previous article.
   const [result, setResult] = useState({ slug: null, status: 'loading', post: null })
+  const { products } = useProducts()
 
   useEffect(() => {
     let cancelled = false
@@ -139,6 +142,7 @@ export default function BlogPost() {
     .join(' · ')
 
   const postPath = `/blog/${slug}`
+  const machines = productsMentioned(`${post.title} ${post.body}`, products)
 
   return (
     <main className="bg-white">
@@ -224,6 +228,27 @@ export default function BlogPost() {
                   {t}
                 </span>
               ))}
+            </div>
+          )}
+
+          {machines.length > 0 && (
+            <div className="mt-14 border-t border-gray-200 pt-8">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                Machines in this story
+              </p>
+              <ul className="mt-4 flex flex-wrap gap-3">
+                {machines.map((m) => (
+                  <li key={m.code}>
+                    <Link
+                      to={productPath(m)}
+                      className="inline-flex items-center gap-2 border border-gray-800 bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-gray-900 transition-colors hover:border-[#f37022] hover:text-[#f37022]"
+                    >
+                      Tata Hitachi {m.name}
+                      <span aria-hidden>→</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

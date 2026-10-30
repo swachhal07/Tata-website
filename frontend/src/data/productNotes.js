@@ -38,3 +38,86 @@ export const GENERIC_NOTE =
 export function noteFor(product) {
   return NOTES[product?.code] || GENERIC_NOTE
 }
+
+/* Facts read off each machine's manufacturer brochure, keyed by model code.
+ * Only what the brochure actually prints — anything absent stays absent and
+ * the FAQ answer falls back to the general wording. */
+export const BROCHURE = {}
+
+const SALES_PHONE = '+977 980-2591430'
+
+function joinList(items) {
+  if (items.length <= 1) return items.join('')
+  return `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`
+}
+
+function spec(product, label) {
+  return product.specs?.find((s) => s.label.toLowerCase() === label.toLowerCase())?.value
+}
+
+/**
+ * Buyer questions for one machine, answered from its catalogue data, its
+ * brochure facts and the commitments made elsewhere on the site (warranty,
+ * finance, parts, service network). Rendered on the product page and as
+ * FAQPage JSON-LD, so every answer here must also be true on the page.
+ *
+ * `formatPrice` is passed in rather than imported to keep this module free of
+ * the SEO layer.
+ */
+export function productFaqs(product, formatPrice) {
+  if (!product?.name) return []
+  const name = `Tata Hitachi ${product.name}`
+  const facts = BROCHURE[product.code] || {}
+  const apps = (product.applications || []).map((a) => a.toLowerCase())
+  const faqs = []
+
+  faqs.push({
+    q: `What is the price of the ${name} in Nepal?`,
+    a:
+      product.price > 0
+        ? `The ${name} starts from NPR ${formatPrice(product.price)}. The final price depends on configuration, attachments and financing. Call our sales team on ${SALES_PHONE} or request a quote for today's price.`
+        : `The price of the ${name} depends on configuration, attachments and financing, so we quote each enquiry individually. Call our sales team on ${SALES_PHONE} or request a quote through this site.`,
+  })
+
+  if (apps.length) {
+    faqs.push({
+      q: `What is the ${product.name} best used for?`,
+      a: `The ${name}${product.series ? ` (${product.series.split('·')[0].trim().toLowerCase()})` : ''} is best suited to ${joinList(apps)} work.${facts.applications ? ` ${facts.applications}` : ''}`,
+    })
+  }
+
+  if (product.specs?.length) {
+    faqs.push({
+      q: `What are the main specifications of the ${product.name}?`,
+      a: `${joinList(product.specs.map((s) => `${s.label.toLowerCase()} ${s.value}`))}.${facts.engine ? ` ${facts.engine}` : ''} Full figures are in the manufacturer brochure on this page.`,
+    })
+  }
+
+  const tank = spec(product, 'Fuel tank')
+  faqs.push({
+    q: `How much fuel does the ${product.name} use?`,
+    a: `Fuel use depends on the work mode, the material and the operator, so there is no single figure.${tank ? ` The ${product.name} carries a ${tank} fuel tank.` : ''}${facts.fuel ? ` ${facts.fuel}` : ''} Tell us your duty cycle and our team will estimate consumption for your site.`,
+  })
+
+  faqs.push({
+    q: `How often does the ${product.name} need servicing, and who services it in Nepal?`,
+    a: `${facts.service ? `${facts.service} ` : ''}Dugar Earthmovers services every Tata Hitachi machine from ten branches: Kathmandu, Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang and Butwal. A factory-trained technician can typically be on site within 24 to 48 hours, and scheduled preventive maintenance can be set up for fleet customers.`,
+  })
+
+  faqs.push({
+    q: `Are spare parts for the ${product.name} available in Nepal?`,
+    a: 'Yes. Genuine Tata Hitachi parts are stocked at our central warehouse with regional stocking in the major work zones. Most orders ship the same day; specialised parts are sourced from the factory within 5–10 working days.',
+  })
+
+  faqs.push({
+    q: `Can I buy the ${product.name} on finance or EMI?`,
+    a: 'Yes. We work with leading banks and financing partners across Nepal to arrange equipment finance, hire purchase and operating leases. Our team can help you compare options based on project tenure and cash flow.',
+  })
+
+  faqs.push({
+    q: `What warranty comes with a new ${product.name}?`,
+    a: `Every new machine ships with the standard manufacturer warranty covering structural components and major hydraulic systems, and extended warranty packages are available. Every handover also includes structured operator training.${facts.warranty ? ` ${facts.warranty}` : ''}`,
+  })
+
+  return faqs
+}

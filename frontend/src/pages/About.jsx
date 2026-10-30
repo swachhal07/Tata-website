@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
 import Seo from '../seo/Seo'
+import {
+  ABOUT_INTRO,
+  STORY,
+  AT_A_GLANCE,
+  TRUST_PILLARS,
+  TEAMS,
+  PROMISE,
+} from '../data/about'
 import storySlide1 from '../assets/WhatsApp Image 2026-06-14 at 1.13.27 PM.jpeg'
 import storySlide2 from '../assets/WhatsApp Image 2026-06-14 at 1.19.34 PM.jpeg'
 import storySlide3 from '../assets/WhatsApp Image 2026-06-14 at 1.19.35 PM.jpeg'
@@ -26,45 +34,20 @@ const partnerLogos = [
   { src: logo6, alt: 'Partner 6', invert: false },
 ]
 
-const trustPillars = [
-  { label: 'Authorised distributor' },
-  { label: 'Factory-trained service' },
-  { label: 'Manufacturer warranty' },
-  { label: 'Genuine parts supply' },
-]
+const trustPillars = TRUST_PILLARS.map((label) => ({ label }))
 
-const teamGroups = [
-  {
-    number: '01',
-    label: 'Sales',
-    headline: 'Built around',
-    accent: 'the buyer.',
-    photos: [salesTeamPhoto],
-    caption: 'Jeetpur showroom · 2026',
-    bio: "Our sales floor pairs technical depth with on-the-ground experience. They walk job sites, talk through applications, and stay involved long after the invoice is signed, because the relationship is the product.",
-    capabilities: [
-      'Showroom walk-throughs & site visits',
-      'Application sizing & spec advice',
-      'Finance & delivery coordination',
-      'Long-term customer relationships',
-    ],
-  },
-  {
-    number: '02',
-    label: 'Service',
-    headline: 'Built to',
-    accent: 'stay close.',
-    photos: [serviceTeamPhoto1, serviceTeamPhoto2],
-    caption: 'Service centre · 2026',
-    bio: 'Factory-trained, parts-stocked, and always reachable. The service team carries the machine from first commissioning to its tenth season, through warranty work, scheduled servicing, and the late-night calls from remote sites.',
-    capabilities: [
-      'Factory-trained technicians',
-      'Scheduled servicing & warranty',
-      'Genuine Tata Hitachi parts',
-      'Emergency field response',
-    ],
-  },
-]
+/* Copy lives in data/about.js (shared with the prerender snapshot); only the
+ * presentation — numbering, photos, captions — is defined here. */
+const TEAM_MEDIA = {
+  Sales: { photos: [salesTeamPhoto], caption: 'Jeetpur showroom · 2026' },
+  Service: { photos: [serviceTeamPhoto1, serviceTeamPhoto2], caption: 'Service centre · 2026' },
+}
+
+const teamGroups = TEAMS.map((team, i) => ({
+  ...team,
+  ...TEAM_MEDIA[team.label],
+  number: String(i + 1).padStart(2, '0'),
+}))
 
 function TeamPhoto({ photos, label, number }) {
   const [idx, setIdx] = useState(0)
@@ -175,9 +158,7 @@ export default function About() {
                 </div>
               </div>
               <p className="max-w-md text-base leading-relaxed text-gray-700 md:text-lg">
-                Dugar Earthmovers P. Ltd is the authorised Tata Hitachi distributor for
-                Nepal, supplying, servicing, and standing behind the machines
-                that build the country's roads, hydropower, and quarries.
+                {ABOUT_INTRO}
               </p>
               <div className="mt-6 inline-flex items-center border border-black/15 bg-white/60 px-4 py-2">
                 <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-black">
@@ -231,29 +212,43 @@ export default function About() {
               </h2>
 
               <div className="mt-10 space-y-5 text-base leading-relaxed text-gray-700 md:text-lg">
-                <p>
-                  Dugar Earthmovers Pvt. Ltd. has been a trusted partner in
-                  Nepal's construction and infrastructure sector for decades.
-                  As the authorized distributor of Tata Hitachi equipment, we
-                  provide reliable machinery, genuine spare parts, and
-                  dedicated after-sales support to customers across the
-                  country.
-                </p>
-                <p>
-                  From road construction and hydropower projects to mining
-                  and large-scale development, our equipment helps power the
-                  projects that shape Nepal's future. Backed by experienced
-                  professionals and a commitment to customer success, we
-                  strive to deliver quality, reliability, and long-term value
-                  in every partnership.
-                </p>
-                <p>
-                  At Dugar Earthmovers, we believe that strong infrastructure
-                  begins with dependable equipment and exceptional service.
-                </p>
+                {STORY.map((para) => (
+                  <p key={para.slice(0, 24)}>{para}</p>
+                ))}
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ─── At a glance ──────────────────────────────────────── */}
+      <section className="border-t border-black/10 bg-[#f7f5f0] py-20 md:py-28">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
+          <div className="mb-6 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-[#f37022] md:text-base">
+            <span className="h-px w-10 bg-[#f37022]" />
+            At a glance
+          </div>
+          <h2 className="max-w-3xl text-4xl font-black uppercase leading-[0.95] tracking-tight text-black md:text-5xl lg:text-6xl">
+            What you get{' '}
+            <span className="font-serif font-bold italic normal-case tracking-normal text-[#f37022]">
+              from us.
+            </span>
+          </h2>
+          <dl className="mt-14 grid grid-cols-1 gap-px border border-black/10 bg-black/10 md:grid-cols-2 lg:grid-cols-3">
+            {AT_A_GLANCE.map((item, i) => (
+              <div key={item.label} className="bg-[#f7f5f0] p-7 md:p-8">
+                <dt className="flex items-center gap-3">
+                  <span className="font-mono text-xs font-bold tabular-nums tracking-[0.25em] text-[#f37022]">
+                    / {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="text-sm font-bold uppercase tracking-[0.14em] text-black">
+                    {item.label}
+                  </span>
+                </dt>
+                <dd className="mt-4 text-base leading-relaxed text-gray-700">{item.body}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
@@ -418,9 +413,7 @@ export default function About() {
               "
             </h2>
             <p className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-gray-700 md:text-lg">
-              Every machine we deliver is supported by the same team for as
-              long as it's working. The people who answer the call know the
-              machine, the operator, and the project it's on.
+              {PROMISE.body}
             </p>
           </div>
         </div>

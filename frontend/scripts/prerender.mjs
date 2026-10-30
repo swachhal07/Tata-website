@@ -46,6 +46,7 @@ import {
   CONTACT,
   DEFAULT_OG_IMAGE,
   absoluteUrl,
+  formatNpr,
 } from '../src/seo/siteMeta.js'
 import {
   organizationSchema,
@@ -55,9 +56,20 @@ import {
   blogPostingSchema,
   itemListSchema,
   branchSchema,
+  faqSchema,
 } from '../src/seo/structuredData.js'
-import { productSlug, productPath } from '../src/data/slug.js'
-import { noteFor } from '../src/data/productNotes.js'
+import { productSlug, productPath, productsMentioned } from '../src/data/slug.js'
+import { faqs } from '../src/data/faqs.js'
+import {
+  ABOUT_INTRO,
+  STORY,
+  AT_A_GLANCE,
+  PARTNER_NAMES,
+  TRUST_PILLARS,
+  TEAMS,
+  PROMISE,
+} from '../src/data/about.js'
+import { noteFor, productFaqs } from '../src/data/productNotes.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const distDir = path.resolve(here, '..', 'dist')
@@ -133,14 +145,29 @@ async function allLocations() {
   return list.filter((l) => l.city)
 }
 
-/* Seed product images are Vite-resolved asset paths that do not exist as URLs
- * at build time, so anything not already absolute or under /uploads falls back
- * to the default card. Better a correct default than a 404 in an OG tag. */
+/* Hashed filenames Vite emitted into dist/assets, read once in main(). */
+let builtAssets = []
+
+/* Seed product images arrive here as the shimmed import specifier
+ * ('../assets/EX 130.jpg'), not a URL. Vite emits that file as
+ * `dist/assets/<name>-<8-char hash>.<ext>`, so find the built copy and point
+ * og:image and Product.image at the real machine photo. Anything that cannot
+ * be resolved falls back to the default card — better a correct default than
+ * a 404 in an OG tag. */
 function ogImageFor(image) {
-  if (typeof image !== 'string') return DEFAULT_OG_IMAGE
+  if (typeof image !== 'string' || !image) return DEFAULT_OG_IMAGE
   if (/^https?:\/\//i.test(image)) return image
-  if (image.startsWith('/uploads/')) return absoluteUrl(image)
-  return DEFAULT_OG_IMAGE
+  if (image.startsWith('/')) return encodeURI(absoluteUrl(image))
+  const file = path.basename(image)
+  const ext = path.extname(file)
+  const stem = file.slice(0, -ext.length)
+  const built = builtAssets.find(
+    (name) =>
+      name.startsWith(`${stem}-`) &&
+      name.endsWith(ext) &&
+      name.length === stem.length + 1 + 8 + ext.length,
+  )
+  return built ? encodeURI(absoluteUrl(`/assets/${built}`)) : DEFAULT_OG_IMAGE
 }
 
 /* ── HTML helpers ──────────────────────────────────────────────────── */
@@ -205,6 +232,8 @@ function productBody(product, products) {
     `<h1>Tata Hitachi ${esc(product.name)}</h1>`,
     product.series ? `<p>${esc(product.series)}</p>` : '',
     p(product.intro),
+    product.applications?.length ? p(`Best for: ${product.applications.join(' · ')}`) : '',
+    product.price > 0 ? p(`Price in Nepal: from NPR ${formatNpr(product.price)}`) : '',
     p(noteFor(product)),
     product.specs?.length
       ? `<h2>Specifications</h2><ul>${li(
@@ -219,18 +248,26 @@ function productBody(product, products) {
     p(
       'Every machine is commissioned by our own technicians and handed over with structured operator training. Genuine parts are stocked centrally with regional stocking in the major work zones, and a factory-trained technician can be on site typically within 24 to 48 hours anywhere in Nepal.',
     ),
+    faqHtml(`${product.name} questions`, productFaqs(product, formatNpr)),
     others.length ? `<h2>Other machines</h2>${machineList(others)}` : '',
     CONTACT_BLOCK,
   ].join('')
 }
 
-function postBody(post) {
+function faqHtml(heading, faqs) {
+  if (!faqs.length) return ''
+  return `<h2>${esc(heading)}</h2>${faqs.map((f) => `<h3>${esc(f.q)}</h3>${p(f.a)}`).join('')}`
+}
+
+function postBody(post, products) {
   const text = stripTags(post.body || post.content || '')
+  const machines = productsMentioned(`${post.title} ${text}`, products)
   return [
     `<h1>${esc(post.title)}</h1>`,
     post.publishedAt ? `<p>Published ${esc(String(post.publishedAt).slice(0, 10))}</p>` : '',
     p(post.excerpt),
     text ? p(text.slice(0, 1200)) : '',
+    machines.length ? `<h2>Machines in this story</h2>${machineList(machines)}` : '',
     `<p>${link('/blog', 'More notes from the ground up')}</p>`,
     CONTACT_BLOCK,
   ].join('')
@@ -266,6 +303,9 @@ function staticBody(route, meta, { products, posts, locations }) {
   if (route === '/' || route === '/contact') {
     parts.push(branchList(locations))
   }
+  if (route === '/') {
+    parts.push(faqHtml('Frequently asked questions', faqs))
+  }
   if (route === '/blog' && posts.length) {
     parts.push(
       '<h2>Recent posts</h2>',
@@ -274,6 +314,29 @@ function staticBody(route, meta, { products, posts, locations }) {
           .slice(0, 20)
           .map((post) => `${link(`/blog/${post.slug}`, post.title)}${post.excerpt ? ` — ${esc(post.excerpt)}` : ''}`),
       )}</ul>`,
+    )
+  }
+  if (route === '/about') {
+    parts.push(
+      p(ABOUT_INTRO),
+      '<h2>Our story</h2>',
+      STORY.map(p).join(''),
+      '<h2>At a glance</h2>',
+      AT_A_GLANCE.map((item) => `<h3>${esc(item.label)}</h3>${p(item.body)}`).join(''),
+      '<h2>Working with</h2>',
+      `<ul>${li(PARTNER_NAMES.map(esc))}</ul>`,
+      `<ul>${li(TRUST_PILLARS.map(esc))}</ul>`,
+      '<h2>Our team</h2>',
+      TEAMS.map(
+        (t) =>
+          `<h3>${esc(t.label)}: ${esc(t.headline)} ${esc(t.accent)}</h3>${p(t.bio)}<ul>${li(
+            t.capabilities.map(esc),
+          )}</ul>`,
+      ).join(''),
+      '<h2>Our promise</h2>',
+      p(PROMISE.quote),
+      p(PROMISE.body),
+      `<p>${link('/products', 'See the full Tata Hitachi range')} · ${link('/contact', 'Find your nearest branch')}</p>`,
     )
   }
   if (route === '/about' || route === '/leadership') {
@@ -314,7 +377,7 @@ const SNAPSHOT_STYLE = [
   'background:#f7f5f0',
 ].join(';')
 
-function headTags({ title, description, canonical, image, type }) {
+function headTags({ title, description, canonical, image, type, noindex }) {
   const meta = [
     ['name', 'description', description],
     ['property', 'og:type', type],
@@ -332,7 +395,9 @@ function headTags({ title, description, canonical, image, type }) {
   return [
     `<title>${esc(title)}</title>`,
     `<link data-seo rel="canonical" href="${esc(canonical)}" />`,
-    `<meta data-seo name="robots" content="index, follow, max-image-preview:large" />`,
+    `<meta data-seo name="robots" content="${
+      noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'
+    }" />`,
     ...meta.map(
       ([attr, key, value]) =>
         `<meta data-seo ${attr}="${esc(key)}" content="${esc(value)}" />`,
@@ -345,7 +410,10 @@ function headTags({ title, description, canonical, image, type }) {
  * current route, so the prerendered head is replaced rather than duplicated.
  * The <title> is untagged for the same reason — document.title overwrites it
  * in place. */
-function buildPage(template, { title, description, canonical, image, type, blocks, body }) {
+function buildPage(
+  template,
+  { title, description, canonical, image, type, blocks, body, noindex = false },
+) {
   const jsonLd = [organizationSchema(), websiteSchema(), ...blocks]
     .filter(Boolean)
     .map(
@@ -357,7 +425,7 @@ function buildPage(template, { title, description, canonical, image, type, block
     )
     .join('\n  ')
 
-  const head = `${headTags({ title, description, canonical, image, type })}\n  ${jsonLd}`
+  const head = `${headTags({ title, description, canonical, image, type, noindex })}\n  ${jsonLd}`
 
   /* Drop the homepage defaults baked into index.html, then insert this
    * route's tags where they were. */
@@ -395,6 +463,7 @@ async function main() {
     console.error('  ! dist/index.html missing — run `vite build` first')
     process.exit(1)
   }
+  builtAssets = await fs.readdir(path.join(distDir, 'assets')).catch(() => [])
 
   const [products, posts, locations] = await Promise.all([
     allProducts(),
@@ -424,6 +493,9 @@ async function main() {
     }
     if (route === '/contact') {
       blocks.push(...locations.map(branchSchema))
+    }
+    if (route === '/') {
+      blocks.push(faqSchema(faqs))
     }
     await writePage(
       route,
@@ -464,6 +536,7 @@ async function main() {
             { name: 'Machines', path: '/products' },
             { name: product.name, path: route },
           ]),
+          faqSchema(productFaqs(product, formatNpr)),
         ],
         body: productBody(product, products),
       }),
@@ -478,20 +551,44 @@ async function main() {
         title: `${post.title} — Dugar Earthmovers`.slice(0, 62),
         description: (post.excerpt || stripTags(post.body || '')).slice(0, 158),
         canonical: absoluteUrl(route),
-        image: ogImageFor(post.image),
+        image: ogImageFor(post.cover || post.image),
         type: 'article',
         blocks: [
-          blogPostingSchema(post, route),
+          /* BlogPost.jsx stores the image as `cover`; mirror its mapping. */
+          blogPostingSchema({ ...post, image: ogImageFor(post.cover || post.image) }, route),
           breadcrumbSchema([
             { name: 'Home', path: '/' },
             { name: 'Blog', path: '/blog' },
             { name: post.title, path: route },
           ]),
         ],
-        body: postBody(post),
+        body: postBody(post, products),
       }),
     )
   }
+
+  /* Vercel serves dist/404.html, with a real 404 status, for any path that
+   * matches neither a prerendered file nor a rewrite in vercel.json. It is
+   * the full app shell, so React still mounts and renders <NotFound>; the
+   * snapshot is only for crawlers. */
+  await fs.writeFile(
+    path.join(distDir, '404.html'),
+    buildPage(template, {
+      title: `Page not found — ${SITE_NAME}`,
+      description: routeMeta['/'].description,
+      canonical: absoluteUrl('/'),
+      image: DEFAULT_OG_IMAGE,
+      type: 'website',
+      blocks: [],
+      noindex: true,
+      body: [
+        '<h1>Page not found</h1>',
+        p('This page does not exist or has moved.'),
+        `<ul>${li([link('/', 'Home'), link('/products', 'All machines'), link('/contact', 'Contact')])}</ul>`,
+      ].join(''),
+    }),
+    'utf8',
+  )
 
   const total = Object.keys(routeMeta).length + products.length + posts.length
   console.log(

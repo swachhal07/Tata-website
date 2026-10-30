@@ -25,3 +25,22 @@ export function productSlug(product) {
 export function productPath(product) {
   return `/products/${productSlug(product)}`
 }
+
+const squash = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
+/**
+ * Machines a blog post names in its text, matched on model code or name with
+ * spacing and punctuation ignored ("ZAXIS 220 LC" finds `ZAXIS-220LC`). The
+ * blog page and its prerendered snapshot both link these, so every post
+ * passes authority on to the product pages it discusses.
+ */
+export function productsMentioned(text, products) {
+  const hay = squash(text)
+  if (!hay) return []
+  return products.filter((p) =>
+    [p.code, p.name].some((key) => {
+      const needle = squash(key)
+      return needle.length >= 4 && hay.includes(needle)
+    }),
+  )
+}

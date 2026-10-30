@@ -10,7 +10,11 @@
     { "source": "/api/login",               "destination": "https://tata-website.onrender.com/api/login" },
     { "source": "/api/logout",              "destination": "https://tata-website.onrender.com/api/logout" },
     { "source": "/api/me",                  "destination": "https://tata-website.onrender.com/api/me" },
-    { "source": "/((?!api/).*)",            "destination": "/index.html" }
+    { "source": "/products/:path*",         "destination": "/index.html" },
+    { "source": "/blog/:path*",             "destination": "/index.html" },
+    { "source": "/admin",                   "destination": "/index.html" },
+    { "source": "/admin/:path*",            "destination": "/index.html" },
+    { "source": "/login",                   "destination": "/index.html" }
   ],
   "headers": [
     {

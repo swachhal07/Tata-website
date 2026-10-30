@@ -258,8 +258,16 @@ function parseBody(req) {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean)
+  /* Optional "from" price in NPR. Blank clears it; anything else must be a
+   * positive whole number so the Product schema never asserts a junk price. */
+  const priceRaw = String(b.price ?? '').replace(/[,\s]/g, '')
+  const price = priceRaw ? Number(priceRaw) : null
+  if (price !== null && !(Number.isInteger(price) && price > 0)) {
+    throw new Error('Price must be a whole number of rupees')
+  }
   return {
     name: b.name?.trim() || '',
+    price,
     cat: b.cat?.trim() || '',
     series: b.series?.trim() || '',
     intro: b.intro?.trim() || '',

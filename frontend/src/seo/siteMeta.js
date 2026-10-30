@@ -12,6 +12,16 @@ export const LEGAL_NAME = 'Dugar Earthmovers Pvt. Ltd.'
 export const PARENT_ORG = 'MV Dugar Group'
 export const PARENT_ORG_URL = 'https://www.mvdugar.com/'
 
+/* Official profiles of the same business, for Organization `sameAs`. These
+ * tie the site to the Facebook and LinkedIn pages Google already ranks for
+ * brand searches. Add YouTube / Instagram / Google Business Profile URLs here
+ * once they exist. */
+export const SAME_AS = [
+  PARENT_ORG_URL,
+  'https://www.facebook.com/TataHitachiNepal/',
+  'https://www.linkedin.com/company/tata-hitachi-dugar-nepal',
+]
+
 /* Shown in Open Graph / Twitter cards when a page sets no image of its own.
  * Generated at 1200x630 by scripts/optimize-assets.mjs. */
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.jpg`
@@ -22,6 +32,11 @@ export const CONTACT = {
   email: 'sales.tatahitachinp@gmail.com',
   city: 'Kathmandu',
   country: 'NP',
+}
+
+/** Rupees in the Indian/Nepali grouping buyers read prices in: 95,00,000. */
+export function formatNpr(amount) {
+  return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(amount)
 }
 
 /** Absolute URL for a site-relative path. Trailing slash only on the root. */
