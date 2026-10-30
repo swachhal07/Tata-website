@@ -8,6 +8,12 @@
       "port": 5173
     },
     {
+      "name": "frontend-dev-live-api",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set VITE_API_TARGET=https://tata-website.onrender.com&& npm run dev --prefix frontend -- --port 5174 --strictPort"],
+      "port": 5174
+    },
+    {
       "name": "frontend-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview", "--prefix", "frontend"],
