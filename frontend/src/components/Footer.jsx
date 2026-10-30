@@ -132,7 +132,7 @@ export default function Footer() {
             <span className="font-serif text-xs normal-case text-gray-500">Developed by</span>
             <span className="mx-2 text-[#f37022]">·</span>
             <a
-              href="https://swachhalportfolio.vercel.app/"
+              href="https://scalea.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs transition-colors hover:text-[#f37022] md:text-[13px]"
