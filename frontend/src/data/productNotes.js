@@ -48,8 +48,18 @@ export function noteFor(product) {
  * table on the same page (ZAXIS 140H, EX 350, EX 215), service intervals for
  * the EX 215 (its brochure covers a 140 HP variant), and the EX 210 LC Prime
  * and EX 130 entirely (their linked brochures are the electric-conversion and
- * tunnel versions). ZAXIS 370 LCH and Shinrai Power brochures were not read. */
+ * tunnel versions). The Shinrai Power brochure was not read, and only the
+ * feature and maintenance pages of the ZAXIS 370 LCH brochure were. */
 export const BROCHURE = {
+  'ZAXIS-370LCH': {
+    performance:
+      'Auto Power Lift raises lifting force by 10% when needed, Enhanced Power Boost adds 5% digging force at the press of a button, and regenerative valves speed up arm roll-in.',
+    fuel: 'Its HIOS III hydraulic and engine control system is built for higher production with lower CO2 emissions, and an electric fuel refilling pump fills the tank at the push of a button.',
+    service:
+      'Tata Hitachi specifies engine oil and engine oil filter changes every 500 hours; hydraulic oil filter, fuel filter, fuel pre-filter and water separator every 1,000 hours; hydraulic oil every 5,000 hours; and greasing of the front joint and bucket link pins every 50 hours. Inspection points are grouped behind ground-level side covers, and the arm and boom have centralised greasing points.',
+    applications:
+      'It is built for quarry work, with a strengthened boom, bucket and boom cylinders, and an optional Mighty Track undercarriage with a heavy-duty track chain for longer track life.',
+  },
   /* Engine and reach figures omitted: the live admin record (64.5 t, 463 HP)
    * describes a different build from the brochure on file (58.3 t, 295 kW). */
   'ZAXIS-650H': {
