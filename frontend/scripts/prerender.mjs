@@ -452,6 +452,83 @@ async function writePage(route, html) {
   await fs.writeFile(target, html, 'utf8')
 }
 
+/* ── llms.txt ─────────────────────────────────────────────────────── */
+
+/* The plain-text site summary AI assistants read (llmstxt.org). Built from
+ * the same products, posts and locations as the pages, so a machine added in
+ * the admin, a published price or a new post appears here on the next deploy
+ * instead of drifting out of date in a hand-written file. Markdown, not HTML,
+ * so nothing is escaped. */
+function llmsTxt({ products, posts, locations }) {
+  const machine = (m) => {
+    const specs = (m.specs || []).map((s) => `${s.label} ${s.value}`).join('; ')
+    const price = m.price > 0 ? `From NPR ${formatNpr(m.price)}.` : 'Price on enquiry.'
+    return `- [Tata Hitachi ${m.name}](${absoluteUrl(productPath(m))}): ${[
+      m.series ? `${m.series}.` : '',
+      m.intro,
+      m.applications?.length ? `Best for: ${m.applications.join(', ')}.` : '',
+      specs ? `${specs}.` : '',
+      price,
+    ]
+      .filter(Boolean)
+      .join(' ')}`
+  }
+
+  /* Location records are per desk (sales and service separately), so a city
+   * can appear more than once. List each city once; the numbers live on
+   * /contact, linked under Pages. */
+  const cities = [...new Set(locations.map((l) => l.city.trim()))]
+  const branches = cities.length
+    ? cities.join(', ')
+    : 'Kathmandu (HQ), Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang and Butwal'
+
+  return [
+    `# ${SITE_NAME} — Tata Hitachi Nepal`,
+    '',
+    `> ${CITABLE}`,
+    '',
+    '## Facts',
+    '',
+    `- Authorised Tata Hitachi Construction Machinery distributor for Nepal (${LEGAL_NAME}).`,
+    `- Part of ${PARENT_ORG} (${PARENT_ORG_URL}).`,
+    `- Branches: ${branches}.`,
+    '- Factory-trained technicians typically reach a project site within 24–48 hours anywhere in Nepal.',
+    '- Genuine parts stocked centrally and regionally; most orders ship the same day, specialised parts in 5–10 working days.',
+    '- Every handover includes commissioning and structured operator training.',
+    '- Equipment finance, hire purchase and operating leases arranged through banks and financing partners.',
+    `- Sales: ${CONTACT.salesPhone} · Service: ${CONTACT.servicePhone} · ${CONTACT.email}`,
+    '',
+    '## Machines',
+    '',
+    ...products.map(machine),
+    '',
+    ...(posts.length
+      ? [
+          '## Guides',
+          '',
+          ...posts.map(
+            (post) =>
+              `- [${post.title}](${absoluteUrl(`/blog/${post.slug}`)})${
+                post.excerpt ? `: ${post.excerpt}` : ''
+              }`,
+          ),
+          '',
+        ]
+      : []),
+    '## Pages',
+    '',
+    ...Object.entries(routeMeta)
+      .filter(([route]) => route !== '/privacy' && route !== '/terms')
+      .map(([route, meta]) => `- [${meta.title}](${absoluteUrl(route)}): ${meta.description}`),
+    '',
+    '## Notes',
+    '',
+    '- Starting prices are shown on machine pages where published; otherwise prices are quoted per enquiry, depending on configuration, attachments and financing.',
+    '- Machine specifications are manufacturer figures and are a guide, not a contract.',
+    '',
+  ].join('\n')
+}
+
 /* ── Main ─────────────────────────────────────────────────────────── */
 
 async function main() {
@@ -589,6 +666,8 @@ async function main() {
     }),
     'utf8',
   )
+
+  await fs.writeFile(path.join(distDir, 'llms.txt'), llmsTxt(data), 'utf8')
 
   const total = Object.keys(routeMeta).length + products.length + posts.length
   console.log(
