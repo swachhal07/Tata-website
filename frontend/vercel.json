@@ -1,6 +1,12 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "tata-website-six.vercel.app" }],
+      "destination": "https://www.dugarearthmovers.com.np/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "tata-website-six.vercel.app" }],
       "destination": "https://www.dugarearthmovers.com.np/:path*",
