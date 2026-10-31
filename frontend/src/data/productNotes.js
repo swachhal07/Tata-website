@@ -41,8 +41,57 @@ export function noteFor(product) {
 
 /* Facts read off each machine's manufacturer brochure, keyed by model code.
  * Only what the brochure actually prints — anything absent stays absent and
- * the FAQ answer falls back to the general wording. */
-export const BROCHURE = {}
+ * the FAQ answer falls back to the general wording.
+ *
+ * Deliberately left out until the catalogue specs are reconciled with the
+ * brochures: engine power and dimension figures that disagree with the spec
+ * table on the same page (ZAXIS 140H, EX 350, EX 215), service intervals for
+ * the EX 215 (its brochure covers a 140 HP variant), and the EX 210 LC Prime
+ * and EX 130 entirely (their linked brochures are the electric-conversion and
+ * tunnel versions). ZAXIS 370 LCH and Shinrai Power brochures were not read. */
+export const BROCHURE = {
+  /* Engine and reach figures omitted: the live admin record (64.5 t, 463 HP)
+   * describes a different build from the brochure on file (58.3 t, 295 kW). */
+  'ZAXIS-650H': {
+    fuel: 'It has four work modes (general purpose, trench digging, attachment and precision) and an engine speed sensing system.',
+    service:
+      'Small engine maintenance doors give access without opening the whole engine cover, and the bucket pins are boss-lubricated with bucket bushes.',
+    applications: 'Tata Hitachi designs it for mining-class work, and long-reach versions are available.',
+  },
+  'ZAXIS-220LC': {
+    performance:
+      'Auto Power Lift adds 6% lifting force and Enhanced Power Boost adds 5% digging force.',
+    fuel: 'According to Tata Hitachi, its ECO mode can cut fuel consumption by 10% compared with PWR mode.',
+    service:
+      'ConSite telematics reports the machine’s operating status remotely, which helps plan servicing before a fault stops work.',
+    applications:
+      'It comes with a factory-fitted rock breaker piping kit and works with a rock breaker, auger, orange peel grab or quick coupler.',
+  },
+  'ZAXIS-140H': {
+    fuel: 'According to Tata Hitachi, its ECO mode cuts fuel consumption by 10% compared with PWR mode.',
+    service:
+      'Its steel bushings hold grease longer for longer greasing intervals, and ConSite telematics sends a monthly operating report with caution and emergency alerts.',
+    applications:
+      'It takes a rock breaker, auger, orange peel grab or quick coupler, with an optional rock breaker piping kit.',
+  },
+  'EX-350-LCPRIME': {
+    fuel: 'It has four power modes, slow and fast travel modes, auto shutdown, and fuel consumption monitoring through InSite telematics.',
+    service:
+      'Remote-mounted filters, a cyclonic pre-cleaner and an on-board maintenance and diagnostic display on a 7-inch screen make routine servicing quicker.',
+  },
+  'EX-215': {
+    fuel: 'Auto idle, auto deceleration, E/S/P work modes, a fuel-saving pump and hydraulic regeneration all help keep fuel use down.',
+    service:
+      'A maintenance-free cyclonic pre-cleaner and a 7-inch display with maintenance alerts make routine servicing simpler.',
+  },
+  'EX-70-SUPER': {
+    fuel: 'The engine starts in its fuel-saving EP mode by default, with auto idle and auto deceleration.',
+    service:
+      'Tata Hitachi rates the hydraulic oil for 4,500 hours between changes in bucket work, and service points are reachable from ground level.',
+    applications:
+      'Tata Hitachi also builds an EX70 AQUA version with 600 mm tracks for marshy ground.',
+  },
+}
 
 const SALES_PHONE = '+977 980-2591430'
 
@@ -89,7 +138,9 @@ export function productFaqs(product, formatPrice) {
   if (product.specs?.length) {
     faqs.push({
       q: `What are the main specifications of the ${product.name}?`,
-      a: `${joinList(product.specs.map((s) => `${s.label.toLowerCase()} ${s.value}`))}.${facts.engine ? ` ${facts.engine}` : ''} Full figures are in the manufacturer brochure on this page.`,
+      a: `${joinList(
+        product.specs.map((s, i) => `${i === 0 ? s.label : s.label.toLowerCase()} ${s.value}`),
+      )}.${facts.engine ? ` ${facts.engine}` : ''}${facts.performance ? ` ${facts.performance}` : ''} Full figures are in the manufacturer brochure on this page.`,
     })
   }
 
