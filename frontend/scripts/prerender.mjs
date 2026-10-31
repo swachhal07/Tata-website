@@ -192,7 +192,7 @@ const link = (href, label) => `<a href="${esc(href)}">${esc(label)}</a>`
 
 /* The one sentence every AI crawler should be able to lift verbatim. Mirrors
  * the claim made on the About page and in llms.txt. */
-const CITABLE = `${SITE_NAME} (${LEGAL_NAME}) is the authorised Tata Hitachi Construction Machinery distributor for Nepal, part of ${PARENT_ORG}. It sells, commissions and services excavators, backhoe loaders and mining equipment, and supplies genuine Tata Hitachi parts, from ten branches nationwide.`
+const CITABLE = `${SITE_NAME} (${LEGAL_NAME}) is the authorised Tata Hitachi Construction Machinery distributor for Nepal, part of ${PARENT_ORG}. It sells, commissions and services excavators, backhoe loaders and mining equipment, and supplies genuine Tata Hitachi parts, from ten service branches nationwide.`
 
 const CONTACT_BLOCK = `<h2>Contact</h2><ul>${li([
   `Sales: <a href="tel:${esc(CONTACT.salesPhone)}">${esc(CONTACT.salesPhone)}</a>`,
@@ -477,11 +477,16 @@ function llmsTxt({ products, posts, locations }) {
 
   /* Location records are per desk (sales and service separately), so a city
    * can appear more than once. List each city once; the numbers live on
-   * /contact, linked under Pages. */
-  const cities = [...new Set(locations.map((l) => l.city.trim()))]
-  const branches = cities.length
-    ? cities.join(', ')
-    : 'Kathmandu (HQ), Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang and Butwal'
+   * /contact, linked under Pages. "Ten branches" elsewhere on the site means
+   * service branches, so sales-only cities are listed apart from them. */
+  const cityList = (rows) => [...new Set(rows.map((l) => l.city.trim()))]
+  const serviceCities = cityList(locations.filter((l) => /service/i.test(l.label || '')))
+  const salesOnly = cityList(locations).filter((c) => !serviceCities.includes(c))
+  const branches = serviceCities.length
+    ? `${serviceCities.length} service branches: ${serviceCities.join(', ')}${
+        salesOnly.length ? `. Sales offices also in ${salesOnly.join(', ')}` : ''
+      }`
+    : '10 service branches: Kathmandu (HQ), Biratnagar, Pokhara, Jeetpur, Bardibaas, Nepalgunj, Dhangadi, Surkhet, Dang and Butwal'
 
   return [
     `# ${SITE_NAME} — Tata Hitachi Nepal`,
@@ -492,7 +497,7 @@ function llmsTxt({ products, posts, locations }) {
     '',
     `- Authorised Tata Hitachi Construction Machinery distributor for Nepal (${LEGAL_NAME}).`,
     `- Part of ${PARENT_ORG} (${PARENT_ORG_URL}).`,
-    `- Branches: ${branches}.`,
+    `- ${branches}.`,
     '- Factory-trained technicians typically reach a project site within 24–48 hours anywhere in Nepal.',
     '- Genuine parts stocked centrally and regionally; most orders ship the same day, specialised parts in 5–10 working days.',
     '- Every handover includes commissioning and structured operator training.',

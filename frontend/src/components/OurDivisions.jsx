@@ -37,7 +37,7 @@ const divisions = [
     machineCount: backhoeCount,
     stats: [
       { label: 'Engine Power', value: '99 HP' },
-      { label: 'Backhoe Reach', value: '5.7 m' },
+      { label: 'Digging Depth', value: '4.7 m' },
       { label: 'Loader Capacity', value: '1.1 m³' },
       { label: 'Series', value: 'Shinrai Power' },
     ],

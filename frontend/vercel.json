@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "tata-website-six.vercel.app" }],
+      "destination": "https://www.dugarearthmovers.com.np/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/api/products",            "destination": "https://tata-website.onrender.com/api/products" },
     { "source": "/api/products/:path*",     "destination": "https://tata-website.onrender.com/api/products/:path*" },

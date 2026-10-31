@@ -124,11 +124,30 @@ function toXml(urls) {
 
 /* Served from public/ so it overrides Cloudflare's managed robots.txt.
  * The AI-crawler block that file applies is a Cloudflare dashboard setting —
- * changing it here has no effect until the managed rule is turned off. */
+ * changing it here has no effect until the managed rule is turned off.
+ *
+ * AI training crawlers are named explicitly so a crawler that only honours
+ * its own group still gets the welcome; a named group replaces `*` for that
+ * bot, so the private paths are repeated there. Bytespider stays out: it
+ * crawls hard and TikTok search sends this site nothing. */
+const PRIVATE = `Disallow: /admin
+Disallow: /login`
+
 const ROBOTS = `User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /login
+${PRIVATE}
+
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Amazonbot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+${PRIVATE}
+
+User-agent: Bytespider
+Disallow: /
 
 Sitemap: ${SITE_URL}/sitemap.xml
 `

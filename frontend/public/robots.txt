@@ -3,4 +3,17 @@ Allow: /
 Disallow: /admin
 Disallow: /login
 
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Amazonbot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /login
+
+User-agent: Bytespider
+Disallow: /
+
 Sitemap: https://www.dugarearthmovers.com.np/sitemap.xml
