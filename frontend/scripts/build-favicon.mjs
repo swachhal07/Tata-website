@@ -82,3 +82,61 @@ await sharp({
   .toFile(whiteOut)
 
 console.log(`wrote ${whiteOut} (${CANVAS}x${CANVAS}); stack ${m1.width}x${m1.height} + ${m2.width}x${m2.height}, topOffset=${topOffset}`)
+
+// step 4: the favicon set, written to public/ under fixed names.
+//
+// The white wordmark on its own is invisible on light backgrounds, and that
+// is exactly what Google shows it on: search results crop the favicon to a
+// circle on white. So the wordmark sits on a solid brand-orange square, scaled
+// to 78% of the width: the stacked wordmark is wide and short, so its corners
+// still fall inside the circle crop (about 0.42 of the radius 0.5). Fixed paths (not
+// Vite-hashed ones) because Google caches favicons by URL and expects
+// /favicon.ico to exist.
+const BRAND = { r: 0xf3, g: 0x70, b: 0x22, alpha: 1 }
+const MARK_SCALE = 0.78
+
+async function icon(size) {
+  const mark = await sharp(whiteOut)
+    .resize(Math.round(size * MARK_SCALE), Math.round(size * MARK_SCALE), { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .toBuffer()
+  const m = await sharp(mark).metadata()
+  return sharp({ create: { width: size, height: size, channels: 4, background: BRAND } })
+    .composite([{ input: mark, left: Math.round((size - m.width) / 2), top: Math.round((size - m.height) / 2) }])
+    .png()
+    .toBuffer()
+}
+
+/* .ico with PNG-compressed entries: 6-byte header, a 16-byte directory entry
+ * per image, then the PNG bytes. Every current browser and Google read it. */
+function ico(pngs) {
+  const header = Buffer.alloc(6)
+  header.writeUInt16LE(0, 0)
+  header.writeUInt16LE(1, 2)
+  header.writeUInt16LE(pngs.length, 4)
+  let offset = 6 + 16 * pngs.length
+  const dir = pngs.map(({ size, data }) => {
+    const e = Buffer.alloc(16)
+    e.writeUInt8(size >= 256 ? 0 : size, 0)
+    e.writeUInt8(size >= 256 ? 0 : size, 1)
+    e.writeUInt16LE(1, 4) // colour planes
+    e.writeUInt16LE(32, 6) // bits per pixel
+    e.writeUInt32LE(data.length, 8)
+    e.writeUInt32LE(offset, 12)
+    offset += data.length
+    return e
+  })
+  return Buffer.concat([header, ...dir, ...pngs.map((p) => p.data)])
+}
+
+const { writeFile } = await import('node:fs/promises')
+const icoSizes = [16, 32, 48]
+await writeFile('public/favicon.ico', ico(await Promise.all(icoSizes.map(async (size) => ({ size, data: await icon(size) })))))
+for (const [file, size] of [
+  ['public/favicon-96x96.png', 96],
+  ['public/apple-touch-icon.png', 180],
+  ['public/icon-192.png', 192],
+  ['public/icon-512.png', 512],
+]) {
+  await writeFile(file, await icon(size))
+}
+console.log('wrote public/favicon.ico (16/32/48), favicon-96x96.png, apple-touch-icon.png, icon-192.png, icon-512.png')
