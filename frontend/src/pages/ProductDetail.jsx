@@ -4,7 +4,7 @@ import useProducts from '../data/useProducts'
 import { productSlug, productPath } from '../data/slug'
 import { noteFor, productFaqs } from '../data/productNotes'
 import Seo from '../seo/Seo'
-import { formatNpr } from '../seo/siteMeta'
+import { formatNpr, productKeywords } from '../seo/siteMeta'
 import { productSchema, breadcrumbSchema, faqSchema } from '../seo/structuredData'
 import NotFound from './NotFound'
 
@@ -225,6 +225,7 @@ export default function ProductDetail() {
       <Seo
         title={title.length > 62 ? `Tata Hitachi ${product.name} — Nepal Specs & Price` : title}
         description={description.slice(0, 158)}
+        keywords={productKeywords(product)}
         path={path}
         image={product.image}
         type="product"

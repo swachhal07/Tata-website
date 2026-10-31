@@ -47,6 +47,7 @@ export default function Seo({
   type = 'website',
   noindex = false,
   author,
+  keywords,
   jsonLd,
 }) {
   const { pathname } = useLocation()
@@ -55,6 +56,7 @@ export default function Seo({
 
   const finalTitle = title || fallback.title
   const finalDescription = description || fallback.description
+  const finalKeywords = keywords || fallback.keywords
   const finalImage = image ? absoluteUrl(image) : DEFAULT_OG_IMAGE
   const canonical = absoluteUrl(canonicalPath)
   const serialisedJsonLd = JSON.stringify(jsonLd ?? null)
@@ -65,6 +67,7 @@ export default function Seo({
 
     addMeta('name', 'description', finalDescription)
     addMeta('name', 'author', author || SITE_NAME)
+    addMeta('name', 'keywords', finalKeywords)
     addTag('link', { rel: 'canonical', href: canonical })
     addMeta(
       'name',
@@ -108,6 +111,7 @@ export default function Seo({
     type,
     noindex,
     author,
+    finalKeywords,
     serialisedJsonLd,
   ])
 

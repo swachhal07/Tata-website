@@ -38,6 +38,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   routeMeta,
+  productKeywords,
   SITE_URL,
   SITE_NAME,
   LEGAL_NAME,
@@ -377,10 +378,11 @@ const SNAPSHOT_STYLE = [
   'background:#f7f5f0',
 ].join(';')
 
-function headTags({ title, description, canonical, image, type, noindex, author }) {
+function headTags({ title, description, canonical, image, type, noindex, author, keywords }) {
   const meta = [
     ['name', 'description', description],
     ['name', 'author', author || SITE_NAME],
+    ...(keywords ? [['name', 'keywords', keywords]] : []),
     ['property', 'og:type', type],
     ['property', 'og:site_name', SITE_NAME],
     ['property', 'og:title', title],
@@ -413,7 +415,7 @@ function headTags({ title, description, canonical, image, type, noindex, author 
  * in place. */
 function buildPage(
   template,
-  { title, description, canonical, image, type, blocks, body, noindex = false, author },
+  { title, description, canonical, image, type, blocks, body, noindex = false, author, keywords },
 ) {
   const jsonLd = [organizationSchema(), websiteSchema(), ...blocks]
     .filter(Boolean)
@@ -426,7 +428,7 @@ function buildPage(
     )
     .join('\n  ')
 
-  const head = `${headTags({ title, description, canonical, image, type, noindex, author })}\n  ${jsonLd}`
+  const head = `${headTags({ title, description, canonical, image, type, noindex, author, keywords })}\n  ${jsonLd}`
 
   /* Drop the homepage defaults baked into index.html, then insert this
    * route's tags where they were. */
@@ -585,6 +587,7 @@ async function main() {
       buildPage(template, {
         title: meta.title,
         description: meta.description,
+        keywords: meta.keywords,
         canonical,
         image: DEFAULT_OG_IMAGE,
         type: 'website',
@@ -609,6 +612,7 @@ async function main() {
       buildPage(template, {
         title,
         description,
+        keywords: productKeywords(product),
         canonical: absoluteUrl(route),
         image: ogImageFor(product.image),
         type: 'product',
@@ -637,6 +641,7 @@ async function main() {
         image: ogImageFor(post.cover || post.image),
         type: 'article',
         author: post.author,
+        keywords: routeMeta['/blog'].keywords,
         blocks: [
           /* BlogPost.jsx stores the image as `cover`; mirror its mapping. */
           blogPostingSchema({ ...post, image: ogImageFor(post.cover || post.image) }, route),

@@ -4,6 +4,7 @@ import { autoExcerpt, formatDate, parseBody, readingTime } from '../data/blog'
 import useProducts from '../data/useProducts'
 import { productPath, productsMentioned } from '../data/slug'
 import Seo from '../seo/Seo'
+import { routeMeta } from '../seo/siteMeta'
 import { blogPostingSchema, breadcrumbSchema } from '../seo/structuredData'
 
 function Body({ text }) {
@@ -153,6 +154,7 @@ export default function BlogPost() {
         image={post.cover}
         type="article"
         author={post.author}
+        keywords={routeMeta['/blog'].keywords}
         jsonLd={[
           blogPostingSchema(
             { ...post, excerpt: post.excerpt || autoExcerpt(post.body), image: post.cover },
