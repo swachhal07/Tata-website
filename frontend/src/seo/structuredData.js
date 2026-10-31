@@ -98,6 +98,8 @@ export function websiteSchema() {
     url: `${SITE_URL}/`,
     name: SITE_NAME,
     publisher: { '@id': ORG_ID },
+    image: DEFAULT_OG_IMAGE,
+    sameAs: SAME_AS,
     inLanguage: 'en',
   }
 }

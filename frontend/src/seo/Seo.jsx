@@ -46,6 +46,7 @@ export default function Seo({
   path,
   type = 'website',
   noindex = false,
+  author,
   jsonLd,
 }) {
   const { pathname } = useLocation()
@@ -63,6 +64,7 @@ export default function Seo({
     document.title = finalTitle
 
     addMeta('name', 'description', finalDescription)
+    addMeta('name', 'author', author || SITE_NAME)
     addTag('link', { rel: 'canonical', href: canonical })
     addMeta(
       'name',
@@ -105,6 +107,7 @@ export default function Seo({
     canonical,
     type,
     noindex,
+    author,
     serialisedJsonLd,
   ])
 

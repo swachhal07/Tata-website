@@ -14,7 +14,7 @@ const cards = [
 
 function Card({ card }) {
   return (
-    <article className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-900 md:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]">
+    <li className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-900 md:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]">
       <img
         src={card.image}
         alt={card.title}
@@ -27,7 +27,7 @@ function Card({ card }) {
           {card.title}
         </h3>
       </div>
-    </article>
+    </li>
   )
 }
 
@@ -50,11 +50,11 @@ export default function WhatWeDo() {
           </h2>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4">
+        <ul className="flex flex-wrap justify-center gap-4">
           {cards.map((c) => (
             <Card key={c.number} card={c} />
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   )

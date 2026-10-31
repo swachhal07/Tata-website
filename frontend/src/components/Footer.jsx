@@ -49,9 +49,9 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-white">
+            <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-white">
               Quick Links
-            </h4>
+            </h2>
             <ul className="space-y-3 text-sm">
               <li><Link to="/" className="transition-colors hover:text-[#f37022]">Home</Link></li>
               <li><Link to="/products" className="transition-colors hover:text-[#f37022]">Products</Link></li>
@@ -63,9 +63,9 @@ export default function Footer() {
 
           {/* Equipment */}
           <div>
-            <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-white">
+            <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-white">
               Equipment
-            </h4>
+            </h2>
             <ul className="space-y-3 text-sm">
               <li><Link to="/products#excavators" className="transition-colors hover:text-[#f37022]">Excavators</Link></li>
               <li><Link to="/products#backhoes" className="transition-colors hover:text-[#f37022]">Backhoe Loaders</Link></li>
@@ -75,9 +75,9 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-white">
+            <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-white">
               Contact
-            </h4>
+            </h2>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 text-[#f37022]"><PinIcon /></span>

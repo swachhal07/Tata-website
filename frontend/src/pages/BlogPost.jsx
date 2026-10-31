@@ -152,6 +152,7 @@ export default function BlogPost() {
         path={postPath}
         image={post.cover}
         type="article"
+        author={post.author}
         jsonLd={[
           blogPostingSchema(
             { ...post, excerpt: post.excerpt || autoExcerpt(post.body), image: post.cover },

@@ -377,9 +377,10 @@ const SNAPSHOT_STYLE = [
   'background:#f7f5f0',
 ].join(';')
 
-function headTags({ title, description, canonical, image, type, noindex }) {
+function headTags({ title, description, canonical, image, type, noindex, author }) {
   const meta = [
     ['name', 'description', description],
+    ['name', 'author', author || SITE_NAME],
     ['property', 'og:type', type],
     ['property', 'og:site_name', SITE_NAME],
     ['property', 'og:title', title],
@@ -412,7 +413,7 @@ function headTags({ title, description, canonical, image, type, noindex }) {
  * in place. */
 function buildPage(
   template,
-  { title, description, canonical, image, type, blocks, body, noindex = false },
+  { title, description, canonical, image, type, blocks, body, noindex = false, author },
 ) {
   const jsonLd = [organizationSchema(), websiteSchema(), ...blocks]
     .filter(Boolean)
@@ -425,7 +426,7 @@ function buildPage(
     )
     .join('\n  ')
 
-  const head = `${headTags({ title, description, canonical, image, type, noindex })}\n  ${jsonLd}`
+  const head = `${headTags({ title, description, canonical, image, type, noindex, author })}\n  ${jsonLd}`
 
   /* Drop the homepage defaults baked into index.html, then insert this
    * route's tags where they were. */
@@ -630,6 +631,7 @@ async function main() {
         canonical: absoluteUrl(route),
         image: ogImageFor(post.cover || post.image),
         type: 'article',
+        author: post.author,
         blocks: [
           /* BlogPost.jsx stores the image as `cover`; mirror its mapping. */
           blogPostingSchema({ ...post, image: ogImageFor(post.cover || post.image) }, route),

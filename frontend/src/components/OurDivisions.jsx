@@ -138,9 +138,9 @@ export default function OurDivisions() {
               {active.description}
             </p>
 
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {active.stats.map((s) => (
-                <div
+                <li
                   key={s.label}
                   className="rounded-xl border border-gray-200 bg-white p-4"
                 >
@@ -150,9 +150,9 @@ export default function OurDivisions() {
                   <p className="mt-1.5 text-base font-bold text-black md:text-lg">
                     {s.value}
                   </p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
             <Link
               to={`/products#${active.id}`}
