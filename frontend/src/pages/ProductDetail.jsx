@@ -189,13 +189,24 @@ export default function ProductDetail() {
     [products, slug],
   )
 
-  const related = useMemo(
-    () =>
-      products
-        .filter((p) => p !== product && p.cat === product?.cat)
-        .slice(0, 3),
-    [products, product],
-  )
+  /* Same-class machines first. A class with fewer than three (the Shinrai
+   * Power is the only backhoe loader) is topped up with the machines that
+   * share the most applications, so the page never ends without onward
+   * links and the dark FAQ band never runs straight into the footer. */
+  const { related, sameClass } = useMemo(() => {
+    if (!product) return { related: [], sameClass: true }
+    const others = products.filter((p) => p !== product)
+    const same = others.filter((p) => p.cat === product.cat)
+    if (same.length >= 3) return { related: same.slice(0, 3), sameClass: true }
+    const apps = new Set((product.applications || []).map((a) => a.toLowerCase()))
+    const overlap = (p) => (p.applications || []).filter((a) => apps.has(a.toLowerCase())).length
+    const fill = others
+      .filter((p) => p.cat !== product.cat)
+      .map((p, i) => ({ p, score: overlap(p), i }))
+      .sort((a, b) => b.score - a.score || a.i - b.i)
+      .map(({ p }) => p)
+    return { related: [...same, ...fill].slice(0, 3), sameClass: same.length > 0 }
+  }, [products, product])
 
   if (!product) {
     /* The catalogue may still be in flight — hold the frame rather than
@@ -230,16 +241,8 @@ export default function ProductDetail() {
 
       {/* ─── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[#f7f5f0] pt-10 pb-20 md:pt-14 md:pb-28 lg:pb-32">
-        {/* Warm bloom behind the headline, plus a faint survey grid — the grid
-         * is a static background-image so it costs nothing to scroll past. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-40 -top-40 hidden h-[620px] w-[620px] lg:block"
-          style={{
-            background:
-              'radial-gradient(closest-side, rgba(243,112,34,0.16), transparent 72%)',
-          }}
-        />
+        {/* Faint survey grid — a static background-image, so it costs nothing
+         * to scroll past. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.5]"
@@ -311,14 +314,25 @@ export default function ProductDetail() {
               </div>
 
               {product.applications?.length > 0 && (
-                <p className="mt-5 text-sm text-gray-700" style={REVEAL(0.2)}>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-gray-500">
+                <div className="mt-7 max-w-xl" style={REVEAL(0.2)}>
+                  <p className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.28em] text-[#f37022]">
+                    <span aria-hidden className="h-px w-6 bg-[#f37022]" />
                     Best for
-                  </span>
-                  <span className="ml-2 font-semibold text-black">
-                    {product.applications.join(' · ')}
-                  </span>
-                </p>
+                  </p>
+                  {/* Same chip language as the series tag above and the
+                    * deployment tags further down the page. */}
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {product.applications.map((a) => (
+                      <li
+                        key={a}
+                        className="inline-flex items-center gap-2 border border-black/15 bg-white/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-800"
+                      >
+                        <span aria-hidden className="h-1 w-1 bg-[#f37022]" />
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
 
               {product.price > 0 && (
@@ -567,7 +581,7 @@ export default function ProductDetail() {
           <div className="mx-auto max-w-[1500px] px-6 lg:px-12">
             <div className="flex items-baseline justify-between gap-6 border-b border-gray-300 pb-6">
               <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-[-0.02em] text-black md:text-5xl">
-                Also in this class.
+                {sameClass ? 'Also in this class.' : 'Also worth a look.'}
               </h2>
               <Link
                 to="/products"
